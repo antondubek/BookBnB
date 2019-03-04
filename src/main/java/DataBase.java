@@ -1,9 +1,10 @@
 
+
 import java.sql.*;
 
-public class Database {
+public class DataBase {
 
-    public static void main(String[] args) {
+    public static String getData() {
         Connection con = null;
         String url = "jdbc:mysql://dag8.host.cs.st-andrews.ac.uk/";
         String db = "dag8_RickDB";
@@ -21,6 +22,7 @@ public class Database {
                 while (rs.next()) {
                     String name = rs.getString("name");
                     System.out.println(name);
+                    return name;
                 }
 
                 //ADD User
@@ -39,5 +41,6 @@ public class Database {
         } catch (Exception e) {
             System.out.println("ERR: " + e);
         }
+        return "Default";
     }
 }
