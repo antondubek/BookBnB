@@ -14,6 +14,21 @@ public class GreetingController {
     @RequestMapping("/greeting")
     public Greeting greeting(@RequestParam(value="name", defaultValue="Rick") String name) {
         return new Greeting(counter.incrementAndGet(),
-                String.format(template, name));
+                String.format(template, DataBase.getData("test")));
     }
+
+    @RequestMapping("/addNewUser")
+    public Greeting addNewUser(@RequestParam(value="name", defaultValue="Rick") String name) {
+        DataBase.addNewUser(name);
+        return new Greeting(counter.incrementAndGet(),
+                String.format(template, DataBase.getData("test")));
+    }
+
+    @RequestMapping("/deleteTheUser")
+    public Greeting deleteTheUser(@RequestParam(value="name", defaultValue="Rick") String name) {
+        DataBase.deleteTheUser(name);
+        return new Greeting(counter.incrementAndGet(),
+                String.format(template, DataBase.getData("test")));
+    }
+
 }

@@ -1,8 +1,9 @@
 .idea/*
+.project
+.settings
 .gradle
 /build/
 settings.gradle
-
 
 *.jar
 *.war
