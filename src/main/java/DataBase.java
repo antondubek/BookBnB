@@ -23,7 +23,6 @@ public class DataBase {
         try {
             Class.forName(driver).newInstance();
             con = DriverManager.getConnection(url + db, user, pass);
-            
             try {
                 Statement st = con.createStatement();
                 ResultSet rs = st.executeQuery("SELECT * FROM " + tableName);
@@ -31,16 +30,6 @@ public class DataBase {
                     String name = rs.getString("name");
                     returnData += name + "\n";
                 }
-
-                //ADD User
-                //st.executeUpdate("INSERT INTO dag8_RickDB.test (name) Values ('Praneeth'), ('John'); ");
-
-
-                //DELETE
-                //st.executeUpdate("DELETE FROM dag8_RickDB.test WHERE name = 'John'");
-
-                //UPDATE
-                //st.executeUpdate("UPDATE dag8_RickDB.test SET name = 'Edwin' WHERE name = 'Edvin'");
                 con.close();
             } catch (SQLException se) {
                  System.out.println("SQL ERR: " + se); //
@@ -50,4 +39,46 @@ public class DataBase {
         }
         return returnData;
     }
+
+    /**
+     * AddTheNewUser
+     */
+    public static void addNewUser(String name){
+        try {
+            Class.forName(driver).newInstance();
+            con = DriverManager.getConnection(url + db, user, pass);
+            try {
+                Statement st = con.createStatement();
+                st.executeUpdate("INSERT INTO dag8_RickDB.test (name) Values ('" + name + "')");
+                con.close();
+            } catch (SQLException se) {
+                 System.out.println("SQL ERR: " + se); //
+            }
+        } catch (Exception e) {
+            System.out.println("ERR: " + e);
+        }
+    }
+
+    /**
+     * DeleteTheUser
+     */
+    public static void deleteTheUser(String name){
+        try {
+            Class.forName(driver).newInstance();
+            con = DriverManager.getConnection(url + db, user, pass);
+            try {
+                Statement st = con.createStatement();
+                st.executeUpdate("DELETE FROM dag8_RickDB.test WHERE name = '" + name + "'");
+                con.close();
+            } catch (SQLException se) {
+                 System.out.println("SQL ERR: " + se); //
+            }
+        } catch (Exception e) {
+            System.out.println("ERR: " + e);
+        }
+    }
+
+    //UPDATE
+    //st.executeUpdate("UPDATE dag8_RickDB.test SET name = 'Edwin' WHERE name = 'Edvin'");
+
 }
