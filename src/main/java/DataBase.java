@@ -8,7 +8,7 @@ import java.sql.*;
 public class DataBase {
 
     private static Connection con = null;
-    private static String url = "jdbc:mysql://127.0.0.1:3306/";
+    private static String url = "jdbc:mysql://127.0.0.1:3307/";
     private static String db = "dag8_RickDB";
     private static String driver = "com.mysql.cj.jdbc.Driver";
     private static String user = "ri31";
