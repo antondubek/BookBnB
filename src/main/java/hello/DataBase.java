@@ -17,6 +17,7 @@ public class DataBase {
     private static String user = "ri31";
     private static String pass = "33.1Z4HLNfnbuy";
 
+
     public static String userList() {
         StringBuilder data = new StringBuilder();
         try {
@@ -29,16 +30,51 @@ public class DataBase {
         return data.toString(); //TODO for testing purposes, this could be problematic, as it can return an empty string builder
     }
 
+    /**Parse query results one line at a time */
     private static StringBuilder parseQuery() {
         StringBuilder data = new StringBuilder();
         try {
             Statement queryStatement = con.createStatement();
-            ResultSet queryResults = queryStatement.executeQuery(Query.userInformation);
+            ResultSet queryResults = queryStatement.executeQuery(Query.allUserInformation);
             while (queryResults.next()) {
                 String name = queryResults.getString("name");
                 String email = queryResults.getString("email");
                 String city = queryResults.getString("city");
                 data.append(name + "with email " + email + "in city " + city +", ");
+            }
+            con.close();
+        } catch (SQLException se) {
+            System.out.println("SQL ERR: " + se); //
+        }
+        return data;
+    }
+
+    public static String findUser(String email) {
+        ArrayList<User> data = new ArrayList<>();
+        try {
+            Class.forName(driver).newInstance();
+            con = DriverManager.getConnection(url + db, user, pass);
+            data = getName(email);
+        } catch (Exception e) {
+            System.out.println("ERR: " + e);
+        }
+        return data.toString(); //TODO  this turn an arraylist of User obejcts into a string, needs to return JSON
+    }
+
+    public static ArrayList<User> getName(String name){
+        ArrayList<User> data = new ArrayList<>();
+        try {
+            Statement queryStatement = con.createStatement();
+            String query = String.format(Query.userSearchByEmail, name);
+            ResultSet queryResults = queryStatement.executeQuery(query);
+            while (queryResults.next()) {
+                String username = queryResults.getString("name");
+                String email = queryResults.getString("email");
+                String city = queryResults.getString("city");
+
+                User nextUser = new User(username, email, city);
+
+                data.add(nextUser);
             }
             con.close();
         } catch (SQLException se) {
@@ -56,14 +92,16 @@ public class DataBase {
         } catch (Exception e) {
             System.out.println("ERR: " + e);
         }
-        return data.toString();
+        return data.toString(); //TODO  this turn an arraylist of User obejcts into a string, needs to return JSON
     }
+
+    /**Parse query results and turn into object */
 
     private static ArrayList<User> parseQueryObjects() {
         ArrayList<User> data = new ArrayList<>();
         try {
             Statement queryStatement = con.createStatement();
-            ResultSet queryResults = queryStatement.executeQuery(Query.userInformation);
+            ResultSet queryResults = queryStatement.executeQuery(Query.allUserInformation);
             while (queryResults.next()) {
                 String name = queryResults.getString("name");
                 String email = queryResults.getString("email");
@@ -81,7 +119,7 @@ public class DataBase {
     }
 
 
-
+//RIAD's code listed below
     /**
      * Get all the data from the table.
      * @param tableName the name of the table

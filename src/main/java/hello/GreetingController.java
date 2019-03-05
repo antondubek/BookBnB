@@ -95,9 +95,15 @@ public class GreetingController {
     }
 
     @RequestMapping("/testUserObject")
-    public Greeting get() {
+    public Greeting noRequestParam() {
         return new Greeting(counter.incrementAndGet(),
                 String.format(template, DataBase.userObjects()));
+    }
+
+    @RequestMapping("/searchSpecificUser")
+    public Greeting userRequestParam(@RequestParam(value="name", defaultValue = "Rick") String name) {
+        return new Greeting(counter.incrementAndGet(),
+                String.format(template, DataBase.findUser(name)));
     }
 
 }
