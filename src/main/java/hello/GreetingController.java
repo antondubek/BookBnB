@@ -3,12 +3,12 @@ package hello;
 import java.util.concurrent.atomic.AtomicLong;
 
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.json.JSONObject;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 //import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.PostMapping;
+
 
 @RestController
 public class GreetingController {
@@ -25,6 +25,32 @@ public class GreetingController {
     @PostMapping("/greeting")
     public Greeting postRequest(Greeting post) {
         return post;
+    }
+
+    @RequestMapping(method= RequestMethod.POST, value = "/login")
+    public ResponseEntity<String> login(@RequestBody String jsonString){
+        System.out.println(jsonString);
+
+        JSONObject data = new JSONObject(jsonString);
+
+        System.out.println("Name: " + data.get("name").toString());
+        System.out.println("Email: " + data.get("email").toString());
+        System.out.println("Name: " + data.get("password").toString());
+        System.out.println("Name: " + data.get("city").toString());
+
+        return new ResponseEntity<String>(HttpStatus.OK);
+    }
+
+    @RequestMapping(method= RequestMethod.POST, value = "/logintest")
+    public String logintest(@RequestBody String jsonString){
+        System.out.println(jsonString);
+
+        JSONObject data = new JSONObject(jsonString);
+
+        System.out.println("ID: " + data.get("id").toString());
+        System.out.println("Content: " + data.get("content").toString());
+
+        return "Login GOOD";
     }
 
     @RequestMapping("/addNewUser")
