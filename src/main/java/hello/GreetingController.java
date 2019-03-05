@@ -3,12 +3,13 @@ package hello;
 import java.util.concurrent.atomic.AtomicLong;
 
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 //import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.PostMapping;
+
 
 @RestController
 public class GreetingController {
@@ -26,6 +27,52 @@ public class GreetingController {
     public Greeting postRequest(Greeting post) {
         return post;
     }
+
+    @RequestMapping(method= RequestMethod.POST, value = "/login")
+    public ResponseEntity<String> login(@RequestBody String jsonString){
+        System.out.println(jsonString);
+
+        JSONObject data = new JSONObject(jsonString);
+
+        // data.put("name", "Rick Sanchez");
+        // data.toString();
+
+        System.out.println("Name: " + data.get("name").toString());
+        System.out.println("Email: " + data.get("email").toString());
+        System.out.println("Password: " + data.get("password").toString());
+        System.out.println("City: " + data.get("city").toString());
+
+        return new ResponseEntity<String>(HttpStatus.OK);
+    }
+
+    @RequestMapping(method= RequestMethod.POST, value = "/logintest")
+    public String logintest(@RequestBody String jsonString){
+        System.out.println(jsonString);
+
+        JSONObject data = new JSONObject(jsonString);
+
+        System.out.println("ID: " + data.get("id").toString());
+        System.out.println("Content: " + data.get("content").toString());
+
+        return "Login GOOD";
+    }
+
+    @RequestMapping(method= RequestMethod.POST, value = "/logintestj")
+    public String logintestJson(@RequestBody String jsonString){
+        System.out.println(jsonString);
+
+        JSONArray array = new JSONArray();
+        JSONObject obj1 = new JSONObject(new Greeting(1, "content"));
+        JSONObject obj2 = new JSONObject(new Greeting(2, "content2"));
+        JSONObject obj3 = new JSONObject(new Greeting(3, "content3"));
+
+        array.put(obj1);
+        array.put(obj2);
+        array.put(obj3);
+
+        return array.toString();
+    }
+
 
     @RequestMapping("/addNewUser")
     public Greeting addNewUser(@RequestParam(value="name", defaultValue="Rick") String name) {
