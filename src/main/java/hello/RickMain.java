@@ -9,4 +9,4 @@ public class RickMain {
     public static void main(String[] args) {
         SpringApplication.run(RickMain.class, args);
     }
-}
+}ls
