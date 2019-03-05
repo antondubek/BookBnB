@@ -15,6 +15,34 @@ public class DataBase {
     private static String user = "ri31";
     private static String pass = "33.1Z4HLNfnbuy";
 
+    public static String userList() {
+        StringBuilder data = new StringBuilder();
+        try {
+            Class.forName(driver).newInstance();
+            con = DriverManager.getConnection(url + db, user, pass);
+            data = parseQuery();
+        } catch (Exception e) {
+            System.out.println("ERR: " + e);
+        }
+        return data.toString(); //TODO for testing purposes, this could be problematic, as it can return an empty string builder
+    }
+
+    private static StringBuilder parseQuery() {
+        StringBuilder data = new StringBuilder();
+        try {
+            Statement queryStatement = con.createStatement();
+            ResultSet queryResults = queryStatement.executeQuery(Query.userInformation);
+            while (queryResults.next()) {
+                String name = queryResults.getString("name");
+                data.append(name + "  ");
+            }
+            con.close();
+        } catch (SQLException se) {
+            System.out.println("SQL ERR: " + se); //
+        }
+        return data;
+    }
+
     /**
      * Get all the data from the table.
      * @param tableName the name of the table

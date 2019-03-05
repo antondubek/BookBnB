@@ -88,4 +88,10 @@ public class GreetingController {
                 String.format(template, DataBase.getData("test")));
     }
 
+    @RequestMapping("/testQueries")
+    public Greeting get(@RequestParam(value="name", defaultValue = "Rick") String name) {
+        return new Greeting(counter.incrementAndGet(),
+                String.format(template, DataBase.userList()));
+    }
+
 }
