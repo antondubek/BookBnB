@@ -65,7 +65,7 @@ public class DataBase {
         ArrayList<User> data = new ArrayList<>();
         try {
             Statement queryStatement = con.createStatement();
-            String query = String.format(Query.userSearchByEmail, name);
+            String query = String.format(Query.userSearchByName, name);
             ResultSet queryResults = queryStatement.executeQuery(query);
             while (queryResults.next()) {
                 String username = queryResults.getString("name");
