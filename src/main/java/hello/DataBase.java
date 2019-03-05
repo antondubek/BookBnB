@@ -34,7 +34,9 @@ public class DataBase {
             ResultSet queryResults = queryStatement.executeQuery(Query.userInformation);
             while (queryResults.next()) {
                 String name = queryResults.getString("name");
-                data.append(name + "  ");
+                String email = queryResults.getString("email");
+                String city = queryResults.getString("city");
+                data.append(name + "with email " + email + "in city " + city +", ");
             }
             con.close();
         } catch (SQLException se) {
