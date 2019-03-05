@@ -39,8 +39,8 @@ public class GreetingController {
 
         System.out.println("Name: " + data.get("name").toString());
         System.out.println("Email: " + data.get("email").toString());
-        System.out.println("Name: " + data.get("password").toString());
-        System.out.println("Name: " + data.get("city").toString());
+        System.out.println("Password: " + data.get("password").toString());
+        System.out.println("City: " + data.get("city").toString());
 
         return new ResponseEntity<String>(HttpStatus.OK);
     }
