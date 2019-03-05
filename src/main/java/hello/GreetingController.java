@@ -94,4 +94,10 @@ public class GreetingController {
                 String.format(template, DataBase.userList()));
     }
 
+    @RequestMapping("/testUserObject")
+    public Greeting get() {
+        return new Greeting(counter.incrementAndGet(),
+                String.format(template, DataBase.userObjects()));
+    }
+
 }

@@ -1,6 +1,8 @@
 package hello;
 
 import java.sql.*;
+import java.util.ArrayList;
+
 /**
  * Class which is responsible for the database connections
  * @author 180029410
@@ -44,6 +46,41 @@ public class DataBase {
         }
         return data;
     }
+
+    public static String userObjects() {
+        ArrayList<User> data = new ArrayList<>();
+        try {
+            Class.forName(driver).newInstance();
+            con = DriverManager.getConnection(url + db, user, pass);
+            data = parseQueryObjects();
+        } catch (Exception e) {
+            System.out.println("ERR: " + e);
+        }
+        return data.toString();
+    }
+
+    private static ArrayList<User> parseQueryObjects() {
+        ArrayList<User> data = new ArrayList<>();
+        try {
+            Statement queryStatement = con.createStatement();
+            ResultSet queryResults = queryStatement.executeQuery(Query.userInformation);
+            while (queryResults.next()) {
+                String name = queryResults.getString("name");
+                String email = queryResults.getString("email");
+                String city = queryResults.getString("city");
+
+                User nextUser = new User(name, email, city);
+
+                data.add(nextUser);
+            }
+            con.close();
+        } catch (SQLException se) {
+            System.out.println("SQL ERR: " + se); //
+        }
+        return data;
+    }
+
+
 
     /**
      * Get all the data from the table.
