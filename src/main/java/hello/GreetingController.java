@@ -1,9 +1,14 @@
 package hello;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicLong;
 
 
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
@@ -128,10 +133,19 @@ public class GreetingController {
     @RequestMapping("/searchSpecificUser")
     public String userRequestParam(@RequestParam(value="name", defaultValue = "Rick") String name) {
         ArrayList<User> user = DataBase.findUser(name);
-        String test = String.valueOf(user.get(0));
-        System.out.println(test);
-        JSONObject data = new JSONObject(user.get(0)); //this is creating an empty object
-        return data.toString();
+        User specificUser = user.get(0);
+
+        String JSON;
+        ObjectMapper mapper = new ObjectMapper();
+
+        try {
+           JSON = mapper.writeValueAsString(specificUser);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            JSON = "error";
+        }
+
+        return JSON;
 
         //TODO most likely need to implement Jackson API to get this to work
     }
