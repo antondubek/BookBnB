@@ -1,5 +1,6 @@
 package hello;
 
+import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicLong;
 
 
@@ -41,6 +42,14 @@ public class GreetingController {
         System.out.println("Email: " + data.get("email").toString());
         System.out.println("Password: " + data.get("password").toString());
         System.out.println("City: " + data.get("city").toString());
+
+        String name = data.get("name").toString();
+        String email = data.get("email").toString();
+        String city = data.get("city").toString();
+        String password = data.get("password").toString();
+
+        User new_user = new User(name, email, city);
+        DataBase.insertNewUser(new_user, password);
 
         return new ResponseEntity<String>(HttpStatus.OK);
     }
@@ -88,22 +97,43 @@ public class GreetingController {
                 String.format(template, DataBase.getData("test")));
     }
 
+    /**
+     * This method is a slightly altered version of the first methods Riad wrote test using a GET request to query
+     * the database and send back data as a response.
+     * @param name query string parameter
+     * @return
+     */
     @RequestMapping("/testQueries")
     public Greeting get(@RequestParam(value="name", defaultValue = "Rick") String name) {
         return new Greeting(counter.incrementAndGet(),
                 String.format(template, DataBase.userList()));
     }
 
+    /**
+     * This returns all the users in the database right now. It does not need any request parameters.
+     * @return a greeting object back to client, containing the requested data
+     */
     @RequestMapping("/testUserObject")
     public Greeting noRequestParam() {
         return new Greeting(counter.incrementAndGet(),
                 String.format(template, DataBase.userObjects()));
     }
 
+    /**
+     * This grabs a parameter of the query string passed as part of the GET request and uses its value to run an SQL
+     * query, then sends the results of that query back to the client.
+     * @param name the value of the name variable in the query string passed to the API
+     * @return a greeting object that gets sent back to the client
+     */
     @RequestMapping("/searchSpecificUser")
-    public Greeting userRequestParam(@RequestParam(value="name", defaultValue = "Rick") String name) {
-        return new Greeting(counter.incrementAndGet(),
-                String.format(template, DataBase.findUser(name)));
+    public String userRequestParam(@RequestParam(value="name", defaultValue = "Rick") String name) {
+        ArrayList<User> user = DataBase.findUser(name);
+        String test = String.valueOf(user.get(0));
+        System.out.println(test);
+        JSONObject data = new JSONObject(user.get(0)); //this is creating an empty object
+        return data.toString();
+
+        //TODO most likely need to implement Jackson API to get this to work
     }
 
 }

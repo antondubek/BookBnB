@@ -10,8 +10,8 @@ import java.util.ArrayList;
 public class DataBase {
 
     private static Connection con = null;
-    //private static String url = "jdbc:mysql://dag8.host.cs.st-andrews.ac.uk/";
-    private static String url = "jdbc:mysql://localhost:3307/";
+    private static String url = "jdbc:mysql://dag8.host.cs.st-andrews.ac.uk/";
+    //private static String url = "jdbc:mysql://localhost:3307/";
     private static String db = "dag8_RickDB";
     private static String driver = "com.mysql.cj.jdbc.Driver";
     private static String user = "ri31";
@@ -49,7 +49,7 @@ public class DataBase {
         return data;
     }
 
-    public static String findUser(String email) {
+    public static ArrayList<User> findUser(String email) {
         ArrayList<User> data = new ArrayList<>();
         try {
             Class.forName(driver).newInstance();
@@ -58,7 +58,7 @@ public class DataBase {
         } catch (Exception e) {
             System.out.println("ERR: " + e);
         }
-        return data.toString(); //TODO  this turn an arraylist of User obejcts into a string, needs to return JSON
+        return data; //TODO  this turn an arraylist of User obejcts into a string, needs to return JSON
     }
 
     public static ArrayList<User> getName(String name){
@@ -116,6 +116,28 @@ public class DataBase {
             System.out.println("SQL ERR: " + se); //
         }
         return data;
+    }
+
+    public static void insertNewUser(User new_user, String password) {
+        try {
+            Class.forName(driver).newInstance();
+            con = DriverManager.getConnection(url + db, user, pass);
+            try {
+                Statement st = con.createStatement();
+
+                String query1 = String.format(Query.insertNewUser, new_user.name, new_user.email, new_user.city);
+                st.executeUpdate(query1);
+
+                String query2 = String.format(Query.insertNewUserPassword, new_user.email, password);
+                st.executeUpdate(query2);
+
+                con.close();
+            } catch (SQLException se) {
+                System.out.println("SQL ERR: " + se); //
+            }
+        } catch (Exception e) {
+            System.out.println("ERR: " + e);
+        }
     }
 
 
