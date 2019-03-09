@@ -20,7 +20,7 @@ import javax.xml.crypto.Data;
 
 
 @RestController
-public class GreetingController {
+public class Controller {
 
     private static final String template = "Hello, %s!";
     private final AtomicLong counter = new AtomicLong();
@@ -47,13 +47,10 @@ public class GreetingController {
 
         JSONObject data = new JSONObject(jsonString);
 
-        System.out.println("email: " + data.get("email").toString());
-        System.out.println("password: " + data.get("password").toString());
-
         String email = data.get("email").toString();
         String password = data.get("password").toString();
 
-        return (DataBase.login(email, password)) ? new ResponseEntity<String>(HttpStatus.OK) : new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+        return (DataBase.login(password, email)) ? new ResponseEntity<String>(HttpStatus.OK) : new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
     }
 
     @RequestMapping(method= RequestMethod.POST, value = "/logintestj")      //TODO DELETE once Ant successfully parses it
@@ -77,7 +74,6 @@ public class GreetingController {
         if(!command.equals("all")){ return "error"; }
 
         ArrayList<Book> books = DataBase.fetchAllBooks();
-//        JSONArray JSONBooks = new JSONArray();
 
         String JSON;
         ArrayList<String> JSONBooks = new ArrayList<>();
@@ -92,13 +88,30 @@ public class GreetingController {
             }
 
             JSONBooks.add(JSON);
-//            JSONObject nextBook = new JSONObject(book);
-//            JSONBooks.put(nextBook);
         }
 
-
-
         return JSONBooks.toString();
+    }
+
+    @RequestMapping(method= RequestMethod.POST, value = "/profile")
+    public String loadProfile(@RequestBody String jsonString) {
+        JSONObject data = new JSONObject(jsonString);
+        String email = data.get("email").toString();
+
+        ArrayList<User> user = DataBase.findUser(email);
+        User specificUser = user.get(0);
+
+        String JSON;
+        ObjectMapper mapper = new ObjectMapper();
+
+        try {
+            JSON = mapper.writeValueAsString(specificUser);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            JSON = "error";
+        }
+
+        return JSON;
     }
 
 
@@ -111,29 +124,4 @@ public class GreetingController {
         return new Greeting(counter.incrementAndGet(),
                 String.format(template, DataBase.userObjects()));
     }
-
-    /**
-     * This grabs a parameter of the query string passed as part of the GET request and uses its value to run an SQL
-     * query, then sends the results of that query back to the client.
-     * @param name the value of the name variable in the query string passed to the API
-     * @return a greeting object that gets sent back to the client
-     */
-    @RequestMapping("/searchSpecificUser")
-    public String userRequestParam(@RequestParam(value="name", defaultValue = "Rick") String name) {
-        ArrayList<User> user = DataBase.findUser(name);
-        User specificUser = user.get(0);
-
-        String JSON;
-        ObjectMapper mapper = new ObjectMapper();
-
-        try {
-           JSON = mapper.writeValueAsString(specificUser);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-            JSON = "error";
-        }
-
-        return JSON;
-    }
-
 }

@@ -28,15 +28,17 @@ public class DataBase {
 
                 String query = String.format(Query.login, email);
                 ResultSet queryResults = queryStatement.executeQuery(query);
+
                 ArrayList<String> data = new ArrayList<>();
                 while (queryResults.next()) {
                     String real_password = queryResults.getString("password");
+                    System.out.println("database returned result: " + real_password);
                     data.add(real_password);
                 }
 
+                System.out.println(data.size());
                 con.close();
                 if (data.size() == 1) {
-                    System.out.println("Database password = " + data.get(0));
                     return password.equals(data.get(0));
                 } else {
                     return false;
@@ -108,18 +110,18 @@ public class DataBase {
         return data;
     }
 
-    public static ArrayList<User> getName(String name){
+    public static ArrayList<User> getName(String email){
         ArrayList<User> data = new ArrayList<>();
         try {
             Statement queryStatement = con.createStatement();
-            String query = String.format(Query.userSearchByName, name);
+            String query = String.format(Query.userSearchByEmail, email);
             ResultSet queryResults = queryStatement.executeQuery(query);
             while (queryResults.next()) {
-                String username = queryResults.getString("name");
-                String email = queryResults.getString("email");
+                String name = queryResults.getString("name");
+                String userEmail = queryResults.getString("email");
                 String city = queryResults.getString("city");
 
-                User nextUser = new User(username, email, city);
+                User nextUser = new User(name, userEmail, city);
 
                 data.add(nextUser);
             }
