@@ -5,6 +5,7 @@ public class Book {
     public String title;
     public String author;
     public String version;
+    public Boolean available;
 
     public Book(String ISBN, String title, String author){
         this.ISBN = ISBN;
@@ -20,5 +21,7 @@ public class Book {
     public void setVersion(String version) {
         this.version = version;
     }
+
+    public void setAvailable(String available) { this.available = Boolean.parseBoolean(available); }
 
 }

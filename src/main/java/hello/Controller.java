@@ -1,21 +1,16 @@
 package hello;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicLong;
 
 
-import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import javax.xml.crypto.Data;
 //import org.springframework.web.bind.annotation.RequestBody;
 
 
@@ -36,44 +31,27 @@ public class Controller {
         String password = data.get("password").toString();
 
         User new_user = new User(name, email, city);
-        Boolean insert = DataBase.insertNewUser(new_user, password);
+        Boolean insert = Database.insertNewUser(new_user, password);
 
         return (insert) ? new ResponseEntity<String>(HttpStatus.OK) : new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
     }
 
     @RequestMapping(method= RequestMethod.POST, value = "/login")
     public ResponseEntity<String> logintest(@RequestBody String jsonString){
-        System.out.println(jsonString);
 
         JSONObject data = new JSONObject(jsonString);
 
         String email = data.get("email").toString();
         String password = data.get("password").toString();
 
-        return (DataBase.login(password, email)) ? new ResponseEntity<String>(HttpStatus.OK) : new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
-    }
-
-    @RequestMapping(method= RequestMethod.POST, value = "/logintestj")      //TODO DELETE once Ant successfully parses it
-    public String logintestJson(@RequestBody String jsonString){
-        System.out.println(jsonString);
-
-        JSONArray array = new JSONArray();
-        JSONObject obj1 = new JSONObject(new Greeting(1, "content"));
-        JSONObject obj2 = new JSONObject(new Greeting(2, "content2"));
-        JSONObject obj3 = new JSONObject(new Greeting(3, "content3"));
-
-        array.put(obj1);
-        array.put(obj2);
-        array.put(obj3);
-
-        return array.toString();
+        return (Database.login(password, email)) ? new ResponseEntity<String>(HttpStatus.OK) : new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
     }
 
     @RequestMapping(method = RequestMethod.GET, value="/book")
     public String allBooks(@RequestParam(value="command", defaultValue = "none") String command){
         if(!command.equals("all")){ return "error"; }
 
-        ArrayList<Book> books = DataBase.fetchAllBooks("all");
+        ArrayList<Book> books = Database.fetchAllBooks("all");
 
         String JSON;
         ArrayList<String> JSONBooks = new ArrayList<>();
@@ -98,7 +76,7 @@ public class Controller {
         JSONObject data = new JSONObject(jsonString);
         String email = data.get("email").toString();
 
-        ArrayList<User> user = DataBase.findUser(email);
+        ArrayList<User> user = Database.findUser(email);
         if(user.size() != 1){
             return "error";
         }
@@ -115,7 +93,6 @@ public class Controller {
             JSON = "error";
         }
 
-        System.out.println(JSON); //TODO Remove this
         return JSON;
     }
 
@@ -124,14 +101,14 @@ public class Controller {
         JSONObject data = new JSONObject(jsonString);
         String email = data.get("email").toString();
 
-        ArrayList<User> user = DataBase.findUser(email);
+        ArrayList<User> user = Database.findUser(email);
         if(user.size() != 1){
             return "error";
         }
 
         User specificUser = user.get(0);
 
-        ArrayList<Book> books = DataBase.fetchAllBooks(specificUser.email);
+        ArrayList<Book> books = Database.fetchAllBooks(specificUser.email);
 
         String JSON;
         ArrayList<String> JSONBooks = new ArrayList<>();
@@ -160,6 +137,6 @@ public class Controller {
     @RequestMapping("/testUserObject")
     public Greeting noRequestParam() {
         return new Greeting(counter.incrementAndGet(),
-                String.format(template, DataBase.userObjects()));
+                String.format(template, Database.userObjects()));
     }
 }

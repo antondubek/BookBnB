@@ -7,7 +7,7 @@ import java.util.ArrayList;
  * Class which is responsible for the database connections
  * @author 180029410
  */
-public class DataBase {
+public class Database {
 
     private static Connection con = null;
     private static String url = "jdbc:mysql://dag8.host.cs.st-andrews.ac.uk/";
@@ -75,12 +75,14 @@ public class DataBase {
             String query;
 
             if(email.equals("all")) {
-                query = Query.fetchBooksBase + ";";
+                query = Query.fetchBooksBase;
             } else {
-                query = String.format((Query.fetchBooksBase + Query.fetchUserBooks), email);
+                query = String.format(Query.fetchUserBooks, email);
+                System.out.println(query);
             }
 
             ResultSet queryResults = queryStatement.executeQuery(query);
+            System.out.println("query successful");
             while (queryResults.next()) {
                 String ISBN = queryResults.getString("ISBN");
                 String title = queryResults.getString("title");
@@ -91,6 +93,11 @@ public class DataBase {
                 if(queryResults.getString("book_version") != null) {
                     nextBook.setVersion(queryResults.getString("book_version"));
                 }
+
+                if(!email.equals("all") && queryResults.getString("available") != null) {
+                    nextBook.setAvailable(queryResults.getString("available"));
+                }
+
 
                 data.add(nextBook);
             }
