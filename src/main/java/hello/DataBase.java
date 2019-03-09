@@ -10,37 +10,80 @@ import java.util.ArrayList;
 public class DataBase {
 
     private static Connection con = null;
-    //private static String url = "jdbc:mysql://dag8.host.cs.st-andrews.ac.uk/";
-    private static String url = "jdbc:mysql://localhost:3307/";
+    private static String url = "jdbc:mysql://dag8.host.cs.st-andrews.ac.uk/";
+    //private static String url = "jdbc:mysql://localhost:3307/";
     private static String db = "dag8_RickDB";
     private static String driver = "com.mysql.cj.jdbc.Driver";
     private static String user = "ri31";
     private static String pass = "33.1Z4HLNfnbuy";
 
 
-    public static String userList() {
-        StringBuilder data = new StringBuilder();
+    public static Boolean login(String password, String email) {
         try {
             Class.forName(driver).newInstance();
             con = DriverManager.getConnection(url + db, user, pass);
-            data = parseQuery();
+
+            try {
+                Statement queryStatement = con.createStatement();
+
+                String query = String.format(Query.login, email);
+                ResultSet queryResults = queryStatement.executeQuery(query);
+                ArrayList<String> data = new ArrayList<>();
+                while (queryResults.next()) {
+                    String real_password = queryResults.getString("password");
+                    data.add(real_password);
+                }
+
+                con.close();
+                if (data.size() == 1) {
+                    System.out.println("Database password = " + data.get(0));
+                    return password.equals(data.get(0));
+                } else {
+                    return false;
+                }
+            } catch (SQLException se) {
+                System.out.println("SQL ERR: " + se);
+            }
         } catch (Exception e) {
             System.out.println("ERR: " + e);
         }
-        return data.toString(); //TODO for testing purposes, this could be problematic, as it can return an empty string builder
+        return false;
     }
 
-    /**Parse query results one line at a time */
-    private static StringBuilder parseQuery() {
-        StringBuilder data = new StringBuilder();
+    /**
+     * Use this method and the next one to search for all books
+     */
+    public static ArrayList<Book> fetchAllBooks() {
+        ArrayList<Book> data = new ArrayList<>();
+        try {
+            Class.forName(driver).newInstance();
+            con = DriverManager.getConnection(url + db, user, pass);
+            data = parseBooks();
+        } catch (Exception e) {
+            System.out.println("ERR: " + e);
+        }
+        return data;
+    }
+
+    /**Parse query results and turn into object */
+
+    private static ArrayList<Book> parseBooks() {
+        ArrayList<Book> data = new ArrayList<>();
         try {
             Statement queryStatement = con.createStatement();
-            ResultSet queryResults = queryStatement.executeQuery(Query.allUserInformation);
+            ResultSet queryResults = queryStatement.executeQuery(Query.fetchAllBooks);
             while (queryResults.next()) {
-                String name = queryResults.getString("name");
-                String email = queryResults.getString("email");
-                String city = queryResults.getString("city");
-                data.append(name + "with email " + email + "in city " + city +", ");
+                String ISBN = queryResults.getString("ISBN");
+                String title = queryResults.getString("title");
+                String author = queryResults.getString("author");
+
+                Book nextBook = new Book(ISBN, author, title);
+
+                if(queryResults.getString("book_version") != null) {
+                    nextBook.setVersion(queryResults.getString("book_version"));
+                }
+
+                data.add(nextBook);
             }
             con.close();
         } catch (SQLException se) {
@@ -49,6 +92,10 @@ public class DataBase {
         return data;
     }
 
+
+    /**
+     * Use this method and the next one to search for a specific user
+     */
     public static ArrayList<User> findUser(String email) {
         ArrayList<User> data = new ArrayList<>();
         try {
@@ -58,7 +105,7 @@ public class DataBase {
         } catch (Exception e) {
             System.out.println("ERR: " + e);
         }
-        return data; //TODO  this turn an arraylist of User obejcts into a string, needs to return JSON
+        return data;
     }
 
     public static ArrayList<User> getName(String name){
@@ -83,6 +130,9 @@ public class DataBase {
         return data;
     }
 
+    /**
+     * Use this method and the next one to fetch all users in the DB
+     */
     public static String userObjects() {
         ArrayList<User> data = new ArrayList<>();
         try {
@@ -92,7 +142,7 @@ public class DataBase {
         } catch (Exception e) {
             System.out.println("ERR: " + e);
         }
-        return data.toString(); //TODO  this turn an arraylist of User obejcts into a string, needs to return JSON
+        return data.toString();
     }
 
     /**Parse query results and turn into object */
@@ -118,7 +168,8 @@ public class DataBase {
         return data;
     }
 
-    public static void insertNewUser(User new_user, String password) {
+    //TODO Refactor into two methods
+    public static Boolean insertNewUser(User new_user, String password) {
         try {
             Class.forName(driver).newInstance();
             con = DriverManager.getConnection(url + db, user, pass);
@@ -132,13 +183,16 @@ public class DataBase {
                 st.executeUpdate(query2);
 
                 con.close();
+                return true;
             } catch (SQLException se) {
-                System.out.println("SQL ERR: " + se); //
+                System.out.println("SQL ERR: " + se);
             }
         } catch (Exception e) {
             System.out.println("ERR: " + e);
         }
+        return false;
     }
+
 
 
 //RIAD's code listed below
@@ -205,8 +259,5 @@ public class DataBase {
             System.out.println("ERR: " + e);
         }
     }
-
-    //UPDATE
-    //st.executeUpdate("UPDATE dag8_RickDB.test SET name = 'Edwin' WHERE name = 'Edvin'");
 
 }

@@ -14,6 +14,8 @@ import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import javax.xml.crypto.Data;
 //import org.springframework.web.bind.annotation.RequestBody;
 
 
@@ -23,30 +25,10 @@ public class GreetingController {
     private static final String template = "Hello, %s!";
     private final AtomicLong counter = new AtomicLong();
 
-    @GetMapping("/greeting")
-    public Greeting getRequest(@RequestParam(value="name", defaultValue="Rick") String name) {
-        return new Greeting(counter.incrementAndGet(),
-                String.format(template, DataBase.getData("test")));
-    }
-
-    @PostMapping("/greeting")
-    public Greeting postRequest(Greeting post) {
-        return post;
-    }
-
-    @RequestMapping(method= RequestMethod.POST, value = "/login")
+    @RequestMapping(method= RequestMethod.POST, value = "/register")
     public ResponseEntity<String> login(@RequestBody String jsonString){
-        System.out.println(jsonString);
 
         JSONObject data = new JSONObject(jsonString);
-
-        // data.put("name", "Rick Sanchez");
-        // data.toString();
-
-        System.out.println("Name: " + data.get("name").toString());
-        System.out.println("Email: " + data.get("email").toString());
-        System.out.println("Password: " + data.get("password").toString());
-        System.out.println("City: " + data.get("city").toString());
 
         String name = data.get("name").toString();
         String email = data.get("email").toString();
@@ -54,24 +36,27 @@ public class GreetingController {
         String password = data.get("password").toString();
 
         User new_user = new User(name, email, city);
-        DataBase.insertNewUser(new_user, password);
+        Boolean insert = DataBase.insertNewUser(new_user, password);
 
-        return new ResponseEntity<String>(HttpStatus.OK);
+        return (insert) ? new ResponseEntity<String>(HttpStatus.OK) : new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
     }
 
-    @RequestMapping(method= RequestMethod.POST, value = "/logintest")
-    public String logintest(@RequestBody String jsonString){
+    @RequestMapping(method= RequestMethod.POST, value = "/login")
+    public ResponseEntity<String> logintest(@RequestBody String jsonString){
         System.out.println(jsonString);
 
         JSONObject data = new JSONObject(jsonString);
 
-        System.out.println("ID: " + data.get("id").toString());
-        System.out.println("Content: " + data.get("content").toString());
+        System.out.println("email: " + data.get("email").toString());
+        System.out.println("password: " + data.get("password").toString());
 
-        return "Login GOOD";
+        String email = data.get("email").toString();
+        String password = data.get("password").toString();
+
+        return (DataBase.login(email, password)) ? new ResponseEntity<String>(HttpStatus.OK) : new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
     }
 
-    @RequestMapping(method= RequestMethod.POST, value = "/logintestj")
+    @RequestMapping(method= RequestMethod.POST, value = "/logintestj")      //TODO DELETE once Ant successfully parses it
     public String logintestJson(@RequestBody String jsonString){
         System.out.println(jsonString);
 
@@ -87,32 +72,35 @@ public class GreetingController {
         return array.toString();
     }
 
+    @RequestMapping(method = RequestMethod.GET, value="/book")
+    public String allBooks(@RequestParam(value="command", defaultValue = "none") String command){
+        if(!command.equals("all")){ return "error"; }
 
-    @RequestMapping("/addNewUser")
-    public Greeting addNewUser(@RequestParam(value="name", defaultValue="Rick") String name) {
-        DataBase.addNewUser(name);
-        return new Greeting(counter.incrementAndGet(),
-                String.format(template, DataBase.getData("test")));
+        ArrayList<Book> books = DataBase.fetchAllBooks();
+//        JSONArray JSONBooks = new JSONArray();
+
+        String JSON;
+        ArrayList<String> JSONBooks = new ArrayList<>();
+        ObjectMapper mapper = new ObjectMapper();
+
+        for(Book book : books) {
+            try {
+                JSON = mapper.writeValueAsString(book);
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+                continue;
+            }
+
+            JSONBooks.add(JSON);
+//            JSONObject nextBook = new JSONObject(book);
+//            JSONBooks.put(nextBook);
+        }
+
+
+
+        return JSONBooks.toString();
     }
 
-    @RequestMapping("/deleteTheUser")
-    public Greeting deleteTheUser(@RequestParam(value="name", defaultValue="Rick") String name) {
-        DataBase.deleteTheUser(name);
-        return new Greeting(counter.incrementAndGet(),
-                String.format(template, DataBase.getData("test")));
-    }
-
-    /**
-     * This method is a slightly altered version of the first methods Riad wrote test using a GET request to query
-     * the database and send back data as a response.
-     * @param name query string parameter
-     * @return
-     */
-    @RequestMapping("/testQueries")
-    public Greeting get(@RequestParam(value="name", defaultValue = "Rick") String name) {
-        return new Greeting(counter.incrementAndGet(),
-                String.format(template, DataBase.userList()));
-    }
 
     /**
      * This returns all the users in the database right now. It does not need any request parameters.
@@ -146,8 +134,6 @@ public class GreetingController {
         }
 
         return JSON;
-
-        //TODO most likely need to implement Jackson API to get this to work
     }
 
 }
