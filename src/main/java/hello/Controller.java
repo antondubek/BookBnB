@@ -73,7 +73,7 @@ public class Controller {
     public String allBooks(@RequestParam(value="command", defaultValue = "none") String command){
         if(!command.equals("all")){ return "error"; }
 
-        ArrayList<Book> books = DataBase.fetchAllBooks();
+        ArrayList<Book> books = DataBase.fetchAllBooks("all");
 
         String JSON;
         ArrayList<String> JSONBooks = new ArrayList<>();
@@ -99,6 +99,10 @@ public class Controller {
         String email = data.get("email").toString();
 
         ArrayList<User> user = DataBase.findUser(email);
+        if(user.size() != 1){
+            return "error";
+        }
+
         User specificUser = user.get(0);
 
         String JSON;
@@ -111,7 +115,41 @@ public class Controller {
             JSON = "error";
         }
 
+        System.out.println(JSON); //TODO Remove this
         return JSON;
+    }
+
+    @RequestMapping(method= RequestMethod.POST, value = "/profile/books")
+    public String loadUserbooks(@RequestBody String jsonString) {
+        JSONObject data = new JSONObject(jsonString);
+        String email = data.get("email").toString();
+
+        ArrayList<User> user = DataBase.findUser(email);
+        if(user.size() != 1){
+            return "error";
+        }
+
+        User specificUser = user.get(0);
+
+        ArrayList<Book> books = DataBase.fetchAllBooks(specificUser.email);
+
+        String JSON;
+        ArrayList<String> JSONBooks = new ArrayList<>();
+        ObjectMapper mapper = new ObjectMapper();
+
+        for(Book book : books) {
+            try {
+                JSON = mapper.writeValueAsString(book);
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+                continue;
+            }
+
+            JSONBooks.add(JSON);
+        }
+
+        return JSONBooks.toString();
+
     }
 
 

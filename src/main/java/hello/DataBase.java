@@ -18,7 +18,7 @@ public class DataBase {
     private static String pass = "33.1Z4HLNfnbuy";
 
 
-    public static Boolean login(String password, String email) {
+    public static Boolean login(String password, String email) { //TODO REFACTOR - break down into smaller methods
         try {
             Class.forName(driver).newInstance();
             con = DriverManager.getConnection(url + db, user, pass);
@@ -32,7 +32,6 @@ public class DataBase {
                 ArrayList<String> data = new ArrayList<>();
                 while (queryResults.next()) {
                     String real_password = queryResults.getString("password");
-                    System.out.println("database returned result: " + real_password);
                     data.add(real_password);
                 }
 
@@ -55,12 +54,12 @@ public class DataBase {
     /**
      * Use this method and the next one to search for all books
      */
-    public static ArrayList<Book> fetchAllBooks() {
+    public static ArrayList<Book> fetchAllBooks(String email) {
         ArrayList<Book> data = new ArrayList<>();
         try {
             Class.forName(driver).newInstance();
             con = DriverManager.getConnection(url + db, user, pass);
-            data = parseBooks();
+            data = parseBooks(email);
         } catch (Exception e) {
             System.out.println("ERR: " + e);
         }
@@ -69,11 +68,19 @@ public class DataBase {
 
     /**Parse query results and turn into object */
 
-    private static ArrayList<Book> parseBooks() {
+    private static ArrayList<Book> parseBooks(String email) {
         ArrayList<Book> data = new ArrayList<>();
         try {
             Statement queryStatement = con.createStatement();
-            ResultSet queryResults = queryStatement.executeQuery(Query.fetchAllBooks);
+            String query;
+
+            if(email.equals("all")) {
+                query = Query.fetchBooksBase + ";";
+            } else {
+                query = String.format((Query.fetchBooksBase + Query.fetchUserBooks), email);
+            }
+
+            ResultSet queryResults = queryStatement.executeQuery(query);
             while (queryResults.next()) {
                 String ISBN = queryResults.getString("ISBN");
                 String title = queryResults.getString("title");
