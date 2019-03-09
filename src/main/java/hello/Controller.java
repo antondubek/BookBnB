@@ -6,7 +6,6 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,8 +29,8 @@ public class Controller {
         String city = data.get("city").toString();
         String password = data.get("password").toString();
 
-        User new_user = new User(name, email, city);
-        Boolean insert = Database.insertNewUser(new_user, password);
+        User newUser = new User(name, email, city);
+        Boolean insert = Database.insertNewUser(newUser, password);
 
         return (insert) ? new ResponseEntity<String>(HttpStatus.OK) : new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
     }
@@ -129,14 +128,25 @@ public class Controller {
 
     }
 
+    @RequestMapping(method= RequestMethod.POST, value = "/profile/addBook")
+    public ResponseEntity<String> addBook(@RequestBody String jsonString) {
+        JSONObject data = new JSONObject(jsonString);
 
-    /**
-     * This returns all the users in the database right now. It does not need any request parameters.
-     * @return a greeting object back to client, containing the requested data
-     */
-    @RequestMapping("/testUserObject")
-    public Greeting noRequestParam() {
-        return new Greeting(counter.incrementAndGet(),
-                String.format(template, Database.userObjects()));
+        String ISBN = data.get("ISBN").toString();
+        String author = data.get("author").toString();
+        String title = data.get("title").toString();
+        String edition = data.get("edition").toString();
+        String email = data.get("email").toString();
+
+        Book newBook = new Book(ISBN, author, title);
+
+        if(edition != null && !edition.equals("")) {
+            newBook.setEdition(edition);
+        }
+
+        Boolean insert = Database.insertNewBook(newBook, email);
+
+        return (insert) ? new ResponseEntity<String>(HttpStatus.OK) : new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
     }
+
 }

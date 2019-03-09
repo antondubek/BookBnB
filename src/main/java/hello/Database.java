@@ -16,6 +16,7 @@ public class Database {
     private static String driver = "com.mysql.cj.jdbc.Driver";
     private static String user = "ri31";
     private static String pass = "33.1Z4HLNfnbuy";
+    //private static Statement currentQuery;
 
 
     public static Boolean login(String password, String email) { //TODO REFACTOR - break down into smaller methods
@@ -52,6 +53,58 @@ public class Database {
     }
 
     /**
+     * Insert a book into the database, associate it with a particular user
+     */
+    public static Boolean insertNewBook(Book book, String email){
+        try {
+            Class.forName(driver).newInstance();
+            con = DriverManager.getConnection(url + db, user, pass);
+            return processInsertBook(book, email);
+        } catch (Exception e) {
+            System.out.println("ERR: " + e);
+        }
+        return false;
+    }
+
+    private static Boolean processInsertBook(Book book, String email) {
+        try {
+            Statement queryStatement = con.createStatement();
+
+           if(!checkIfBookInDB(book, queryStatement)){
+               String query1 = String.format(Query.insertNewBook, book.ISBN, book.title, book.author, book.edition);
+               queryStatement.executeUpdate(query1);
+           }
+
+            String query2 = String.format(Query.addUserToBook, email, book.ISBN);
+            queryStatement.executeUpdate(query2);
+
+            con.close();
+            return true;
+        } catch (SQLException se) {
+            System.out.println("SQL ERR: " + se);
+        }
+        return false;
+    }
+
+    private static Boolean checkIfBookInDB(Book book, Statement queryStatement){
+        try {
+            String query = String.format(Query.checkIfBookInDB, book.ISBN);
+            ResultSet queryResults = queryStatement.executeQuery(query);
+
+            ArrayList<String> data = new ArrayList<>();
+            while (queryResults.next()) {
+                String ISBN = queryResults.getString("ISBN");
+                data.add(ISBN);
+            }
+
+            return data.size() == 1;
+        } catch (SQLException se) {
+            System.out.println("SQL ERR: " + se);
+        }
+        return false;
+    }
+
+    /**
      * Use this method and the next one to search for all books
      */
     public static ArrayList<Book> fetchAllBooks(String email) {
@@ -68,7 +121,7 @@ public class Database {
 
     /**Parse query results and turn into object */
 
-    private static ArrayList<Book> parseBooks(String email) {
+    private static ArrayList<Book> parseBooks(String email) { //TODO REFACTOR into smaller methods
         ArrayList<Book> data = new ArrayList<>();
         try {
             Statement queryStatement = con.createStatement();
@@ -78,11 +131,9 @@ public class Database {
                 query = Query.fetchBooksBase;
             } else {
                 query = String.format(Query.fetchUserBooks, email);
-                System.out.println(query);
             }
 
             ResultSet queryResults = queryStatement.executeQuery(query);
-            System.out.println("query successful");
             while (queryResults.next()) {
                 String ISBN = queryResults.getString("ISBN");
                 String title = queryResults.getString("title");
@@ -91,13 +142,12 @@ public class Database {
                 Book nextBook = new Book(ISBN, author, title);
 
                 if(queryResults.getString("book_version") != null) {
-                    nextBook.setVersion(queryResults.getString("book_version"));
+                    nextBook.setEdition(queryResults.getString("book_version"));
                 }
 
                 if(!email.equals("all") && queryResults.getString("available") != null) {
                     nextBook.setAvailable(queryResults.getString("available"));
                 }
-
 
                 data.add(nextBook);
             }
@@ -146,56 +196,18 @@ public class Database {
         return data;
     }
 
-    /**
-     * Use this method and the next one to fetch all users in the DB
-     */
-    public static String userObjects() {
-        ArrayList<User> data = new ArrayList<>();
-        try {
-            Class.forName(driver).newInstance();
-            con = DriverManager.getConnection(url + db, user, pass);
-            data = parseQueryObjects();
-        } catch (Exception e) {
-            System.out.println("ERR: " + e);
-        }
-        return data.toString();
-    }
-
-    /**Parse query results and turn into object */
-
-    private static ArrayList<User> parseQueryObjects() {
-        ArrayList<User> data = new ArrayList<>();
-        try {
-            Statement queryStatement = con.createStatement();
-            ResultSet queryResults = queryStatement.executeQuery(Query.allUserInformation);
-            while (queryResults.next()) {
-                String name = queryResults.getString("name");
-                String email = queryResults.getString("email");
-                String city = queryResults.getString("city");
-
-                User nextUser = new User(name, email, city);
-
-                data.add(nextUser);
-            }
-            con.close();
-        } catch (SQLException se) {
-            System.out.println("SQL ERR: " + se); //
-        }
-        return data;
-    }
-
     //TODO Refactor into two methods
-    public static Boolean insertNewUser(User new_user, String password) {
+    public static Boolean insertNewUser(User newUser, String password) {
         try {
             Class.forName(driver).newInstance();
             con = DriverManager.getConnection(url + db, user, pass);
             try {
                 Statement st = con.createStatement();
 
-                String query1 = String.format(Query.insertNewUser, new_user.name, new_user.email, new_user.city);
+                String query1 = String.format(Query.insertNewUser, newUser.name, newUser.email, newUser.city);
                 st.executeUpdate(query1);
 
-                String query2 = String.format(Query.insertNewUserPassword, new_user.email, password);
+                String query2 = String.format(Query.insertNewUserPassword, newUser.email, password);
                 st.executeUpdate(query2);
 
                 con.close();
@@ -207,73 +219,6 @@ public class Database {
             System.out.println("ERR: " + e);
         }
         return false;
-    }
-
-
-
-//RIAD's code listed below
-    /**
-     * Get all the data from the table.
-     * @param tableName the name of the table
-     */
-    public static String getData(String tableName) {
-        String returnData = "";
-        try {
-            Class.forName(driver).newInstance();
-            con = DriverManager.getConnection(url + db, user, pass);
-            try {
-                Statement st = con.createStatement();
-                ResultSet rs = st.executeQuery("SELECT * FROM " + tableName);
-                while (rs.next()) {
-                    String name = rs.getString("name");
-                    returnData += name + "\n";
-                }
-                con.close();
-            } catch (SQLException se) {
-                 System.out.println("SQL ERR: " + se); //
-            }
-        } catch (Exception e) {
-            System.out.println("ERR: " + e);
-        }
-        return returnData;
-    }
-
-    /**
-     * AddTheNewUser
-     */
-    public static void addNewUser(String name){
-        try {
-            Class.forName(driver).newInstance();
-            con = DriverManager.getConnection(url + db, user, pass);
-            try {
-                Statement st = con.createStatement();
-                st.executeUpdate("INSERT INTO dag8_RickDB.test (name) Values ('" + name + "')");
-                con.close();
-            } catch (SQLException se) {
-                 System.out.println("SQL ERR: " + se); //
-            }
-        } catch (Exception e) {
-            System.out.println("ERR: " + e);
-        }
-    }
-
-    /**
-     * DeleteTheUser
-     */
-    public static void deleteTheUser(String name){
-        try {
-            Class.forName(driver).newInstance();
-            con = DriverManager.getConnection(url + db, user, pass);
-            try {
-                Statement st = con.createStatement();
-                st.executeUpdate("DELETE FROM dag8_RickDB.test WHERE name = '" + name + "'");
-                con.close();
-            } catch (SQLException se) {
-                 System.out.println("SQL ERR: " + se); //
-            }
-        } catch (Exception e) {
-            System.out.println("ERR: " + e);
-        }
     }
 
 }
