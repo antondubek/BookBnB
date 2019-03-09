@@ -22,6 +22,5 @@ public class Book {
         this.edition = edition;
     }
 
-    public void setAvailable(String available) { this.available = Boolean.parseBoolean(available); }
-
+    public void setAvailable(String available) { this.available = available.equals("1"); }
 }

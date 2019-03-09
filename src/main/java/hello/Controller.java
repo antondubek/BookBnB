@@ -1,8 +1,6 @@
 package hello;
 
 import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicLong;
-
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -10,14 +8,11 @@ import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-//import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestBody;
 
 
 @RestController
 public class Controller {
-
-    private static final String template = "Hello, %s!";
-    private final AtomicLong counter = new AtomicLong();
 
     @RequestMapping(method= RequestMethod.POST, value = "/register")
     public ResponseEntity<String> login(@RequestBody String jsonString){
@@ -148,5 +143,4 @@ public class Controller {
 
         return (insert) ? new ResponseEntity<String>(HttpStatus.OK) : new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
     }
-
 }

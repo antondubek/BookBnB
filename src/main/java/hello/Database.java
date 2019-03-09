@@ -18,7 +18,6 @@ public class Database {
     private static String pass = "33.1Z4HLNfnbuy";
     //private static Statement currentQuery;
 
-
     public static Boolean login(String password, String email) { //TODO REFACTOR - break down into smaller methods
         try {
             Class.forName(driver).newInstance();
@@ -36,7 +35,6 @@ public class Database {
                     data.add(real_password);
                 }
 
-                System.out.println(data.size());
                 con.close();
                 if (data.size() == 1) {
                     return password.equals(data.get(0));
@@ -196,27 +194,32 @@ public class Database {
         return data;
     }
 
-    //TODO Refactor into two methods
+
     public static Boolean insertNewUser(User newUser, String password) {
         try {
             Class.forName(driver).newInstance();
             con = DriverManager.getConnection(url + db, user, pass);
-            try {
-                Statement st = con.createStatement();
-
-                String query1 = String.format(Query.insertNewUser, newUser.name, newUser.email, newUser.city);
-                st.executeUpdate(query1);
-
-                String query2 = String.format(Query.insertNewUserPassword, newUser.email, password);
-                st.executeUpdate(query2);
-
-                con.close();
-                return true;
-            } catch (SQLException se) {
-                System.out.println("SQL ERR: " + se);
-            }
+            return processInsertionOfNewUser(newUser, password);
         } catch (Exception e) {
             System.out.println("ERR: " + e);
+        }
+        return false;
+    }
+
+    private static Boolean processInsertionOfNewUser(User newUser, String password){
+        try {
+            Statement queryStatement = con.createStatement();
+
+            String query1 = String.format(Query.insertNewUser, newUser.name, newUser.email, newUser.city);
+            queryStatement.executeUpdate(query1);
+
+            String query2 = String.format(Query.insertNewUserPassword, newUser.email, password);
+            queryStatement.executeUpdate(query2);
+
+            con.close();
+            return true;
+        } catch (SQLException se) {
+            System.out.println("SQL ERR: " + se);
         }
         return false;
     }
