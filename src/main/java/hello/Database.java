@@ -31,7 +31,7 @@ public class Database {
                 //ResultSet queryResults = queryStatement.executeQuery(query);
                 ResultSet queryResults = prepared.executeQuery();
 
-                        ArrayList<String> data = new ArrayList<>();
+                ArrayList<String> data = new ArrayList<>();
                 while (queryResults.next()) {
                     String real_password = queryResults.getString("password");
                     data.add(real_password);
@@ -67,16 +67,24 @@ public class Database {
     }
 
     private static Boolean processInsertBook(Book book, String email) {
-        try {
-            Statement queryStatement = con.createStatement();
+        try (PreparedStatement statementToInsertBook = con.prepareStatement(Query.insertNewBook);
+             PreparedStatement statementToAddUserToBook = con.prepareStatement(Query.addUserToBook)){
+            //Statement queryStatement = con.createStatement();
 
-           if(!checkIfBookInDB(book, queryStatement)){
-               String query1 = String.format(Query.insertNewBook, book.ISBN, book.title, book.author, book.edition);
-               queryStatement.executeUpdate(query1);
-           }
 
-            String query2 = String.format(Query.addUserToBook, email, book.ISBN);
-            queryStatement.executeUpdate(query2);
+            if(!checkIfBookInDB(book)){
+               statementToInsertBook.setString(1, book.ISBN);
+               statementToInsertBook.setString(2, book.title);
+               statementToInsertBook.setString(3, book.author);
+               statementToInsertBook.setString(4, book.edition);
+
+               statementToInsertBook.executeUpdate();
+            }
+
+            statementToAddUserToBook.setString(1, email);
+            statementToAddUserToBook.setString(2, book.ISBN);
+
+            statementToAddUserToBook.executeUpdate();
 
             con.close();
             return true;
@@ -86,15 +94,17 @@ public class Database {
         return false;
     }
 
-    private static Boolean checkIfBookInDB(Book book, Statement queryStatement){
-        try {
-            String query = String.format(Query.checkIfBookInDB, book.ISBN);
-            ResultSet queryResults = queryStatement.executeQuery(query);
+    private static Boolean checkIfBookInDB(Book book){
+        try (PreparedStatement statementCheckIfBookInDB = con.prepareStatement(Query.checkIfBookInDB)){
+            statementCheckIfBookInDB.setString(1, book.ISBN);
+            //String query = String.format(Query.checkIfBookInDB, book.ISBN);
+            ResultSet queryResults = statementCheckIfBookInDB.executeQuery();
 
             ArrayList<String> data = new ArrayList<>();
             while (queryResults.next()) {
                 String ISBN = queryResults.getString("ISBN");
                 data.add(ISBN);
+                System.out.println("checking if book exists");
             }
 
             return data.size() == 1;
@@ -123,7 +133,7 @@ public class Database {
 
     private static ArrayList<Book> parseBooks(String email) { //TODO REFACTOR into smaller methods
         ArrayList<Book> data = new ArrayList<>();
-        try {
+        try (PreparedStatement statementToFetchBooks = con.prepareStatement(Query.fetchBooksBase)){
             Statement queryStatement = con.createStatement();
             String query;
 
