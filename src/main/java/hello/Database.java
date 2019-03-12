@@ -190,10 +190,9 @@ public class Database {
 
     public static ArrayList<User> getName(String email){
         ArrayList<User> data = new ArrayList<>();
-        try {
-            Statement queryStatement = con.createStatement();
-            String query = String.format(Query.userSearchByEmail, email);
-            ResultSet queryResults = queryStatement.executeQuery(query);
+        try (PreparedStatement statementToSerachUserByMail = con.prepareStatement(Query.userSearchByEmail)){
+            statementToSerachUserByMail.setString(1,email);
+            ResultSet queryResults = statementToSerachUserByMail.executeQuery();
             while (queryResults.next()) {
                 String name = queryResults.getString("name");
                 String userEmail = queryResults.getString("email");
