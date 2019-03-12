@@ -134,23 +134,20 @@ public class Database {
     private static ArrayList<Book> parseBooks(String email) { //TODO REFACTOR into smaller methods
         ArrayList<Book> data = new ArrayList<>();
 
-            String query = "";
+        String query = "";
 
-            if(email.equals("all")) {
-                query = Query.fetchBooksBase;
-                System.out.print("ALL");
+        try (PreparedStatement statementToFetchAllBooks = con.prepareStatement(Query.fetchBooksBase);
+             PreparedStatement statementToFetchUserBooks = con.prepareStatement(Query.fetchUserBooks)
+        ){
+            statementToFetchUserBooks.setString(1, email);
+            ResultSet queryResults;
+
+            if (email.equals("all")){
+                queryResults = statementToFetchAllBooks.executeQuery();
             } else {
-                query = Query.fetchUserBooks;
-                System.out.print("User");
-            }
-        try (PreparedStatement statementToFetchBooks = con.prepareStatement(query)){
-
-            if (!email.equals("all")){
-                System.out.println(email);
-                statementToFetchBooks.setString(1, email);
+                queryResults = statementToFetchUserBooks.executeQuery();
             }
 
-            ResultSet queryResults = statementToFetchBooks.executeQuery(query);
             while (queryResults.next()) {
                 String ISBN = queryResults.getString("ISBN");
                 String title = queryResults.getString("title");
