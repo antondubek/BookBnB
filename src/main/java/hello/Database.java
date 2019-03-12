@@ -222,14 +222,19 @@ public class Database {
     }
 
     private static Boolean processInsertionOfNewUser(User newUser, String password){
-        try {
-            Statement queryStatement = con.createStatement();
+        try (PreparedStatement statementToInsertUser = con.prepareStatement(Query.insertNewUser);
+             PreparedStatement statementToInsertPassword = con.prepareStatement(Query.insertNewUserPassword)){
 
-            String query1 = String.format(Query.insertNewUser, newUser.name, newUser.email, newUser.city);
-            queryStatement.executeUpdate(query1);
+            statementToInsertUser.setString(1,newUser.name);
+            statementToInsertUser.setString(2,newUser.email);
+            statementToInsertUser.setString(3,newUser.city);
 
-            String query2 = String.format(Query.insertNewUserPassword, newUser.email, password);
-            queryStatement.executeUpdate(query2);
+            statementToInsertUser.executeUpdate();
+
+            statementToInsertPassword.setString(1,newUser.email);
+            statementToInsertPassword.setString(2,password);
+
+            statementToInsertPassword.executeUpdate();
 
             con.close();
             return true;
