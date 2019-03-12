@@ -6,12 +6,13 @@ import java.util.ArrayList;
 /**
  * Class which is responsible for the database connections
  * @author 180029410
+ * @modified by 180019489
  */
 public class Database {
 
     private static Connection con = null;
-    //private static String url = "jdbc:mysql://dag8.host.cs.st-andrews.ac.uk/";
-    private static String url = "jdbc:mysql://localhost:3307/";
+    private static String url = "jdbc:mysql://dag8.host.cs.st-andrews.ac.uk/";
+    //private static String url = "jdbc:mysql://localhost:3307/";
     private static String db = "dag8_RickDB";
     private static String driver = "com.mysql.cj.jdbc.Driver";
     private static String user = "ri31";
@@ -23,13 +24,14 @@ public class Database {
             Class.forName(driver).newInstance();
             con = DriverManager.getConnection(url + db, user, pass);
 
-            try {
-                Statement queryStatement = con.createStatement();
+            try (PreparedStatement prepared = con.prepareStatement(Query.login)) {
+                //Statement queryStatement = con.createStatement();
+                prepared.setString(1, email);
+                //String query = String.format(Query.login, email);
+                //ResultSet queryResults = queryStatement.executeQuery(query);
+                ResultSet queryResults = prepared.executeQuery();
 
-                String query = String.format(Query.login, email);
-                ResultSet queryResults = queryStatement.executeQuery(query);
-
-                ArrayList<String> data = new ArrayList<>();
+                        ArrayList<String> data = new ArrayList<>();
                 while (queryResults.next()) {
                     String real_password = queryResults.getString("password");
                     data.add(real_password);
