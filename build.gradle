@@ -42,4 +42,8 @@ jacocoTestReport {
     }
 }
 
+test {
+    exclude '**/DatabaseTest.class'
+}
+
 check.dependsOn jacocoTestReport
