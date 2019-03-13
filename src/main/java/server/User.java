@@ -1,4 +1,4 @@
-package hello;
+package server;
 
 /**
  * User class
@@ -9,7 +9,6 @@ public class User {
     private String city;
 
     //Getters
-
     public String getName(){
         return name;
     }
@@ -23,7 +22,6 @@ public class User {
     }
 
     //setters
-
     public void setEmail(String email){
         this.email = email;
     }

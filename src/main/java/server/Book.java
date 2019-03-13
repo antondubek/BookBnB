@@ -1,4 +1,4 @@
-package hello;
+package server;
 
 /**
  * Book class, contains all details about the book.

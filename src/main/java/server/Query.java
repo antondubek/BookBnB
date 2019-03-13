@@ -1,4 +1,4 @@
-package hello;
+package server;
 
 /**
  * Query class, contains all possible queries that are used in DataBase class.

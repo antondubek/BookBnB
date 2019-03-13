@@ -1,14 +1,13 @@
-import hello.Database;
-import hello.Book;
-import hello.Query;
+import server.Database;
+import server.Book;
+import server.Query;
 import org.junit.Test;
-
-import java.sql.*;
-
 import static org.junit.Assert.*;
 
+/**
+ * Testing class. Designed to test DataBase with JUnit tests.
+ */
 public class DatabaseTest {
-
 
     @Test
     public void TestLogin() {
