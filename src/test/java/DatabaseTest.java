@@ -23,6 +23,17 @@ public class DatabaseTest {
         assertFalse(Database.insertNewBook(book, "test1@amakepeace.com"));
     }
 
+    @Test
+    public void insertBookWithoutSomeDetails() {
+        Book book1 = new Book("", "Title", "Author");
+        Book book2 = new Book("0000000000001", "", "Author");
+        Book book3 = new Book("0000000000001", "Title", "");
+        Book book4 = new Book("", "", "");
+        assertFalse(Database.insertNewBook(book1, "test@amakepeace.com"));
+        assertFalse(Database.insertNewBook(book2, "test@amakepeace.com"));
+        assertFalse(Database.insertNewBook(book3, "test@amakepeace.com"));
+        assertFalse(Database.insertNewBook(book4, "test@amakepeace.com"));
+    }
 
     @Test
     public void fetchAllBooks(){
@@ -31,7 +42,6 @@ public class DatabaseTest {
          assertEquals(Database.fetchAllBooks("riad@baku.az").size(),0);
          assertNotEquals(Database.fetchAllBooks("test@amakepeace.com").size(),0);
     }
-
 
     @Test
     public void setQueryTypetest() {
@@ -47,6 +57,5 @@ public class DatabaseTest {
         assertNotEquals(Database.findUser("test@amakepeace.com").get(0).getName(), "anthony");
 
     }
-
 }
 
