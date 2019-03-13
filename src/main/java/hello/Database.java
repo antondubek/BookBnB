@@ -252,13 +252,13 @@ public class Database {
         try (PreparedStatement statementToInsertUser = con.prepareStatement(Query.INSERT_NEW_USER);
              PreparedStatement statementToInsertPassword = con.prepareStatement(Query.INSERT_NEW_USER_PASSWORD)){
 
-            statementToInsertUser.setString(1,newUser.name);
-            statementToInsertUser.setString(2,newUser.email);
-            statementToInsertUser.setString(3,newUser.city);
+            statementToInsertUser.setString(1,newUser.getName());
+            statementToInsertUser.setString(2,newUser.getEmail());
+            statementToInsertUser.setString(3,newUser.getCity());
 
             statementToInsertUser.executeUpdate();
 
-            statementToInsertPassword.setString(1,newUser.email);
+            statementToInsertPassword.setString(1,newUser.getEmail());
             statementToInsertPassword.setString(2,password);
 
             statementToInsertPassword.executeUpdate();

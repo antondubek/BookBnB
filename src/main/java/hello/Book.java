@@ -2,10 +2,10 @@ package hello;
 
 public class Book {
     public String ISBN;
-    public String title;
-    public String author;
-    public String edition;
-    public Boolean available;
+    private String title;
+    private String author;
+    private String edition;
+    private Boolean available;
 
 
     public String getISBN(){
