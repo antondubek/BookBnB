@@ -91,6 +91,9 @@ public class Database {
      * @return false if connection is failed
      */
     public static Boolean insertNewBook(Book book, String email){
+        if (book.getAuthor().equals("") || book.getISBN().equals("") || book.getTitle().equals("")){
+            return false;
+        }
         try {
             Class.forName(driver).newInstance();
             con = DriverManager.getConnection(url + db, user, pass);
