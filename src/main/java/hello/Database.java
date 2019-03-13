@@ -18,19 +18,12 @@ public class Database {
     private static String user = "ri31";
     private static String pass = "33.1Z4HLNfnbuy";
 
-
-    public static Boolean loginIsSuccessful(String password, String email) {
-        try {
-            Class.forName(driver).newInstance();
-            con = DriverManager.getConnection(url + db, user, pass);
-            return loginProcedure(password, email);
-
-        } catch (Exception e) {
-            System.out.println("ERR: " + e);
-        }
-        return false;
-    }
-
+    /**
+     * Gets ArrayList of String from the ResultSet. Useful, if read String sequence from database.
+     * @param queryResults Results of the query
+     * @param namesOfFields Names of the variables from database, which needs to be read
+     * @return ArrayList of all Strings from the query
+     */
     public static ArrayList<String> getArrayListFromResultSet(ResultSet queryResults,String[] namesOfFields){
         ArrayList<String> data = new ArrayList<>();
 
@@ -47,7 +40,31 @@ public class Database {
         return data;
     }
 
-    public static Boolean loginProcedure(String password, String email){
+    /**
+     * Login method. Opens the connection, and calls helping method loginProcedure.
+     * @param password password of the user, who logs in
+     * @param email email of the user, who logs in
+     * @return true if login is successful
+     */
+    public static Boolean loginIsSuccessful(String password, String email) {
+        try {
+            Class.forName(driver).newInstance();
+            con = DriverManager.getConnection(url + db, user, pass);
+            return loginDetailsAreRight(password, email);
+
+        } catch (Exception e) {
+            System.out.println("ERR: " + e);
+        }
+        return false;
+    }
+
+    /**
+     * Helps loginIsSuccessful to do the login part, checks if the password of the user is right or not.
+     * @param password
+     * @param email
+     * @return
+     */
+    public static Boolean loginDetailsAreRight(String password, String email){
         try (PreparedStatement statementForLogin = con.prepareStatement(Query.LOGIN)) {
             statementForLogin.setString(1, email);
             ResultSet queryResults = statementForLogin.executeQuery();
