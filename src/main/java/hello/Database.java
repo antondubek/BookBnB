@@ -108,7 +108,7 @@ public class Database {
         return false;
     }
 
-    private static Boolean checkIfBookInDB(Book book){
+    public static Boolean checkIfBookInDB(Book book){
         try (PreparedStatement statementCheckIfBookInDB = con.prepareStatement(Query.CHECK_IF_BOOK_IN_DB)){
             statementCheckIfBookInDB.setString(1, book.getISBN());
             ResultSet queryResults = statementCheckIfBookInDB.executeQuery();
