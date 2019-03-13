@@ -128,12 +128,12 @@ public class Controller {
         JSONObject data = new JSONObject(jsonString);
 
         String ISBN = data.get("ISBN").toString();
-        String author = data.get("author").toString();
         String title = data.get("title").toString();
+        String author = data.get("author").toString();
         String edition = data.get("edition").toString();
         String email = data.get("email").toString();
 
-        Book newBook = new Book(ISBN, author, title);
+        Book newBook = new Book(ISBN, title, author);
 
         if(edition != null && !edition.equals("")) {
             newBook.setEdition(edition);

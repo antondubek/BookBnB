@@ -6,12 +6,13 @@ import java.util.ArrayList;
 /**
  * Class which is responsible for the database connections
  * @author 180029410
+ * @modified by 180019489
  */
 public class Database {
 
     private static Connection con = null;
-    //private static String url = "jdbc:mysql://dag8.host.cs.st-andrews.ac.uk/";
-    private static String url = "jdbc:mysql://localhost:3307/";
+    private static String url = "jdbc:mysql://dag8.host.cs.st-andrews.ac.uk/";
+    //private static String url = "jdbc:mysql://localhost:3307/";
     private static String db = "dag8_RickDB";
     private static String driver = "com.mysql.cj.jdbc.Driver";
     private static String user = "ri31";
@@ -23,11 +24,12 @@ public class Database {
             Class.forName(driver).newInstance();
             con = DriverManager.getConnection(url + db, user, pass);
 
-            try {
-                Statement queryStatement = con.createStatement();
-
-                String query = String.format(Query.login, email);
-                ResultSet queryResults = queryStatement.executeQuery(query);
+            try (PreparedStatement prepared = con.prepareStatement(Query.login)) {
+                //Statement queryStatement = con.createStatement();
+                prepared.setString(1, email);
+                //String query = String.format(Query.login, email);
+                //ResultSet queryResults = queryStatement.executeQuery(query);
+                ResultSet queryResults = prepared.executeQuery();
 
                 ArrayList<String> data = new ArrayList<>();
                 while (queryResults.next()) {
@@ -65,16 +67,24 @@ public class Database {
     }
 
     private static Boolean processInsertBook(Book book, String email) {
-        try {
-            Statement queryStatement = con.createStatement();
+        try (PreparedStatement statementToInsertBook = con.prepareStatement(Query.insertNewBook);
+             PreparedStatement statementToAddUserToBook = con.prepareStatement(Query.addUserToBook)){
+            //Statement queryStatement = con.createStatement();
 
-           if(!checkIfBookInDB(book, queryStatement)){
-               String query1 = String.format(Query.insertNewBook, book.ISBN, book.title, book.author, book.edition);
-               queryStatement.executeUpdate(query1);
-           }
 
-            String query2 = String.format(Query.addUserToBook, email, book.ISBN);
-            queryStatement.executeUpdate(query2);
+            if(!checkIfBookInDB(book)){
+               statementToInsertBook.setString(1, book.ISBN);
+               statementToInsertBook.setString(2, book.title);
+               statementToInsertBook.setString(3, book.author);
+               statementToInsertBook.setString(4, book.edition);
+
+               statementToInsertBook.executeUpdate();
+            }
+
+            statementToAddUserToBook.setString(1, email);
+            statementToAddUserToBook.setString(2, book.ISBN);
+
+            statementToAddUserToBook.executeUpdate();
 
             con.close();
             return true;
@@ -84,15 +94,17 @@ public class Database {
         return false;
     }
 
-    private static Boolean checkIfBookInDB(Book book, Statement queryStatement){
-        try {
-            String query = String.format(Query.checkIfBookInDB, book.ISBN);
-            ResultSet queryResults = queryStatement.executeQuery(query);
+    private static Boolean checkIfBookInDB(Book book){
+        try (PreparedStatement statementCheckIfBookInDB = con.prepareStatement(Query.checkIfBookInDB)){
+            statementCheckIfBookInDB.setString(1, book.ISBN);
+            //String query = String.format(Query.checkIfBookInDB, book.ISBN);
+            ResultSet queryResults = statementCheckIfBookInDB.executeQuery();
 
             ArrayList<String> data = new ArrayList<>();
             while (queryResults.next()) {
                 String ISBN = queryResults.getString("ISBN");
                 data.add(ISBN);
+                System.out.println("checking if book exists");
             }
 
             return data.size() == 1;
@@ -121,17 +133,21 @@ public class Database {
 
     private static ArrayList<Book> parseBooks(String email) { //TODO REFACTOR into smaller methods
         ArrayList<Book> data = new ArrayList<>();
-        try {
-            Statement queryStatement = con.createStatement();
-            String query;
 
-            if(email.equals("all")) {
-                query = Query.fetchBooksBase;
+        String query = "";
+
+        try (PreparedStatement statementToFetchAllBooks = con.prepareStatement(Query.fetchBooksBase);
+             PreparedStatement statementToFetchUserBooks = con.prepareStatement(Query.fetchUserBooks)
+        ){
+            statementToFetchUserBooks.setString(1, email);
+            ResultSet queryResults;
+
+            if (email.equals("all")){
+                queryResults = statementToFetchAllBooks.executeQuery();
             } else {
-                query = String.format(Query.fetchUserBooks, email);
+                queryResults = statementToFetchUserBooks.executeQuery();
             }
 
-            ResultSet queryResults = queryStatement.executeQuery(query);
             while (queryResults.next()) {
                 String ISBN = queryResults.getString("ISBN");
                 String title = queryResults.getString("title");
@@ -174,10 +190,9 @@ public class Database {
 
     public static ArrayList<User> getName(String email){
         ArrayList<User> data = new ArrayList<>();
-        try {
-            Statement queryStatement = con.createStatement();
-            String query = String.format(Query.userSearchByEmail, email);
-            ResultSet queryResults = queryStatement.executeQuery(query);
+        try (PreparedStatement statementToSerachUserByMail = con.prepareStatement(Query.userSearchByEmail)){
+            statementToSerachUserByMail.setString(1,email);
+            ResultSet queryResults = statementToSerachUserByMail.executeQuery();
             while (queryResults.next()) {
                 String name = queryResults.getString("name");
                 String userEmail = queryResults.getString("email");
@@ -207,14 +222,19 @@ public class Database {
     }
 
     private static Boolean processInsertionOfNewUser(User newUser, String password){
-        try {
-            Statement queryStatement = con.createStatement();
+        try (PreparedStatement statementToInsertUser = con.prepareStatement(Query.insertNewUser);
+             PreparedStatement statementToInsertPassword = con.prepareStatement(Query.insertNewUserPassword)){
 
-            String query1 = String.format(Query.insertNewUser, newUser.name, newUser.email, newUser.city);
-            queryStatement.executeUpdate(query1);
+            statementToInsertUser.setString(1,newUser.name);
+            statementToInsertUser.setString(2,newUser.email);
+            statementToInsertUser.setString(3,newUser.city);
 
-            String query2 = String.format(Query.insertNewUserPassword, newUser.email, password);
-            queryStatement.executeUpdate(query2);
+            statementToInsertUser.executeUpdate();
+
+            statementToInsertPassword.setString(1,newUser.email);
+            statementToInsertPassword.setString(2,password);
+
+            statementToInsertPassword.executeUpdate();
 
             con.close();
             return true;
