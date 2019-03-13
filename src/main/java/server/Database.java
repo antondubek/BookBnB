@@ -5,8 +5,7 @@ import java.util.ArrayList;
 
 /**
  * Class which is responsible for the database connections
- * @author 180029410
- * @modified by 180019489
+ * @author 180029410 & 180019489
  */
 public class Database {
 
@@ -113,7 +112,6 @@ public class Database {
     private static Boolean processInsertBook(Book book, String email) {
         try (PreparedStatement statementToInsertBook = con.prepareStatement(Query.INSERT_NEW_BOOK);
              PreparedStatement statementToAddUserToBook = con.prepareStatement(Query.ADD_USER_TO_BOOK)){
-            //Statement queryStatement = con.createStatement();
 
             if(!checkIfBookInDB(book)){
                statementToInsertBook.setString(1, book.getISBN());
