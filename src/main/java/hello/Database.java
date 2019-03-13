@@ -41,7 +41,7 @@ public class Database {
     }
 
     /**
-     * Login method. Opens the connection, and calls helping method loginProcedure.
+     * Login method. Opens the connection, and calls helping method loginDetailsAreRight.
      * @param password password of the user, who logs in
      * @param email email of the user, who logs in
      * @return true if login is successful
@@ -85,7 +85,10 @@ public class Database {
     }
 
     /**
-     * Insert a book into the database, associate it with a particular user
+     * Insert a new book, opens a connection. Actual insertion is done in another method.
+     * @param book to be added to the database
+     * @param email user which adds the book
+     * @return false if connection is failed
      */
     public static Boolean insertNewBook(Book book, String email){
         try {
@@ -98,6 +101,12 @@ public class Database {
         return false;
     }
 
+    /**
+     * Inserts a book to the database
+     * @param book to be added to the database
+     * @param email email user which adds the book
+     * @return true if the book is added
+     */
     private static Boolean processInsertBook(Book book, String email) {
         try (PreparedStatement statementToInsertBook = con.prepareStatement(Query.INSERT_NEW_BOOK);
              PreparedStatement statementToAddUserToBook = con.prepareStatement(Query.ADD_USER_TO_BOOK)){
@@ -125,6 +134,11 @@ public class Database {
         return false;
     }
 
+    /**
+     * Checks if the book already exists in database.
+     * @param book the book which is search in database
+     * @return true if the book exists in database
+     */
     public static Boolean checkIfBookInDB(Book book){
         try (PreparedStatement statementCheckIfBookInDB = con.prepareStatement(Query.CHECK_IF_BOOK_IN_DB)){
             statementCheckIfBookInDB.setString(1, book.getISBN());
@@ -141,20 +155,27 @@ public class Database {
     }
 
     /**
-     * Use this method and the next one to search for all books
+     * Fetch all books from the database. Connection is opened.
+     * @param email email of the user whose books should be shown, or "all" for all books to be shown
+     * @return List of books
      */
     public static ArrayList<Book> fetchAllBooks(String email) {
         ArrayList<Book> data = new ArrayList<>();
         try {
             Class.forName(driver).newInstance();
             con = DriverManager.getConnection(url + db, user, pass);
-            data = parseBooks(email);
+            data = executeGetBooksFromDB(email);
         } catch (Exception e) {
             System.out.println("ERR: " + e);
         }
         return data;
     }
 
+    /**
+     * gets right query type, depending on the request.
+     * @param email email of the user whose books should be shown, or "all" for all books to be shown
+     * @return String of the SQL Query.
+     */
     public static String getQueryType(String email){
         String query = "";
         if (email.equals("all")){
@@ -165,7 +186,12 @@ public class Database {
         return query;
     }
 
-
+    /**
+     * Gets book objects from the ResultSet.
+     * @param queryResults Query results for getting books from the database
+     * @param booksAreForUser True if books are for 1 user, false if all books should be returned
+     * @return ArrayList of books
+     */
     public static ArrayList<Book> getBookFromResultSet(ResultSet queryResults, boolean booksAreForUser){
         ArrayList<Book> data = new ArrayList<>();
         try {
@@ -192,9 +218,12 @@ public class Database {
         return data;
     }
 
-    /**Parse query results and turn into object */
-
-    private static ArrayList<Book> parseBooks(String email) { //TODO REFACTOR into smaller methods
+    /**
+     * Parse book, executes the query and gets the books from the database.
+     * @param email email of the user, whose books should be shown
+     * @return ArrayList Of Books
+     */
+    private static ArrayList<Book> executeGetBooksFromDB(String email) {
         ArrayList<Book> data = new ArrayList<>();
 
         String query = getQueryType(email);
@@ -216,23 +245,29 @@ public class Database {
         return data;
     }
 
-
     /**
-     * Use this method and the next one to search for a specific user
+     * Find the user, by his email.
+     * @param email email of the user to be searched
+     * @return ArrayListOfUsers
      */
     public static ArrayList<User> findUser(String email) {
         ArrayList<User> data = new ArrayList<>();
         try {
             Class.forName(driver).newInstance();
             con = DriverManager.getConnection(url + db, user, pass);
-            data = getName(email);
+            data = getDetailsofTheUser(email);
         } catch (Exception e) {
             System.out.println("ERR: " + e);
         }
         return data;
     }
 
-    public static ArrayList<User> getName(String email){
+    /**
+     * Get's details of the user by executing the query and searching for the user by his email.
+     * @param email email of the user to be searched
+     * @return ArrayListOfUsers
+     */
+    public static ArrayList<User> getDetailsofTheUser(String email){
         ArrayList<User> data = new ArrayList<>();
         try (PreparedStatement statementToSerachUserByMail = con.prepareStatement(Query.USER_SEARCH_BY_EMAIL)){
             statementToSerachUserByMail.setString(1,email);
@@ -253,7 +288,12 @@ public class Database {
         return data;
     }
 
-
+    /**
+     * Registers a new user.
+     * @param newUser username
+     * @param password password (is hashed)
+     * @return false if the connection is failed and the user is not registered
+     */
     public static Boolean insertNewUser(User newUser, String password) {
         try {
             Class.forName(driver).newInstance();
@@ -265,6 +305,12 @@ public class Database {
         return false;
     }
 
+    /**
+     * Adds the user to the database.
+     * @param newUser username
+     * @param password password of the new user
+     * @return true if the user is added to the database
+     */
     private static Boolean processInsertionOfNewUser(User newUser, String password){
         try (PreparedStatement statementToInsertUser = con.prepareStatement(Query.INSERT_NEW_USER);
              PreparedStatement statementToInsertPassword = con.prepareStatement(Query.INSERT_NEW_USER_PASSWORD)){
