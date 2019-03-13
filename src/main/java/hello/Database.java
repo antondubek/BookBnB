@@ -24,12 +24,9 @@ public class Database {
             Class.forName(driver).newInstance();
             con = DriverManager.getConnection(url + db, user, pass);
 
-            try (PreparedStatement prepared = con.prepareStatement(Query.LOGIN)) {
-                //Statement queryStatement = con.createStatement();
-                prepared.setString(1, email);
-                //String query = String.format(Query.login, email);
-                //ResultSet queryResults = queryStatement.executeQuery(query);
-                ResultSet queryResults = prepared.executeQuery();
+            try (PreparedStatement statementForLogin = con.prepareStatement(Query.LOGIN)) {
+                statementForLogin.setString(1, email);
+                ResultSet queryResults = statementForLogin.executeQuery();
 
                 ArrayList<String> data = new ArrayList<>();
                 while (queryResults.next()) {
@@ -51,6 +48,8 @@ public class Database {
         }
         return false;
     }
+
+
 
     /**
      * Insert a book into the database, associate it with a particular user
