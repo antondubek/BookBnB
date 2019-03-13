@@ -1,5 +1,8 @@
 package hello;
 
+/**
+ * Query class, contains all possible queries that are used in DataBase class.
+ */
 public class Query {
     public final static String USER_SEARCH_BY_EMAIL = "SELECT name, email, city FROM Users WHERE email = ?;";
     public final static String INSERT_NEW_USER = "INSERT INTO Users (name, email, city) VALUES (?, ?, ?);";

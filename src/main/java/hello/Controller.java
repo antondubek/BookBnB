@@ -10,10 +10,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RequestBody;
 
-
+/**
+ * Controller class, responsible for the connection with the clients.
+ */
 @RestController
 public class Controller {
 
+    /**
+     * Register request method.
+     * @param jsonString json contains fields of the user
+     * @return response if the registration is successful or not.
+     */
     @RequestMapping(method= RequestMethod.POST, value = "/register")
     public ResponseEntity<String> login(@RequestBody String jsonString){
 
@@ -30,6 +37,11 @@ public class Controller {
         return (insert) ? new ResponseEntity<String>(HttpStatus.OK) : new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
     }
 
+    /**
+     * Login request method
+     * @param jsonString gets email and password to login
+     * @return status if login was successful
+     */
     @RequestMapping(method= RequestMethod.POST, value = "/login")
     public ResponseEntity<String> logintest(@RequestBody String jsonString){
 
@@ -41,6 +53,11 @@ public class Controller {
         return (Database.loginIsSuccessful(password, email)) ? new ResponseEntity<String>(HttpStatus.OK) : new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
     }
 
+    /**
+     * get books request method, GET request
+     * @param command command which table of books to send
+     * @return books for user or all books depending on request
+     */
     @RequestMapping(method = RequestMethod.GET, value="/book")
     public String allBooks(@RequestParam(value="command", defaultValue = "none") String command){
         if(!command.equals("all")){ return "error"; }
@@ -65,6 +82,11 @@ public class Controller {
         return JSONBooks.toString();
     }
 
+    /**
+     * Searching for the user
+     * @param jsonString
+     * @return users
+     */
     @RequestMapping(method= RequestMethod.POST, value = "/profile")
     public String loadProfile(@RequestBody String jsonString) {
         JSONObject data = new JSONObject(jsonString);
@@ -90,6 +112,11 @@ public class Controller {
         return JSON;
     }
 
+    /**
+     * get all books for the user
+     * @param jsonString
+     * @return
+     */
     @RequestMapping(method= RequestMethod.POST, value = "/profile/books")
     public String loadUserbooks(@RequestBody String jsonString) {
         JSONObject data = new JSONObject(jsonString);
@@ -123,6 +150,11 @@ public class Controller {
 
     }
 
+    /**
+     * Add book request method
+     * @param jsonString
+     * @return ok if the book is added to the database successfully
+     */
     @RequestMapping(method= RequestMethod.POST, value = "/profile/addBook")
     public ResponseEntity<String> addBook(@RequestBody String jsonString) {
         JSONObject data = new JSONObject(jsonString);

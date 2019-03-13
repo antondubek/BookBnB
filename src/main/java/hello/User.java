@@ -1,9 +1,14 @@
 package hello;
 
+/**
+ * User class
+ */
 public class User {
     private String name;
     private String email;
     private String city;
+
+    //Getters
 
     public String getName(){
         return name;
@@ -17,6 +22,8 @@ public class User {
         return city;
     }
 
+    //setters
+
     public void setEmail(String email){
         this.email = email;
     }
@@ -29,6 +36,12 @@ public class User {
         this.city = city;
     }
 
+    /**
+     * User constructor.
+     * @param name name of the registered user.
+     * @param email email of the user.
+     * @param city city where the user lends his books.
+     */
     public User(String name, String email, String city){
         this.name = name;
         this.email = email;
