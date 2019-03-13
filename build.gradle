@@ -12,6 +12,7 @@ apply plugin: 'eclipse'
 apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
+apply plugin: 'jacoco'
 
 bootJar {
     baseName = 'gs-rest-service'
@@ -33,3 +34,16 @@ dependencies {
     testCompile('org.springframework.boot:spring-boot-starter-test')
 
 }
+
+jacocoTestReport {
+    reports {
+        xml.enabled = true
+        html.enabled = true
+    }
+}
+
+test {
+    exclude '**/DatabaseTest.class'
+}
+
+check.dependsOn jacocoTestReport
