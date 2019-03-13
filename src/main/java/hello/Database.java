@@ -31,16 +31,29 @@ public class Database {
         return false;
     }
 
+    public static ArrayList<String> getArrayListFromResultSet(ResultSet queryResults,String[] namesOfFields){
+        ArrayList<String> data = new ArrayList<>();
+
+        try {
+            while (queryResults.next()) {
+                for (String fieldName : namesOfFields){
+                    String element = queryResults.getString(fieldName);
+                    data.add(element);
+                }
+            }
+        } catch (SQLException se){
+            System.out.println("SQL ERR: " + se);
+        }
+        return data;
+    }
+
     public static Boolean loginProcedure(String password, String email){
         try (PreparedStatement statementForLogin = con.prepareStatement(Query.LOGIN)) {
             statementForLogin.setString(1, email);
             ResultSet queryResults = statementForLogin.executeQuery();
 
-            ArrayList<String> data = new ArrayList<>();
-            while (queryResults.next()) {
-                String real_password = queryResults.getString("password");
-                data.add(real_password);
-            }
+            String[] namesOfFieldsInResponse = new String[]{"password"};
+            ArrayList<String> data = getArrayListFromResultSet(queryResults,namesOfFieldsInResponse);
 
             con.close();
             if (data.size() == 1) {
@@ -73,7 +86,6 @@ public class Database {
              PreparedStatement statementToAddUserToBook = con.prepareStatement(Query.ADD_USER_TO_BOOK)){
             //Statement queryStatement = con.createStatement();
 
-
             if(!checkIfBookInDB(book)){
                statementToInsertBook.setString(1, book.ISBN);
                statementToInsertBook.setString(2, book.title);
@@ -99,15 +111,10 @@ public class Database {
     private static Boolean checkIfBookInDB(Book book){
         try (PreparedStatement statementCheckIfBookInDB = con.prepareStatement(Query.CHECK_IF_BOOK_IN_DB)){
             statementCheckIfBookInDB.setString(1, book.ISBN);
-            //String query = String.format(Query.checkIfBookInDB, book.ISBN);
             ResultSet queryResults = statementCheckIfBookInDB.executeQuery();
 
-            ArrayList<String> data = new ArrayList<>();
-            while (queryResults.next()) {
-                String ISBN = queryResults.getString("ISBN");
-                data.add(ISBN);
-                System.out.println("checking if book exists");
-            }
+            String[] namesOfFieldsInResponse = new String[]{"ISBN"};
+            ArrayList<String> data = getArrayListFromResultSet(queryResults,namesOfFieldsInResponse);
 
             return data.size() == 1;
         } catch (SQLException se) {
