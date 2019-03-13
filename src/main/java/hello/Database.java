@@ -17,14 +17,14 @@ public class Database {
     private static String driver = "com.mysql.cj.jdbc.Driver";
     private static String user = "ri31";
     private static String pass = "33.1Z4HLNfnbuy";
-    //private static Statement currentQuery;
+
 
     public static Boolean login(String password, String email) { //TODO REFACTOR - break down into smaller methods
         try {
             Class.forName(driver).newInstance();
             con = DriverManager.getConnection(url + db, user, pass);
 
-            try (PreparedStatement prepared = con.prepareStatement(Query.login)) {
+            try (PreparedStatement prepared = con.prepareStatement(Query.LOGIN)) {
                 //Statement queryStatement = con.createStatement();
                 prepared.setString(1, email);
                 //String query = String.format(Query.login, email);
@@ -67,8 +67,8 @@ public class Database {
     }
 
     private static Boolean processInsertBook(Book book, String email) {
-        try (PreparedStatement statementToInsertBook = con.prepareStatement(Query.insertNewBook);
-             PreparedStatement statementToAddUserToBook = con.prepareStatement(Query.addUserToBook)){
+        try (PreparedStatement statementToInsertBook = con.prepareStatement(Query.INSER_NEW_BOOK);
+             PreparedStatement statementToAddUserToBook = con.prepareStatement(Query.ADD_USER_TO_BOOK)){
             //Statement queryStatement = con.createStatement();
 
 
@@ -95,7 +95,7 @@ public class Database {
     }
 
     private static Boolean checkIfBookInDB(Book book){
-        try (PreparedStatement statementCheckIfBookInDB = con.prepareStatement(Query.checkIfBookInDB)){
+        try (PreparedStatement statementCheckIfBookInDB = con.prepareStatement(Query.CHECK_IF_BOOK_IN_DB)){
             statementCheckIfBookInDB.setString(1, book.ISBN);
             //String query = String.format(Query.checkIfBookInDB, book.ISBN);
             ResultSet queryResults = statementCheckIfBookInDB.executeQuery();
@@ -136,8 +136,8 @@ public class Database {
 
         String query = "";
 
-        try (PreparedStatement statementToFetchAllBooks = con.prepareStatement(Query.fetchBooksBase);
-             PreparedStatement statementToFetchUserBooks = con.prepareStatement(Query.fetchUserBooks)
+        try (PreparedStatement statementToFetchAllBooks = con.prepareStatement(Query.FETCH_BOOKS_BASE);
+             PreparedStatement statementToFetchUserBooks = con.prepareStatement(Query.FETCH_USER_BOOKS)
         ){
             statementToFetchUserBooks.setString(1, email);
             ResultSet queryResults;
@@ -190,7 +190,7 @@ public class Database {
 
     public static ArrayList<User> getName(String email){
         ArrayList<User> data = new ArrayList<>();
-        try (PreparedStatement statementToSerachUserByMail = con.prepareStatement(Query.userSearchByEmail)){
+        try (PreparedStatement statementToSerachUserByMail = con.prepareStatement(Query.USER_SEARCH_BY_EMAIL)){
             statementToSerachUserByMail.setString(1,email);
             ResultSet queryResults = statementToSerachUserByMail.executeQuery();
             while (queryResults.next()) {
@@ -222,8 +222,8 @@ public class Database {
     }
 
     private static Boolean processInsertionOfNewUser(User newUser, String password){
-        try (PreparedStatement statementToInsertUser = con.prepareStatement(Query.insertNewUser);
-             PreparedStatement statementToInsertPassword = con.prepareStatement(Query.insertNewUserPassword)){
+        try (PreparedStatement statementToInsertUser = con.prepareStatement(Query.INSERT_NEW_USER);
+             PreparedStatement statementToInsertPassword = con.prepareStatement(Query.INSERT_NEW_USER_PASSWORD)){
 
             statementToInsertUser.setString(1,newUser.name);
             statementToInsertUser.setString(2,newUser.email);
