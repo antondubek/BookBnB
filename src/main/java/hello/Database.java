@@ -138,25 +138,20 @@ public class Database {
         return data;
     }
 
-    /**Parse query results and turn into object */
-
-    private static ArrayList<Book> parseBooks(String email) { //TODO REFACTOR into smaller methods
-        ArrayList<Book> data = new ArrayList<>();
-
+    public static String getQueryType(String email){
         String query = "";
+        if (email.equals("all")){
+            query = Query.FETCH_BOOKS_BASE;
+        } else {
+            query = Query.FETCH_USER_BOOKS;
+        }
+        return query;
+    }
 
-        try (PreparedStatement statementToFetchAllBooks = con.prepareStatement(Query.FETCH_BOOKS_BASE);
-             PreparedStatement statementToFetchUserBooks = con.prepareStatement(Query.FETCH_USER_BOOKS)
-        ){
-            statementToFetchUserBooks.setString(1, email);
-            ResultSet queryResults;
 
-            if (email.equals("all")){
-                queryResults = statementToFetchAllBooks.executeQuery();
-            } else {
-                queryResults = statementToFetchUserBooks.executeQuery();
-            }
-
+    public static ArrayList<Book> getBookFromResultSet(ResultSet queryResults, boolean booksAreForUser){
+        ArrayList<Book> data = new ArrayList<>();
+        try {
             while (queryResults.next()) {
                 String ISBN = queryResults.getString("ISBN");
                 String title = queryResults.getString("title");
@@ -164,16 +159,39 @@ public class Database {
 
                 Book nextBook = new Book(ISBN, author, title);
 
-                if(queryResults.getString("book_version") != null) {
+                if (queryResults.getString("book_version") != null) {
                     nextBook.setEdition(queryResults.getString("book_version"));
                 }
 
-                if(!email.equals("all") && queryResults.getString("available") != null) {
+                if (booksAreForUser && queryResults.getString("available") != null) {
                     nextBook.setAvailable(queryResults.getString("available"));
                 }
 
                 data.add(nextBook);
             }
+        } catch (SQLException se){
+            System.out.println("SQL ERR: " + se);
+        }
+        return data;
+    }
+
+    /**Parse query results and turn into object */
+
+    private static ArrayList<Book> parseBooks(String email) { //TODO REFACTOR into smaller methods
+        ArrayList<Book> data = new ArrayList<>();
+
+        String query = getQueryType(email);
+        boolean booksAreForUser = !email.equals("all");
+
+        try (PreparedStatement statementToFetchBooks = con.prepareStatement(query)
+        ){
+            if (booksAreForUser){
+                statementToFetchBooks.setString(1, email);
+            }
+
+            ResultSet queryResults = statementToFetchBooks.executeQuery();
+            data = getBookFromResultSet(queryResults, booksAreForUser);
+
             con.close();
         } catch (SQLException se) {
             System.out.println("SQL ERR: " + se); //
