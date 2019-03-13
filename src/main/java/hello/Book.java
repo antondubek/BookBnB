@@ -7,6 +7,28 @@ public class Book {
     public String edition;
     public Boolean available;
 
+
+    public String getISBN(){
+        return ISBN;
+    }
+
+    public String getTitle(){
+        return title;
+    }
+
+    public String getAuthor(){
+        return author;
+    }
+
+    public String getEdition(){
+        return edition;
+    }
+
+    public Boolean getAvailable(){
+        return available;
+    }
+
+
     public Book(String ISBN, String title, String author){
         this.ISBN = ISBN;
         this.title = title;

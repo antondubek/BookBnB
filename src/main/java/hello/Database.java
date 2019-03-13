@@ -82,21 +82,21 @@ public class Database {
     }
 
     private static Boolean processInsertBook(Book book, String email) {
-        try (PreparedStatement statementToInsertBook = con.prepareStatement(Query.INSER_NEW_BOOK);
+        try (PreparedStatement statementToInsertBook = con.prepareStatement(Query.INSERT_NEW_BOOK);
              PreparedStatement statementToAddUserToBook = con.prepareStatement(Query.ADD_USER_TO_BOOK)){
             //Statement queryStatement = con.createStatement();
 
             if(!checkIfBookInDB(book)){
-               statementToInsertBook.setString(1, book.ISBN);
-               statementToInsertBook.setString(2, book.title);
-               statementToInsertBook.setString(3, book.author);
-               statementToInsertBook.setString(4, book.edition);
+               statementToInsertBook.setString(1, book.getISBN());
+               statementToInsertBook.setString(2, book.getTitle());
+               statementToInsertBook.setString(3, book.getAuthor());
+               statementToInsertBook.setString(4, book.getEdition());
 
                statementToInsertBook.executeUpdate();
             }
 
             statementToAddUserToBook.setString(1, email);
-            statementToAddUserToBook.setString(2, book.ISBN);
+            statementToAddUserToBook.setString(2, book.getISBN());
 
             statementToAddUserToBook.executeUpdate();
 
@@ -110,7 +110,7 @@ public class Database {
 
     private static Boolean checkIfBookInDB(Book book){
         try (PreparedStatement statementCheckIfBookInDB = con.prepareStatement(Query.CHECK_IF_BOOK_IN_DB)){
-            statementCheckIfBookInDB.setString(1, book.ISBN);
+            statementCheckIfBookInDB.setString(1, book.getISBN());
             ResultSet queryResults = statementCheckIfBookInDB.executeQuery();
 
             String[] namesOfFieldsInResponse = new String[]{"ISBN"};

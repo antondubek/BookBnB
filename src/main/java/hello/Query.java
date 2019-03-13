@@ -10,7 +10,7 @@ public class Query {
                                           "INNER JOIN Users_book ON Book.ISBN = Users_book.Book_ISBN INNER JOIN Users ON Users_book.Users_id = Users.id " +
                                           "WHERE EMAIL = ?;";
     public final static String CHECK_IF_BOOK_IN_DB = "SELECT ISBN FROM Book WHERE ISBN = ?;";
-    public final static String INSER_NEW_BOOK = "INSERT INTO Book VALUES (?, ?, ?, ?);";
+    public final static String INSERT_NEW_BOOK = "INSERT INTO Book VALUES (?, ?, ?, ?);";
     public final static String ADD_USER_TO_BOOK = "INSERT INTO Users_book (Users_id, Book_ISBN, available) VALUES ((SELECT id FROM Users WHERE email = ?), ?, false);";
 
 }
