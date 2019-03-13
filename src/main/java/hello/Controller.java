@@ -38,7 +38,7 @@ public class Controller {
         String email = data.get("email").toString();
         String password = data.get("password").toString();
 
-        return (Database.login(password, email)) ? new ResponseEntity<String>(HttpStatus.OK) : new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+        return (Database.loginIsSuccessful(password, email)) ? new ResponseEntity<String>(HttpStatus.OK) : new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
     }
 
     @RequestMapping(method = RequestMethod.GET, value="/book")

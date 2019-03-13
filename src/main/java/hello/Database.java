@@ -19,37 +19,40 @@ public class Database {
     private static String pass = "33.1Z4HLNfnbuy";
 
 
-    public static Boolean login(String password, String email) { //TODO REFACTOR - break down into smaller methods
+    public static Boolean loginIsSuccessful(String password, String email) {
         try {
             Class.forName(driver).newInstance();
             con = DriverManager.getConnection(url + db, user, pass);
+            return loginProcedure(password, email);
 
-            try (PreparedStatement statementForLogin = con.prepareStatement(Query.LOGIN)) {
-                statementForLogin.setString(1, email);
-                ResultSet queryResults = statementForLogin.executeQuery();
-
-                ArrayList<String> data = new ArrayList<>();
-                while (queryResults.next()) {
-                    String real_password = queryResults.getString("password");
-                    data.add(real_password);
-                }
-
-                con.close();
-                if (data.size() == 1) {
-                    return password.equals(data.get(0));
-                } else {
-                    return false;
-                }
-            } catch (SQLException se) {
-                System.out.println("SQL ERR: " + se);
-            }
         } catch (Exception e) {
             System.out.println("ERR: " + e);
         }
         return false;
     }
 
+    public static Boolean loginProcedure(String password, String email){
+        try (PreparedStatement statementForLogin = con.prepareStatement(Query.LOGIN)) {
+            statementForLogin.setString(1, email);
+            ResultSet queryResults = statementForLogin.executeQuery();
 
+            ArrayList<String> data = new ArrayList<>();
+            while (queryResults.next()) {
+                String real_password = queryResults.getString("password");
+                data.add(real_password);
+            }
+
+            con.close();
+            if (data.size() == 1) {
+                return password.equals(data.get(0));
+            } else {
+                return false;
+            }
+        } catch (SQLException se) {
+            System.out.println("SQL ERR: " + se);
+        }
+        return false;
+    }
 
     /**
      * Insert a book into the database, associate it with a particular user
