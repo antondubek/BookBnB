@@ -60,10 +60,11 @@ public class Database {
      * @return true if login is successful
      */
     public static Boolean loginIsSuccessful(String password, String email) {
-        if (!openTheConnection()){
-            return false;
+        if (openTheConnection()){
+            return loginDetailsAreRight(password, email);
         }
-        return loginDetailsAreRight(password, email);
+        return false;
+
     }
 
     /**
@@ -102,10 +103,10 @@ public class Database {
         if (book.getAuthor().equals("") || book.getISBN().equals("") || book.getTitle().equals("")){
             return false;
         }
-        if (!openTheConnection()){
-            return false;
+        if (openTheConnection()){
+            return processInsertBook(book, email);
         }
-        return processInsertBook(book, email);
+        return false;
     }
 
     /**
@@ -291,10 +292,10 @@ public class Database {
      * @return false if the connection is failed and the user is not registered
      */
     public static Boolean insertNewUser(User newUser, String password) {
-        if (!openTheConnection()){
-            return false;
+        if (openTheConnection()){
+            return processInsertionOfNewUser(newUser, password);
         }
-        return processInsertionOfNewUser(newUser, password);
+        return false;
     }
 
     /**
