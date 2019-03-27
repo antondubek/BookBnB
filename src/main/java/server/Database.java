@@ -10,12 +10,25 @@ import java.util.ArrayList;
 public class Database {
 
     private static Connection con = null;
-    //private static String url = "jdbc:mysql://dag8.host.cs.st-andrews.ac.uk/";
-    private static String url = "jdbc:mysql://localhost:3307/";
+    private static String url = "jdbc:mysql://dag8.host.cs.st-andrews.ac.uk/";
+    //private static String url = "jdbc:mysql://localhost:3307/";
     private static String db = "dag8_RickDB";
     private static String driver = "com.mysql.cj.jdbc.Driver";
     private static String user = "ri31";
     private static String pass = "33.1Z4HLNfnbuy";
+
+
+
+    public static Boolean openTheConnection(){
+        try{
+            Class.forName(driver);
+            con = DriverManager.getConnection(url + db, user, pass);
+            return true;
+        } catch (Exception e) {
+            System.out.println("ERR: " + e);
+        }
+        return false;
+    }
 
     /**
      * Gets ArrayList of String from the ResultSet. Useful, if read String sequence from database.
@@ -46,15 +59,10 @@ public class Database {
      * @return true if login is successful
      */
     public static Boolean loginIsSuccessful(String password, String email) {
-        try {
-            Class.forName(driver).newInstance();
-            con = DriverManager.getConnection(url + db, user, pass);
-            return loginDetailsAreRight(password, email);
-
-        } catch (Exception e) {
-            System.out.println("ERR: " + e);
+        if (!openTheConnection()){
+            return false;
         }
-        return false;
+        return loginDetailsAreRight(password, email);
     }
 
     /**
