@@ -30,6 +30,7 @@ public class Database {
         return false;
     }
 
+
     /**
      * Gets ArrayList of String from the ResultSet. Useful, if read String sequence from database.
      * @param queryResults Results of the query
@@ -101,14 +102,10 @@ public class Database {
         if (book.getAuthor().equals("") || book.getISBN().equals("") || book.getTitle().equals("")){
             return false;
         }
-        try {
-            Class.forName(driver).newInstance();
-            con = DriverManager.getConnection(url + db, user, pass);
-            return processInsertBook(book, email);
-        } catch (Exception e) {
-            System.out.println("ERR: " + e);
+        if (!openTheConnection()){
+            return false;
         }
-        return false;
+        return processInsertBook(book, email);
     }
 
     /**
@@ -170,13 +167,8 @@ public class Database {
      */
     public static ArrayList<Book> fetchAllBooks(String email) {
         ArrayList<Book> data = new ArrayList<>();
-        try {
-            Class.forName(driver).newInstance();
-            con = DriverManager.getConnection(url + db, user, pass);
-            data = executeGetBooksFromDB(email);
-        } catch (Exception e) {
-            System.out.println("ERR: " + e);
-        }
+        openTheConnection();
+        data = executeGetBooksFromDB(email);
         return data;
     }
 
@@ -261,13 +253,8 @@ public class Database {
      */
     public static ArrayList<User> findUser(String email) {
         ArrayList<User> data = new ArrayList<>();
-        try {
-            Class.forName(driver).newInstance();
-            con = DriverManager.getConnection(url + db, user, pass);
-            data = getDetailsofTheUser(email);
-        } catch (Exception e) {
-            System.out.println("ERR: " + e);
-        }
+        openTheConnection();
+        data = getDetailsofTheUser(email);
         return data;
     }
 
@@ -304,14 +291,10 @@ public class Database {
      * @return false if the connection is failed and the user is not registered
      */
     public static Boolean insertNewUser(User newUser, String password) {
-        try {
-            Class.forName(driver).newInstance();
-            con = DriverManager.getConnection(url + db, user, pass);
-            return processInsertionOfNewUser(newUser, password);
-        } catch (Exception e) {
-            System.out.println("ERR: " + e);
+        if (!openTheConnection()){
+            return false;
         }
-        return false;
+        return processInsertionOfNewUser(newUser, password);
     }
 
     /**
