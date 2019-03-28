@@ -39,7 +39,6 @@ public class Database {
      */
     public static ArrayList<String> getArrayListFromResultSet(ResultSet queryResults,String[] namesOfFields){
         ArrayList<String> data = new ArrayList<>();
-
         try {
             while (queryResults.next()) {
                 for (String fieldName : namesOfFields){
@@ -61,26 +60,33 @@ public class Database {
      */
     public static Boolean loginIsSuccessful(String password, String email) {
         if (openTheConnection()){
-            return loginDetailsAreRight(password, email);
+            return loginDetailsAreRight(password, getDataFromDataBaseForLogin(email));
         }
         return false;
 
     }
 
-    /**
-     * Helps loginIsSuccessful to do the login part, checks if the password of the user is right or not.
-     * @param password
-     * @param email
-     * @return
-     */
-    public static Boolean loginDetailsAreRight(String password, String email){
+    private static ArrayList<String> getDataFromDataBaseForLogin(String email){
         try (PreparedStatement statementForLogin = con.prepareStatement(Query.LOGIN)) {
             statementForLogin.setString(1, email);
             ResultSet queryResults = statementForLogin.executeQuery();
-
             String[] namesOfFieldsInResponse = new String[]{"password"};
             ArrayList<String> data = getArrayListFromResultSet(queryResults,namesOfFieldsInResponse);
+            return data;
+        } catch (SQLException se) {
+            System.out.println("SQL ERR: " + se);
+        }
+        System.out.println("2");
+        return null;
+    }
 
+    /**
+     * Helps loginIsSuccessful to do the login part, checks if the password of the user is right or not.
+     * @param password
+     * @return
+     */
+    public static Boolean loginDetailsAreRight(String password, ArrayList<String> data){
+        try {
             con.close();
             if (data.size() == 1) {
                 return password.equals(data.get(0));
