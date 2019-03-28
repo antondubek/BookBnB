@@ -164,36 +164,26 @@ public class Database {
         return false;
     }
 
+    private static ArrayList<String> getAllBooksByISBN(String ISBN){
+        try (PreparedStatement statementCheckIfBookInDB = con.prepareStatement(Query.CHECK_IF_BOOK_IN_DB)){
+            statementCheckIfBookInDB.setString(1, ISBN);
+            ResultSet queryResults = statementCheckIfBookInDB.executeQuery();
+            String[] namesOfFieldsInResponse = new String[]{"ISBN"};
+            return getArrayListFromResultSet(queryResults,namesOfFieldsInResponse);
+        } catch (SQLException se) {
+            System.out.println("SQL ERR: " + se);
+        }
+        return null;
+    }
+
     /**
      * Checks if the book already exists in database.
      * @param book the book which is search in database
      * @return true if the book exists in database
      */
     public static Boolean checkIfBookInDB(Book book){
-        try (PreparedStatement statementCheckIfBookInDB = con.prepareStatement(Query.CHECK_IF_BOOK_IN_DB)){
-            statementCheckIfBookInDB.setString(1, book.getISBN());
-            ResultSet queryResults = statementCheckIfBookInDB.executeQuery();
-
-            String[] namesOfFieldsInResponse = new String[]{"ISBN"};
-            ArrayList<String> data = getArrayListFromResultSet(queryResults,namesOfFieldsInResponse);
-
-            return data.size() == 1;
-        } catch (SQLException se) {
-            System.out.println("SQL ERR: " + se);
-        }
-        return false;
-    }
-
-    /**
-     * Fetch all books from the database. Connection is opened.
-     * @param email email of the user whose books should be shown, or "all" for all books to be shown
-     * @return List of books
-     */
-    public static ArrayList<Book> fetchAllBooks(String email) {
-        ArrayList<Book> data = new ArrayList<>();
-        openTheConnection();
-        data = executeGetBooksFromDB(email);
-        return data;
+        ArrayList<String> data = getAllBooksByISBN(book.ISBN);
+        return data.size() == 1;
     }
 
     /**
@@ -244,11 +234,12 @@ public class Database {
     }
 
     /**
-     * Parse book, executes the query and gets the books from the database.
-     * @param email email of the user, whose books should be shown
-     * @return ArrayList Of Books
+     * Fetch all books from the database. Connection is opened.
+     * @param email email of the user whose books should be shown, or "all" for all books to be shown
+     * @return List of books
      */
-    private static ArrayList<Book> executeGetBooksFromDB(String email) {
+    public static ArrayList<Book> fetchAllBooks(String email) {
+        openTheConnection();
         ArrayList<Book> data = new ArrayList<>();
 
         String query = getQueryType(email);
