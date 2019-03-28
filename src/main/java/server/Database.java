@@ -76,7 +76,6 @@ public class Database {
         } catch (SQLException se) {
             System.out.println("SQL ERR: " + se);
         }
-        System.out.println("2");
         return null;
     }
 
@@ -99,6 +98,10 @@ public class Database {
         return false;
     }
 
+    public static Boolean bookMissesDetails(Book book){
+        return book.getAuthor().equals("") || book.getISBN().equals("") || book.getTitle().equals("");
+    }
+
     /**
      * Insert a new book, opens a connection. Actual insertion is done in another method.
      * @param book to be added to the database
@@ -106,7 +109,7 @@ public class Database {
      * @return false if connection is failed
      */
     public static Boolean insertNewBook(Book book, String email){
-        if (book.getAuthor().equals("") || book.getISBN().equals("") || book.getTitle().equals("")){
+        if (bookMissesDetails(book)){
             return false;
         }
         if (openTheConnection()){
