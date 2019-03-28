@@ -208,29 +208,30 @@ public class Database {
      * @return ArrayList of books
      */
     public static ArrayList<Book> getBookFromResultSet(ResultSet queryResults, boolean booksAreForUser){
-        ArrayList<Book> data = new ArrayList<>();
-        try {
-            while (queryResults.next()) {
-                String ISBN = queryResults.getString("ISBN");
-                String title = queryResults.getString("title");
-                String author = queryResults.getString("author");
-
-                Book nextBook = new Book(ISBN, author, title);
-
-                if (queryResults.getString("book_version") != null) {
-                    nextBook.setEdition(queryResults.getString("book_version"));
-                }
-
-                if (booksAreForUser && queryResults.getString("available") != null) {
-                    nextBook.setAvailable(queryResults.getString("available"));
-                }
-
-                data.add(nextBook);
-            }
-        } catch (SQLException se){
-            System.out.println("SQL ERR: " + se);
+        ArrayList<Book> books = new ArrayList<>();
+        String[] namesOfFieldsInResponse;
+        if (booksAreForUser){
+            namesOfFieldsInResponse = new String[]{"ISBN", "title", "author", "book_version", "available"};
+        } else {
+            namesOfFieldsInResponse = new String[]{"ISBN", "title", "author", "book_version"};
         }
-        return data;
+
+        ArrayList<String> data = getArrayListFromResultSet(queryResults, namesOfFieldsInResponse);
+
+        for (int i = 0; i <= data.size()-namesOfFieldsInResponse.length; i+=namesOfFieldsInResponse.length){
+            //System.out.println(data.get(i)+" "+data.get(i+1)+" "+data.get(i+2)+" "+data.get(i+3)+  " " +data.get(i+4));
+            Book nextBook = new Book(data.get(i), data.get(i+1), data.get(i+2));
+            if (data.get(i+3) != null) {
+                nextBook.setEdition(data.get(i+3));
+            }
+
+            if (booksAreForUser && data.get(i+4) != null) {
+                nextBook.setAvailable(data.get(i+4));
+            }
+            books.add(nextBook);
+        }
+        System.out.println("Query is finished");
+        return books;
     }
 
     /**
