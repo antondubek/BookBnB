@@ -1,5 +1,8 @@
 package server;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
+
+import javax.swing.text.StyledEditorKit;
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -113,7 +116,14 @@ public class Database {
             return false;
         }
         if (openTheConnection()){
-            return processInsertBook(book, email);
+            try {
+                Boolean bookInserted = processInsertBook(book);
+                Boolean userAddedToBook = addUserToBook(email, book);
+                con.close();
+                return bookInserted && userAddedToBook;
+            } catch (SQLException se) {
+            System.out.println("SQL ERR: " + se);
+            }
         }
         return false;
     }
@@ -121,12 +131,10 @@ public class Database {
     /**
      * Inserts a book to the database
      * @param book to be added to the database
-     * @param email email user which adds the book
      * @return true if the book is added
      */
-    private static Boolean processInsertBook(Book book, String email) {
-        try (PreparedStatement statementToInsertBook = con.prepareStatement(Query.INSERT_NEW_BOOK);
-             PreparedStatement statementToAddUserToBook = con.prepareStatement(Query.ADD_USER_TO_BOOK)){
+    private static Boolean processInsertBook(Book book) {
+        try (PreparedStatement statementToInsertBook = con.prepareStatement(Query.INSERT_NEW_BOOK)){
 
             if(!checkIfBookInDB(book)){
                statementToInsertBook.setString(1, book.getISBN());
@@ -136,13 +144,19 @@ public class Database {
 
                statementToInsertBook.executeUpdate();
             }
+            return true;
+        } catch (SQLException se) {
+            System.out.println("SQL ERR: " + se);
+        }
+        return false;
+    }
 
+    private static Boolean addUserToBook(String email, Book book){
+        try (PreparedStatement statementToAddUserToBook = con.prepareStatement(Query.ADD_USER_TO_BOOK)){
             statementToAddUserToBook.setString(1, email);
             statementToAddUserToBook.setString(2, book.getISBN());
 
             statementToAddUserToBook.executeUpdate();
-
-            con.close();
             return true;
         } catch (SQLException se) {
             System.out.println("SQL ERR: " + se);
