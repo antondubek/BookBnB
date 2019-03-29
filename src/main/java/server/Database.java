@@ -1,5 +1,8 @@
 package server;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
+
+import javax.swing.text.StyledEditorKit;
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -10,12 +13,26 @@ import java.util.ArrayList;
 public class Database {
 
     private static Connection con = null;
-    //private static String url = "jdbc:mysql://dag8.host.cs.st-andrews.ac.uk/";
-    private static String url = "jdbc:mysql://localhost:3307/";
+    private static String url = "jdbc:mysql://dag8.host.cs.st-andrews.ac.uk/";
+    //private static String url = "jdbc:mysql://localhost:3307/";
     private static String db = "dag8_RickDB";
     private static String driver = "com.mysql.cj.jdbc.Driver";
     private static String user = "ri31";
     private static String pass = "33.1Z4HLNfnbuy";
+
+
+
+    public static Boolean openTheConnection(){
+        try{
+            Class.forName(driver);
+            con = DriverManager.getConnection(url + db, user, pass);
+            return true;
+        } catch (Exception e) {
+            System.out.println("ERR: " + e);
+        }
+        return false;
+    }
+
 
     /**
      * Gets ArrayList of String from the ResultSet. Useful, if read String sequence from database.
@@ -25,7 +42,6 @@ public class Database {
      */
     public static ArrayList<String> getArrayListFromResultSet(ResultSet queryResults,String[] namesOfFields){
         ArrayList<String> data = new ArrayList<>();
-
         try {
             while (queryResults.next()) {
                 for (String fieldName : namesOfFields){
@@ -46,31 +62,33 @@ public class Database {
      * @return true if login is successful
      */
     public static Boolean loginIsSuccessful(String password, String email) {
-        try {
-            Class.forName(driver).newInstance();
-            con = DriverManager.getConnection(url + db, user, pass);
-            return loginDetailsAreRight(password, email);
-
-        } catch (Exception e) {
-            System.out.println("ERR: " + e);
+        if (openTheConnection()){
+            return loginDetailsAreRight(password, getDataFromDataBaseForLogin(email));
         }
         return false;
+
+    }
+
+    private static ArrayList<String> getDataFromDataBaseForLogin(String email){
+        try (PreparedStatement statementForLogin = con.prepareStatement(Query.LOGIN)) {
+            statementForLogin.setString(1, email);
+            ResultSet queryResults = statementForLogin.executeQuery();
+            String[] namesOfFieldsInResponse = new String[]{"password"};
+            ArrayList<String> data = getArrayListFromResultSet(queryResults,namesOfFieldsInResponse);
+            return data;
+        } catch (SQLException se) {
+            System.out.println("SQL ERR: " + se);
+        }
+        return null;
     }
 
     /**
      * Helps loginIsSuccessful to do the login part, checks if the password of the user is right or not.
      * @param password
-     * @param email
      * @return
      */
-    public static Boolean loginDetailsAreRight(String password, String email){
-        try (PreparedStatement statementForLogin = con.prepareStatement(Query.LOGIN)) {
-            statementForLogin.setString(1, email);
-            ResultSet queryResults = statementForLogin.executeQuery();
-
-            String[] namesOfFieldsInResponse = new String[]{"password"};
-            ArrayList<String> data = getArrayListFromResultSet(queryResults,namesOfFieldsInResponse);
-
+    public static Boolean loginDetailsAreRight(String password, ArrayList<String> data){
+        try {
             con.close();
             if (data.size() == 1) {
                 return password.equals(data.get(0));
@@ -90,28 +108,33 @@ public class Database {
      * @return false if connection is failed
      */
     public static Boolean insertNewBook(Book book, String email){
-        if (book.getAuthor().equals("") || book.getISBN().equals("") || book.getTitle().equals("")){
+        if (bookMissesDetails(book)){
             return false;
         }
-        try {
-            Class.forName(driver).newInstance();
-            con = DriverManager.getConnection(url + db, user, pass);
-            return processInsertBook(book, email);
-        } catch (Exception e) {
-            System.out.println("ERR: " + e);
+        if (openTheConnection()){
+            try {
+                Boolean bookInserted = processInsertBook(book);
+                Boolean userAddedToBook = addUserToBook(email, book);
+                con.close();
+                return bookInserted && userAddedToBook;
+            } catch (SQLException se) {
+            System.out.println("SQL ERR: " + se);
+            }
         }
         return false;
+    }
+
+    public static Boolean bookMissesDetails(Book book){
+        return book.getAuthor().equals("") || book.getISBN().equals("") || book.getTitle().equals("");
     }
 
     /**
      * Inserts a book to the database
      * @param book to be added to the database
-     * @param email email user which adds the book
      * @return true if the book is added
      */
-    private static Boolean processInsertBook(Book book, String email) {
-        try (PreparedStatement statementToInsertBook = con.prepareStatement(Query.INSERT_NEW_BOOK);
-             PreparedStatement statementToAddUserToBook = con.prepareStatement(Query.ADD_USER_TO_BOOK)){
+    private static Boolean processInsertBook(Book book) {
+        try (PreparedStatement statementToInsertBook = con.prepareStatement(Query.INSERT_NEW_BOOK)){
 
             if(!checkIfBookInDB(book)){
                statementToInsertBook.setString(1, book.getISBN());
@@ -121,13 +144,19 @@ public class Database {
 
                statementToInsertBook.executeUpdate();
             }
+            return true;
+        } catch (SQLException se) {
+            System.out.println("SQL ERR: " + se);
+        }
+        return false;
+    }
 
+    private static Boolean addUserToBook(String email, Book book){
+        try (PreparedStatement statementToAddUserToBook = con.prepareStatement(Query.ADD_USER_TO_BOOK)){
             statementToAddUserToBook.setString(1, email);
             statementToAddUserToBook.setString(2, book.getISBN());
 
             statementToAddUserToBook.executeUpdate();
-
-            con.close();
             return true;
         } catch (SQLException se) {
             System.out.println("SQL ERR: " + se);
@@ -141,18 +170,20 @@ public class Database {
      * @return true if the book exists in database
      */
     public static Boolean checkIfBookInDB(Book book){
+        ArrayList<String> data = getAllBooksByISBN(book.ISBN);
+        return data.size() == 1;
+    }
+
+    private static ArrayList<String> getAllBooksByISBN(String ISBN){
         try (PreparedStatement statementCheckIfBookInDB = con.prepareStatement(Query.CHECK_IF_BOOK_IN_DB)){
-            statementCheckIfBookInDB.setString(1, book.getISBN());
+            statementCheckIfBookInDB.setString(1, ISBN);
             ResultSet queryResults = statementCheckIfBookInDB.executeQuery();
-
             String[] namesOfFieldsInResponse = new String[]{"ISBN"};
-            ArrayList<String> data = getArrayListFromResultSet(queryResults,namesOfFieldsInResponse);
-
-            return data.size() == 1;
+            return getArrayListFromResultSet(queryResults,namesOfFieldsInResponse);
         } catch (SQLException se) {
             System.out.println("SQL ERR: " + se);
         }
-        return false;
+        return null;
     }
 
     /**
@@ -161,13 +192,24 @@ public class Database {
      * @return List of books
      */
     public static ArrayList<Book> fetchAllBooks(String email) {
+        openTheConnection();
         ArrayList<Book> data = new ArrayList<>();
-        try {
-            Class.forName(driver).newInstance();
-            con = DriverManager.getConnection(url + db, user, pass);
-            data = executeGetBooksFromDB(email);
-        } catch (Exception e) {
-            System.out.println("ERR: " + e);
+
+        String query = getQueryType(email);
+        boolean booksAreForUser = !email.equals("all");
+
+        try (PreparedStatement statementToFetchBooks = con.prepareStatement(query)
+        ){
+            if (booksAreForUser){
+                statementToFetchBooks.setString(1, email);
+            }
+
+            ResultSet queryResults = statementToFetchBooks.executeQuery();
+            data = getBookFromResultSet(queryResults, booksAreForUser);
+
+            con.close();
+        } catch (SQLException se) {
+            System.out.println("SQL ERR: " + se); //
         }
         return data;
     }
@@ -194,56 +236,29 @@ public class Database {
      * @return ArrayList of books
      */
     public static ArrayList<Book> getBookFromResultSet(ResultSet queryResults, boolean booksAreForUser){
-        ArrayList<Book> data = new ArrayList<>();
-        try {
-            while (queryResults.next()) {
-                String ISBN = queryResults.getString("ISBN");
-                String title = queryResults.getString("title");
-                String author = queryResults.getString("author");
-
-                Book nextBook = new Book(ISBN, author, title);
-
-                if (queryResults.getString("book_version") != null) {
-                    nextBook.setEdition(queryResults.getString("book_version"));
-                }
-
-                if (booksAreForUser && queryResults.getString("available") != null) {
-                    nextBook.setAvailable(queryResults.getString("available"));
-                }
-
-                data.add(nextBook);
-            }
-        } catch (SQLException se){
-            System.out.println("SQL ERR: " + se);
+        ArrayList<Book> books = new ArrayList<>();
+        String[] namesOfFieldsInResponse;
+        if (booksAreForUser){
+            namesOfFieldsInResponse = new String[]{"ISBN", "title", "author", "book_version", "available"};
+        } else {
+            namesOfFieldsInResponse = new String[]{"ISBN", "title", "author", "book_version"};
         }
-        return data;
-    }
 
-    /**
-     * Parse book, executes the query and gets the books from the database.
-     * @param email email of the user, whose books should be shown
-     * @return ArrayList Of Books
-     */
-    private static ArrayList<Book> executeGetBooksFromDB(String email) {
-        ArrayList<Book> data = new ArrayList<>();
+        ArrayList<String> data = getArrayListFromResultSet(queryResults, namesOfFieldsInResponse);
 
-        String query = getQueryType(email);
-        boolean booksAreForUser = !email.equals("all");
-
-        try (PreparedStatement statementToFetchBooks = con.prepareStatement(query)
-        ){
-            if (booksAreForUser){
-                statementToFetchBooks.setString(1, email);
+        for (int i = 0; i <= data.size()-namesOfFieldsInResponse.length; i+=namesOfFieldsInResponse.length){
+            Book nextBook = new Book(data.get(i), data.get(i+1), data.get(i+2));
+            if (data.get(i+3) != null) {
+                nextBook.setEdition(data.get(i+3));
             }
 
-            ResultSet queryResults = statementToFetchBooks.executeQuery();
-            data = getBookFromResultSet(queryResults, booksAreForUser);
-
-            con.close();
-        } catch (SQLException se) {
-            System.out.println("SQL ERR: " + se); //
+            if (booksAreForUser && data.get(i+4) != null) {
+                nextBook.setAvailable(data.get(i+4));
+            }
+            books.add(nextBook);
         }
-        return data;
+        System.out.println("Query is finished");
+        return books;
     }
 
     /**
@@ -251,42 +266,30 @@ public class Database {
      * @param email email of the user to be searched
      * @return ArrayListOfUsers
      */
-    public static ArrayList<User> findUser(String email) {
-        ArrayList<User> data = new ArrayList<>();
-        try {
-            Class.forName(driver).newInstance();
-            con = DriverManager.getConnection(url + db, user, pass);
-            data = getDetailsofTheUser(email);
-        } catch (Exception e) {
-            System.out.println("ERR: " + e);
-        }
-        return data;
-    }
-
-    /**
-     * Get's details of the user by executing the query and searching for the user by his email.
-     * @param email email of the user to be searched
-     * @return ArrayListOfUsers
-     */
-    public static ArrayList<User> getDetailsofTheUser(String email){
+    public static ArrayList<User> findUser(String email){
+        openTheConnection();
         ArrayList<User> data = new ArrayList<>();
         try (PreparedStatement statementToSerachUserByMail = con.prepareStatement(Query.USER_SEARCH_BY_EMAIL)){
             statementToSerachUserByMail.setString(1,email);
             ResultSet queryResults = statementToSerachUserByMail.executeQuery();
-            while (queryResults.next()) {
-                String name = queryResults.getString("name");
-                String userEmail = queryResults.getString("email");
-                String city = queryResults.getString("city");
-
-                User nextUser = new User(name, userEmail, city);
-
-                data.add(nextUser);
-            }
+            data = getUsersFromResultSet(queryResults);
             con.close();
         } catch (SQLException se) {
             System.out.println("SQL ERR: " + se); //
         }
         return data;
+    }
+
+    public static ArrayList<User> getUsersFromResultSet(ResultSet queryResults){
+        ArrayList<User> users = new ArrayList<>();
+        String[] namesOfFieldsInResponse = new String[]{"name", "email", "city"};
+        ArrayList<String> data = getArrayListFromResultSet(queryResults, namesOfFieldsInResponse);
+
+        for (int i = 0; i <= data.size()-namesOfFieldsInResponse.length; i+=namesOfFieldsInResponse.length){
+            User nextUser = new User(data.get(i), data.get(i+1), data.get(i+2));
+            users.add(nextUser);
+        }
+        return users;
     }
 
     /**
@@ -295,24 +298,10 @@ public class Database {
      * @param password password (is hashed)
      * @return false if the connection is failed and the user is not registered
      */
-    public static Boolean insertNewUser(User newUser, String password) {
-        try {
-            Class.forName(driver).newInstance();
-            con = DriverManager.getConnection(url + db, user, pass);
-            return processInsertionOfNewUser(newUser, password);
-        } catch (Exception e) {
-            System.out.println("ERR: " + e);
+    public static Boolean insertNewUser(User newUser, String password){
+        if (!openTheConnection()){
+            return false;
         }
-        return false;
-    }
-
-    /**
-     * Adds the user to the database.
-     * @param newUser username
-     * @param password password of the new user
-     * @return true if the user is added to the database
-     */
-    private static Boolean processInsertionOfNewUser(User newUser, String password){
         try (PreparedStatement statementToInsertUser = con.prepareStatement(Query.INSERT_NEW_USER);
              PreparedStatement statementToInsertPassword = con.prepareStatement(Query.INSERT_NEW_USER_PASSWORD)){
 

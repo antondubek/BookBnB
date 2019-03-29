@@ -130,7 +130,6 @@ public class Controller {
         User specificUser = user.get(0);
 
         ArrayList<Book> books = Database.fetchAllBooks(specificUser.getEmail());
-
         String JSON;
         ArrayList<String> JSONBooks = new ArrayList<>();
         ObjectMapper mapper = new ObjectMapper();

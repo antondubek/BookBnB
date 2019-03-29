@@ -44,6 +44,11 @@ public class Book {
         this.author = author;
     }
 
+    @Override
+    public String toString() {
+        return "ISBN "+ ISBN + " title " + title + " author " + author + " edition "+ edition +" ava " + available;
+    }
+
     /**
      * Not all Book's will have a edition recorded, so a separate setter was created to edit the value of this
      * attribute.
