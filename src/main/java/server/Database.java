@@ -219,7 +219,6 @@ public class Database {
         ArrayList<String> data = getArrayListFromResultSet(queryResults, namesOfFieldsInResponse);
 
         for (int i = 0; i <= data.size()-namesOfFieldsInResponse.length; i+=namesOfFieldsInResponse.length){
-            //System.out.println(data.get(i)+" "+data.get(i+1)+" "+data.get(i+2)+" "+data.get(i+3)+  " " +data.get(i+4));
             Book nextBook = new Book(data.get(i), data.get(i+1), data.get(i+2));
             if (data.get(i+3) != null) {
                 nextBook.setEdition(data.get(i+3));
@@ -262,37 +261,32 @@ public class Database {
         return data;
     }
 
+
+    public static ArrayList<User> getUsersFromResultSet(ResultSet queryResults){
+        ArrayList<User> users = new ArrayList<>();
+        String[] namesOfFieldsInResponse = new String[]{"name", "email", "city"};
+        ArrayList<String> data = getArrayListFromResultSet(queryResults, namesOfFieldsInResponse);
+
+        for (int i = 0; i <= data.size()-namesOfFieldsInResponse.length; i+=namesOfFieldsInResponse.length){
+            User nextUser = new User(data.get(i), data.get(i+1), data.get(i+2));
+            users.add(nextUser);
+        }
+        System.out.println("Query is finished");
+        return users;
+    }
+
     /**
      * Find the user, by his email.
      * @param email email of the user to be searched
      * @return ArrayListOfUsers
      */
-    public static ArrayList<User> findUser(String email) {
-        ArrayList<User> data = new ArrayList<>();
+    public static ArrayList<User> findUser(String email){
         openTheConnection();
-        data = getDetailsofTheUser(email);
-        return data;
-    }
-
-    /**
-     * Get's details of the user by executing the query and searching for the user by his email.
-     * @param email email of the user to be searched
-     * @return ArrayListOfUsers
-     */
-    public static ArrayList<User> getDetailsofTheUser(String email){
         ArrayList<User> data = new ArrayList<>();
         try (PreparedStatement statementToSerachUserByMail = con.prepareStatement(Query.USER_SEARCH_BY_EMAIL)){
             statementToSerachUserByMail.setString(1,email);
             ResultSet queryResults = statementToSerachUserByMail.executeQuery();
-            while (queryResults.next()) {
-                String name = queryResults.getString("name");
-                String userEmail = queryResults.getString("email");
-                String city = queryResults.getString("city");
-
-                User nextUser = new User(name, userEmail, city);
-
-                data.add(nextUser);
-            }
+            data = getUsersFromResultSet(queryResults);
             con.close();
         } catch (SQLException se) {
             System.out.println("SQL ERR: " + se); //
@@ -306,20 +300,10 @@ public class Database {
      * @param password password (is hashed)
      * @return false if the connection is failed and the user is not registered
      */
-    public static Boolean insertNewUser(User newUser, String password) {
-        if (openTheConnection()){
-            return processInsertionOfNewUser(newUser, password);
+    public static Boolean insertNewUser(User newUser, String password){
+        if (!openTheConnection()){
+            return false;
         }
-        return false;
-    }
-
-    /**
-     * Adds the user to the database.
-     * @param newUser username
-     * @param password password of the new user
-     * @return true if the user is added to the database
-     */
-    private static Boolean processInsertionOfNewUser(User newUser, String password){
         try (PreparedStatement statementToInsertUser = con.prepareStatement(Query.INSERT_NEW_USER);
              PreparedStatement statementToInsertPassword = con.prepareStatement(Query.INSERT_NEW_USER_PASSWORD)){
 
