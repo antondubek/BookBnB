@@ -101,10 +101,6 @@ public class Database {
         return false;
     }
 
-    public static Boolean bookMissesDetails(Book book){
-        return book.getAuthor().equals("") || book.getISBN().equals("") || book.getTitle().equals("");
-    }
-
     /**
      * Insert a new book, opens a connection. Actual insertion is done in another method.
      * @param book to be added to the database
@@ -126,6 +122,10 @@ public class Database {
             }
         }
         return false;
+    }
+
+    public static Boolean bookMissesDetails(Book book){
+        return book.getAuthor().equals("") || book.getISBN().equals("") || book.getTitle().equals("");
     }
 
     /**
@@ -164,6 +164,16 @@ public class Database {
         return false;
     }
 
+    /**
+     * Checks if the book already exists in database.
+     * @param book the book which is search in database
+     * @return true if the book exists in database
+     */
+    public static Boolean checkIfBookInDB(Book book){
+        ArrayList<String> data = getAllBooksByISBN(book.ISBN);
+        return data.size() == 1;
+    }
+
     private static ArrayList<String> getAllBooksByISBN(String ISBN){
         try (PreparedStatement statementCheckIfBookInDB = con.prepareStatement(Query.CHECK_IF_BOOK_IN_DB)){
             statementCheckIfBookInDB.setString(1, ISBN);
@@ -177,13 +187,31 @@ public class Database {
     }
 
     /**
-     * Checks if the book already exists in database.
-     * @param book the book which is search in database
-     * @return true if the book exists in database
+     * Fetch all books from the database. Connection is opened.
+     * @param email email of the user whose books should be shown, or "all" for all books to be shown
+     * @return List of books
      */
-    public static Boolean checkIfBookInDB(Book book){
-        ArrayList<String> data = getAllBooksByISBN(book.ISBN);
-        return data.size() == 1;
+    public static ArrayList<Book> fetchAllBooks(String email) {
+        openTheConnection();
+        ArrayList<Book> data = new ArrayList<>();
+
+        String query = getQueryType(email);
+        boolean booksAreForUser = !email.equals("all");
+
+        try (PreparedStatement statementToFetchBooks = con.prepareStatement(query)
+        ){
+            if (booksAreForUser){
+                statementToFetchBooks.setString(1, email);
+            }
+
+            ResultSet queryResults = statementToFetchBooks.executeQuery();
+            data = getBookFromResultSet(queryResults, booksAreForUser);
+
+            con.close();
+        } catch (SQLException se) {
+            System.out.println("SQL ERR: " + se); //
+        }
+        return data;
     }
 
     /**
@@ -234,48 +262,6 @@ public class Database {
     }
 
     /**
-     * Fetch all books from the database. Connection is opened.
-     * @param email email of the user whose books should be shown, or "all" for all books to be shown
-     * @return List of books
-     */
-    public static ArrayList<Book> fetchAllBooks(String email) {
-        openTheConnection();
-        ArrayList<Book> data = new ArrayList<>();
-
-        String query = getQueryType(email);
-        boolean booksAreForUser = !email.equals("all");
-
-        try (PreparedStatement statementToFetchBooks = con.prepareStatement(query)
-        ){
-            if (booksAreForUser){
-                statementToFetchBooks.setString(1, email);
-            }
-
-            ResultSet queryResults = statementToFetchBooks.executeQuery();
-            data = getBookFromResultSet(queryResults, booksAreForUser);
-
-            con.close();
-        } catch (SQLException se) {
-            System.out.println("SQL ERR: " + se); //
-        }
-        return data;
-    }
-
-
-    public static ArrayList<User> getUsersFromResultSet(ResultSet queryResults){
-        ArrayList<User> users = new ArrayList<>();
-        String[] namesOfFieldsInResponse = new String[]{"name", "email", "city"};
-        ArrayList<String> data = getArrayListFromResultSet(queryResults, namesOfFieldsInResponse);
-
-        for (int i = 0; i <= data.size()-namesOfFieldsInResponse.length; i+=namesOfFieldsInResponse.length){
-            User nextUser = new User(data.get(i), data.get(i+1), data.get(i+2));
-            users.add(nextUser);
-        }
-        System.out.println("Query is finished");
-        return users;
-    }
-
-    /**
      * Find the user, by his email.
      * @param email email of the user to be searched
      * @return ArrayListOfUsers
@@ -292,6 +278,18 @@ public class Database {
             System.out.println("SQL ERR: " + se); //
         }
         return data;
+    }
+
+    public static ArrayList<User> getUsersFromResultSet(ResultSet queryResults){
+        ArrayList<User> users = new ArrayList<>();
+        String[] namesOfFieldsInResponse = new String[]{"name", "email", "city"};
+        ArrayList<String> data = getArrayListFromResultSet(queryResults, namesOfFieldsInResponse);
+
+        for (int i = 0; i <= data.size()-namesOfFieldsInResponse.length; i+=namesOfFieldsInResponse.length){
+            User nextUser = new User(data.get(i), data.get(i+1), data.get(i+2));
+            users.add(nextUser);
+        }
+        return users;
     }
 
     /**
