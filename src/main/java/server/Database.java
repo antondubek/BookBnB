@@ -13,8 +13,8 @@ import java.util.ArrayList;
 public class Database {
 
     private static Connection con = null;
-    //private static String url = "jdbc:mysql://dag8.host.cs.st-andrews.ac.uk/";
-    private static String url = "jdbc:mysql://localhost:3307/";
+    private static String url = "jdbc:mysql://dag8.host.cs.st-andrews.ac.uk/";
+    //private static String url = "jdbc:mysql://localhost:3307/";
     private static String db = "dag8_RickDB";
     private static String driver = "com.mysql.cj.jdbc.Driver";
     private static String user = "ri31";
@@ -33,7 +33,9 @@ public class Database {
         return false;
     }
 
-
+    public static void setConnection(Connection connection){
+        con = connection;
+    }
     /**
      * Gets ArrayList of String from the ResultSet. Useful, if read String sequence from database.
      * @param queryResults Results of the query
@@ -97,6 +99,8 @@ public class Database {
             }
         } catch (SQLException se) {
             System.out.println("SQL ERR: " + se);
+        } catch (NullPointerException e) {
+            System.out.println("ERR: " + e);
         }
         return false;
     }

@@ -21,6 +21,7 @@ bootJar {
 
 repositories {
     mavenCentral()
+    jcenter()
 }
 
 sourceCompatibility = 1.8
@@ -32,6 +33,7 @@ dependencies {
     compile group: 'mysql', name: 'mysql-connector-java', version: '8.0.15'
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.9.8'
     testCompile('org.springframework.boot:spring-boot-starter-test')
+    testCompile "org.mockito:mockito-core:1.+"
 
 }
 jacoco {
@@ -46,8 +48,8 @@ jacocoTestReport {
     }
 }
 
-test {
-    exclude '**/DatabaseTest.class'
-}
+//test {
+//    exclude '**/DatabaseTest.class'
+//}
 
 //check.dependsOn jacocoTestReport

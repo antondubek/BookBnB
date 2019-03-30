@@ -1,15 +1,43 @@
+import org.mockito.Mockito;
 import server.Database;
 import server.Book;
 import server.Query;
 import org.junit.Test;
+import java.sql.*;
 import static org.junit.Assert.*;
 
+import static org.mockito.Mockito.*;
+
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
 /**
  * Testing class. Designed to test DataBase with JUnit tests.
  */
 public class DatabaseTest {
 
     @Test
+    public void testLoginDetailsAreRight(){
+        Connection jdbcConnection = Mockito.mock(Connection.class);
+        Database.setConnection(jdbcConnection);
+        //ResultSet resultSet = Mockito.mock(ResultSet.class);
+        try {
+            doNothing().when(jdbcConnection).close();
+        } catch (SQLException se){
+            System.out.println("");
+        }
+        assertTrue(Database.loginDetailsAreRight("password", new ArrayList<String>(Arrays.asList("password"))));
+        assertFalse(Database.loginDetailsAreRight("passwor", new ArrayList<String>(Arrays.asList("password"))));
+        assertFalse(Database.loginDetailsAreRight("password", new ArrayList<String>(Arrays.asList("password", ""))));
+        assertFalse(Database.loginDetailsAreRight("password", new ArrayList<String>(Arrays.asList(""))));
+        assertFalse(Database.loginDetailsAreRight("password", null));
+        assertFalse(Database.loginDetailsAreRight(null, new ArrayList<String>(Arrays.asList(""))));
+        Database.setConnection(null);
+    }
+
+   /* @Test
     public void TestLogin() {
         assertTrue(Database.loginIsSuccessful("W6ph5Mm5Pz8GgiULbPgzG37mj9g=", "test@amakepeace.com"));
         assertFalse(Database.loginIsSuccessful("5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8", "test@amakepeace.com"));
@@ -56,6 +84,6 @@ public class DatabaseTest {
         assertEquals(Database.findUser("test@amakepeace.com").get(0).getName(), "test anthony");
         assertNotEquals(Database.findUser("test@amakepeace.com").get(0).getName(), "anthony");
 
-    }
+    }*/
 }
 
