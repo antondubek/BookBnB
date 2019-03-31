@@ -21,7 +21,6 @@ public class Database {
     private static String pass = "33.1Z4HLNfnbuy";
 
 
-
     public static Boolean openTheConnection(){
         try{
             Class.forName(driver);
@@ -33,7 +32,9 @@ public class Database {
         return false;
     }
 
-
+    public static void setConnection(Connection connection){
+        con = connection;
+    }
     /**
      * Gets ArrayList of String from the ResultSet. Useful, if read String sequence from database.
      * @param queryResults Results of the query
@@ -97,6 +98,8 @@ public class Database {
             }
         } catch (SQLException se) {
             System.out.println("SQL ERR: " + se);
+        } catch (NullPointerException e) {
+            System.out.println("ERR: " + e);
         }
         return false;
     }
@@ -133,7 +136,7 @@ public class Database {
      * @param book to be added to the database
      * @return true if the book is added
      */
-    private static Boolean processInsertBook(Book book) {
+    public static Boolean processInsertBook(Book book) {
         try (PreparedStatement statementToInsertBook = con.prepareStatement(Query.INSERT_NEW_BOOK)){
 
             if(!checkIfBookInDB(book)){
@@ -151,7 +154,7 @@ public class Database {
         return false;
     }
 
-    private static Boolean addUserToBook(String email, Book book){
+    public static Boolean addUserToBook(String email, Book book){
         try (PreparedStatement statementToAddUserToBook = con.prepareStatement(Query.ADD_USER_TO_BOOK)){
             statementToAddUserToBook.setString(1, email);
             statementToAddUserToBook.setString(2, book.getISBN());
@@ -257,7 +260,6 @@ public class Database {
             }
             books.add(nextBook);
         }
-        System.out.println("Query is finished");
         return books;
     }
 
