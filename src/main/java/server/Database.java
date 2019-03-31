@@ -49,6 +49,7 @@ public class Database {
                 for (String fieldName : namesOfFields){
                     String element = queryResults.getString(fieldName);
                     data.add(element);
+                    System.out.println("");
                 }
             }
         } catch (SQLException se){

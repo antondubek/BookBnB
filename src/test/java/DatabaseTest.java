@@ -37,6 +37,31 @@ public class DatabaseTest {
         Database.setConnection(null);
     }
 
+//    public void testGetArrayListFromResultSetHelper(){
+//
+//    }
+
+    @Test
+    public void testGetArrayListFromResultSet1(){
+        Connection jdbcConnection = Mockito.mock(Connection.class);
+        Database.setConnection(jdbcConnection);
+        ResultSet resultSet = Mockito.mock(ResultSet.class);
+
+        ArrayList<String> response = new ArrayList<String>(Arrays.asList("123","ABC","GDK"));
+        try {
+            Mockito.when(resultSet.next()).thenReturn(true).thenReturn(true).thenReturn(true).thenReturn(false);
+            Mockito.when(resultSet.getString("password")).thenReturn("123").thenReturn("ABC").thenReturn("GDK");
+        } catch (SQLException se){
+            System.out.println(se);
+        }
+        String[] namesOfFieldsInResponse = new String[]{"password"};
+
+        assertArrayEquals(Database.getArrayListFromResultSet(resultSet, namesOfFieldsInResponse).toArray(), response.toArray());
+        Database.setConnection(null);
+    }
+
+
+
    /* @Test
     public void TestLogin() {
         assertTrue(Database.loginIsSuccessful("W6ph5Mm5Pz8GgiULbPgzG37mj9g=", "test@amakepeace.com"));
