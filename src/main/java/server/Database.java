@@ -48,7 +48,6 @@ public class Database {
                 for (String fieldName : namesOfFields){
                     String element = queryResults.getString(fieldName);
                     data.add(element);
-                    System.out.println("");
                 }
             }
         } catch (SQLException se){
@@ -79,7 +78,7 @@ public class Database {
             ArrayList<String> data = getArrayListFromResultSet(queryResults,namesOfFieldsInResponse);
             return data;
         } catch (SQLException se) {
-            System.out.println("SQ//check.dependsOn jacocoTestReportL ERR: " + se);
+            System.out.println("SQL ERR: " + se);
         }
         return null;
     }
