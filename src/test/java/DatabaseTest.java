@@ -37,27 +37,42 @@ public class DatabaseTest {
         Database.setConnection(null);
     }
 
-//    public void testGetArrayListFromResultSetHelper(){
-//
-//    }
+    public ArrayList<String> testGetArrayListFromResultSetHelper1(ResultSet resultSet){
+        ArrayList<String> predictedResponse = new ArrayList<String>(Arrays.asList("123","ABC","GDK"));
 
-    @Test
-    public void testGetArrayListFromResultSet1(){
-        Connection jdbcConnection = Mockito.mock(Connection.class);
-        Database.setConnection(jdbcConnection);
-        ResultSet resultSet = Mockito.mock(ResultSet.class);
-
-        ArrayList<String> response = new ArrayList<String>(Arrays.asList("123","ABC","GDK"));
         try {
             Mockito.when(resultSet.next()).thenReturn(true).thenReturn(true).thenReturn(true).thenReturn(false);
             Mockito.when(resultSet.getString("password")).thenReturn("123").thenReturn("ABC").thenReturn("GDK");
         } catch (SQLException se){
             System.out.println(se);
         }
-        String[] namesOfFieldsInResponse = new String[]{"password"};
+        return predictedResponse;
+    }
 
-        assertArrayEquals(Database.getArrayListFromResultSet(resultSet, namesOfFieldsInResponse).toArray(), response.toArray());
-        Database.setConnection(null);
+    public ArrayList<String> testGetArrayListFromResultSetHelper2(ResultSet resultSet){
+        ArrayList<String> predictedResponse = new ArrayList<String>(Arrays.asList("1234567890","book1","0123456", "book2"));
+
+        try {
+            Mockito.when(resultSet.next()).thenReturn(true).thenReturn(true).thenReturn(false);
+            Mockito.when(resultSet.getString("ISBN")).thenReturn("1234567890").thenReturn("0123456");
+            Mockito.when(resultSet.getString("Title")).thenReturn("book1").thenReturn("book2");
+        } catch (SQLException se){
+            System.out.println(se);
+        }
+        return predictedResponse;
+    }
+
+    @Test
+    public void testGetArrayListFromResultSet(){
+        ResultSet resultSet = Mockito.mock(ResultSet.class);
+        //Test1
+        ArrayList<String> predictedResponse1 = testGetArrayListFromResultSetHelper1(resultSet);
+        String[] namesOfFieldsInResponse1 = new String[]{"password"};
+        assertArrayEquals(Database.getArrayListFromResultSet(resultSet, namesOfFieldsInResponse1).toArray(), predictedResponse1.toArray());
+        //Test2
+        ArrayList<String> predictedResponse2 = testGetArrayListFromResultSetHelper2(resultSet);
+        String[] namesOfFieldsInResponse2 = new String[]{"ISBN","Title"};
+        assertArrayEquals(Database.getArrayListFromResultSet(resultSet, namesOfFieldsInResponse2).toArray(), predictedResponse2.toArray());
     }
 
 
