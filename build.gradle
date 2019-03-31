@@ -34,7 +34,6 @@ dependencies {
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.9.8'
     testCompile('org.springframework.boot:spring-boot-starter-test')
     testCompile "org.mockito:mockito-core:1.+"
-
 }
 jacoco {
     toolVersion = "0.8.3"
@@ -51,5 +50,3 @@ jacocoTestReport {
 //test {
 //    exclude '**/DatabaseTest.class'
 //}
-
-//check.dependsOn jacocoTestReport

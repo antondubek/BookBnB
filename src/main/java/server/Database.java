@@ -80,7 +80,7 @@ public class Database {
             ArrayList<String> data = getArrayListFromResultSet(queryResults,namesOfFieldsInResponse);
             return data;
         } catch (SQLException se) {
-            System.out.println("SQL ERR: " + se);
+            System.out.println("SQ//check.dependsOn jacocoTestReportL ERR: " + se);
         }
         return null;
     }
@@ -138,7 +138,7 @@ public class Database {
      * @param book to be added to the database
      * @return true if the book is added
      */
-    private static Boolean processInsertBook(Book book) {
+    public static Boolean processInsertBook(Book book) {
         try (PreparedStatement statementToInsertBook = con.prepareStatement(Query.INSERT_NEW_BOOK)){
 
             if(!checkIfBookInDB(book)){
@@ -156,7 +156,7 @@ public class Database {
         return false;
     }
 
-    private static Boolean addUserToBook(String email, Book book){
+    public static Boolean addUserToBook(String email, Book book){
         try (PreparedStatement statementToAddUserToBook = con.prepareStatement(Query.ADD_USER_TO_BOOK)){
             statementToAddUserToBook.setString(1, email);
             statementToAddUserToBook.setString(2, book.getISBN());
