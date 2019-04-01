@@ -47,6 +47,6 @@ jacocoTestReport {
     }
 }
 
-//test {
-//    exclude '**/DatabaseTest.class'
-//}
+test {
+    exclude '**/DatabaseTest.class'
+}
