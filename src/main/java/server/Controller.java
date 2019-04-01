@@ -32,7 +32,7 @@ public class Controller {
         String password = data.get("password").toString();
 
         User newUser = new User(name, email, city);
-        Boolean insert = UserDatabase.insertNewUser(newUser, password);
+        Boolean insert = UserDatabaseLogic.insertNewUser(newUser, password);
 
         return (insert) ? new ResponseEntity<String>(HttpStatus.OK) : new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
     }
@@ -50,7 +50,7 @@ public class Controller {
         String email = data.get("email").toString();
         String password = data.get("password").toString();
 
-        return (UserDatabase.loginIsSuccessful(password, email)) ? new ResponseEntity<String>(HttpStatus.OK) : new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+        return (UserDatabaseLogic.loginIsSuccessful(password, email)) ? new ResponseEntity<String>(HttpStatus.OK) : new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
     }
 
     /**
@@ -62,7 +62,7 @@ public class Controller {
     public String allBooks(@RequestParam(value="command", defaultValue = "none") String command){
         if(!command.equals("all")){ return "error"; }
 
-        ArrayList<Book> books = BookDatabase.fetchAllBooks("all");
+        ArrayList<Book> books = BookDatabaseLogic.fetchAllBooks("all");
 
         String JSON;
         ArrayList<String> JSONBooks = new ArrayList<>();
@@ -92,7 +92,7 @@ public class Controller {
         JSONObject data = new JSONObject(jsonString);
         String email = data.get("email").toString();
 
-        ArrayList<User> user = UserDatabase.findUser(email);
+        ArrayList<User> user = UserDatabaseLogic.findUser(email);
         if(user.size() != 1){
             return "error";
         }
@@ -122,14 +122,14 @@ public class Controller {
         JSONObject data = new JSONObject(jsonString);
         String email = data.get("email").toString();
 
-        ArrayList<User> user = UserDatabase.findUser(email);
+        ArrayList<User> user = UserDatabaseLogic.findUser(email);
         if(user.size() != 1){
             return "error";
         }
 
         User specificUser = user.get(0);
 
-        ArrayList<Book> books = BookDatabase.fetchAllBooks(specificUser.getEmail());
+        ArrayList<Book> books = BookDatabaseLogic.fetchAllBooks(specificUser.getEmail());
         String JSON;
         ArrayList<String> JSONBooks = new ArrayList<>();
         ObjectMapper mapper = new ObjectMapper();
@@ -170,7 +170,7 @@ public class Controller {
             newBook.setEdition(edition);
         }
 
-        Boolean insert = BookDatabase.insertNewBook(newBook, email);
+        Boolean insert = BookDatabaseLogic.insertNewBook(newBook, email);
 
         return (insert) ? new ResponseEntity<String>(HttpStatus.OK) : new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
     }

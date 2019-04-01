@@ -5,7 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public class UserDatabase extends Database{
+public class UserDatabaseLogic extends DatabaseLogic {
 
     /**
      * Login method. Opens the connection, and calls helping method loginDetailsAreRight.
