@@ -86,7 +86,7 @@ public class DatabaseLogicTest {
     }
 
     @Test
-    public void setQueryTypetest() {
+    public void setQueryTypeTest() {
         assertEquals(BookDatabaseLogic.getQueryType("all"), Query.FETCH_BOOKS_BASE);
         assertEquals(BookDatabaseLogic.getQueryType("das"), Query.FETCH_USER_BOOKS);
     }

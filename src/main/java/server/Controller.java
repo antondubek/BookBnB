@@ -94,7 +94,7 @@ public class Controller {
 
         ArrayList<User> user = UserDatabaseLogic.findUser(email);
         if(user.size() != 1){
-            return "error";
+            return "No user found with this email address";
         }
 
         User specificUser = user.get(0);
@@ -124,7 +124,7 @@ public class Controller {
 
         ArrayList<User> user = UserDatabaseLogic.findUser(email);
         if(user.size() != 1){
-            return "error";
+            return "No user found with this email address";
         }
 
         User specificUser = user.get(0);
