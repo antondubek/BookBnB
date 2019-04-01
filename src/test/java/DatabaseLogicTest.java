@@ -1,4 +1,5 @@
 
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import server.*;
 import org.junit.Test;
@@ -90,5 +91,28 @@ public class DatabaseLogicTest {
         assertEquals(BookDatabaseLogic.getQueryType("all"), Query.FETCH_BOOKS_BASE);
         assertEquals(BookDatabaseLogic.getQueryType("das"), Query.FETCH_USER_BOOKS);
     }
+
+    @Test
+    public void testGetUsersFromResultSet() {
+        ResultSet resultSet = Mockito.mock(ResultSet.class);
+        try {
+            Mockito.when(resultSet.next()).thenReturn(true).thenReturn(false);
+            Mockito.when(resultSet.getString("name")).thenReturn("Riad");
+            Mockito.when(resultSet.getString("email")).thenReturn("riadibadulla@gmail.com");
+            Mockito.when(resultSet.getString("city")).thenReturn("Baku");
+        } catch (SQLException se){
+            System.out.println(se);
+        }
+        ArrayList<User> usersExpected = new ArrayList<>();
+        User user = new User("Riad","riadibadulla@gmail.com","Baku");
+        usersExpected.add(user);
+        ArrayList<User> usersActual = UserDatabaseLogic.getUsersFromResultSet(resultSet);
+        assertEquals(usersActual.get(0).getName(), usersExpected.get(0).getName());
+        assertEquals(usersActual.get(0).getCity(), usersExpected.get(0).getCity());
+        assertEquals(usersActual.get(0).getEmail(), usersExpected.get(0).getEmail());
+
+    }
+
+
 }
 
