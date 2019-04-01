@@ -1,9 +1,8 @@
 
 import org.mockito.Mockito;
-import server.Database;
-import server.Book;
-import server.Query;
+import server.*;
 import org.junit.Test;
+
 import java.sql.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -27,12 +26,12 @@ public class DatabaseTest {
         } catch (SQLException se){
             System.out.println("");
         }
-        assertTrue(Database.loginDetailsAreRight("password", new ArrayList<String>(Arrays.asList("password"))));
-        assertFalse(Database.loginDetailsAreRight("passwor", new ArrayList<String>(Arrays.asList("password"))));
-        assertFalse(Database.loginDetailsAreRight("password", new ArrayList<String>(Arrays.asList("password", ""))));
-        assertFalse(Database.loginDetailsAreRight("password", new ArrayList<String>(Arrays.asList(""))));
-        assertFalse(Database.loginDetailsAreRight("password", null));
-        assertFalse(Database.loginDetailsAreRight(null, new ArrayList<String>(Arrays.asList(""))));
+        assertTrue(UserDatabase.loginDetailsAreRight("password", new ArrayList<String>(Arrays.asList("password"))));
+        assertFalse(UserDatabase.loginDetailsAreRight("passwor", new ArrayList<String>(Arrays.asList("password"))));
+        assertFalse(UserDatabase.loginDetailsAreRight("password", new ArrayList<String>(Arrays.asList("password", ""))));
+        assertFalse(UserDatabase.loginDetailsAreRight("password", new ArrayList<String>(Arrays.asList(""))));
+        assertFalse(UserDatabase.loginDetailsAreRight("password", null));
+        assertFalse(UserDatabase.loginDetailsAreRight(null, new ArrayList<String>(Arrays.asList(""))));
         Database.setConnection(null);
     }
 
@@ -80,16 +79,16 @@ public class DatabaseTest {
         Book book2 = new Book("0000000000001", "", "Author");
         Book book3 = new Book("0000000000001", "Title", "");
         Book book4 = new Book("", "", "");
-        assertTrue(Database.bookMissesDetails(book1));
-        assertTrue(Database.bookMissesDetails(book2));
-        assertTrue(Database.bookMissesDetails(book3));
-        assertTrue(Database.bookMissesDetails(book4));
+        assertTrue(BookDatabase.bookMissesDetails(book1));
+        assertTrue(BookDatabase.bookMissesDetails(book2));
+        assertTrue(BookDatabase.bookMissesDetails(book3));
+        assertTrue(BookDatabase.bookMissesDetails(book4));
     }
 
     @Test
     public void setQueryTypetest() {
-        assertEquals(Database.getQueryType("all"), Query.FETCH_BOOKS_BASE);
-        assertEquals(Database.getQueryType("das"), Query.FETCH_USER_BOOKS);
+        assertEquals(BookDatabase.getQueryType("all"), Query.FETCH_BOOKS_BASE);
+        assertEquals(BookDatabase.getQueryType("das"), Query.FETCH_USER_BOOKS);
     }
 }
 
