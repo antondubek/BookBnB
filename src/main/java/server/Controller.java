@@ -16,6 +16,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 @RestController
 public class Controller {
 
+    @RequestMapping(method = RequestMethod.GET, value="/alive")
+    public ResponseEntity<String> alive(@RequestParam(value="command", defaultValue = "none") String command){
+        return new ResponseEntity<String>(HttpStatus.OK);
+    }
+
+
     /**
      * Register request method.
      * @param jsonString json contains fields of the user
@@ -32,7 +38,7 @@ public class Controller {
         String password = data.get("password").toString();
 
         User newUser = new User(name, email, city);
-        Boolean insert = UserDatabase.insertNewUser(newUser, password);
+        Boolean insert = UserDatabaseLogic.insertNewUser(newUser, password);
 
         return (insert) ? new ResponseEntity<String>(HttpStatus.OK) : new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
     }
@@ -50,7 +56,7 @@ public class Controller {
         String email = data.get("email").toString();
         String password = data.get("password").toString();
 
-        return (UserDatabase.loginIsSuccessful(password, email)) ? new ResponseEntity<String>(HttpStatus.OK) : new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+        return (UserDatabaseLogic.loginIsSuccessful(password, email)) ? new ResponseEntity<String>(HttpStatus.OK) : new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
     }
 
     /**
@@ -62,7 +68,7 @@ public class Controller {
     public String allBooks(@RequestParam(value="command", defaultValue = "none") String command){
         if(!command.equals("all")){ return "error"; }
 
-        ArrayList<Book> books = BookDatabase.fetchAllBooks("all");
+        ArrayList<Book> books = BookDatabaseLogic.fetchAllBooks("all");
 
         String JSON;
         ArrayList<String> JSONBooks = new ArrayList<>();
@@ -83,7 +89,7 @@ public class Controller {
     }
 
     /**
-     * Searching for the user
+     * Searching for the user. if user is not found, returns user with empty fields.
      * @param jsonString
      * @return users
      */
@@ -91,17 +97,16 @@ public class Controller {
     public String loadProfile(@RequestBody String jsonString) {
         JSONObject data = new JSONObject(jsonString);
         String email = data.get("email").toString();
+        ArrayList<User> user = UserDatabaseLogic.findUser(email);
+        User specificUser;
 
-        ArrayList<User> user = UserDatabase.findUser(email);
-        if(user.size() != 1){
-            return "error";
+        if(user.size() == 1){
+            specificUser = user.get(0);
+        } else {
+            specificUser = new User("","","");
         }
-
-        User specificUser = user.get(0);
-
         String JSON;
         ObjectMapper mapper = new ObjectMapper();
-
         try {
             JSON = mapper.writeValueAsString(specificUser);
         } catch (JsonProcessingException e) {
@@ -122,14 +127,14 @@ public class Controller {
         JSONObject data = new JSONObject(jsonString);
         String email = data.get("email").toString();
 
-        ArrayList<User> user = UserDatabase.findUser(email);
+        ArrayList<User> user = UserDatabaseLogic.findUser(email);
         if(user.size() != 1){
-            return "error";
+            return "No user found with this email address";
         }
 
         User specificUser = user.get(0);
 
-        ArrayList<Book> books = BookDatabase.fetchAllBooks(specificUser.getEmail());
+        ArrayList<Book> books = BookDatabaseLogic.fetchAllBooks(specificUser.getEmail());
         String JSON;
         ArrayList<String> JSONBooks = new ArrayList<>();
         ObjectMapper mapper = new ObjectMapper();
@@ -170,7 +175,7 @@ public class Controller {
             newBook.setEdition(edition);
         }
 
-        Boolean insert = BookDatabase.insertNewBook(newBook, email);
+        Boolean insert = BookDatabaseLogic.insertNewBook(newBook, email);
 
         return (insert) ? new ResponseEntity<String>(HttpStatus.OK) : new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
     }

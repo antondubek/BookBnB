@@ -1,4 +1,5 @@
 
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import server.*;
 import org.junit.Test;
@@ -14,25 +15,25 @@ import java.util.Arrays;
 /**
  * Testing class. Designed to test DataBase with JUnit tests.
  */
-public class DatabaseTest {
+public class DatabaseLogicTest {
 
     @Test
     public void testLoginDetailsAreRight(){
         Connection jdbcConnection = Mockito.mock(Connection.class);
-        Database.setConnection(jdbcConnection);
+        DatabaseLogic.setConnection(jdbcConnection);
         //ResultSet resultSet = Mockito.mock(ResultSet.class);
         try {
             doNothing().when(jdbcConnection).close();
         } catch (SQLException se){
             System.out.println("");
         }
-        assertTrue(UserDatabase.loginDetailsAreRight("password", new ArrayList<String>(Arrays.asList("password"))));
-        assertFalse(UserDatabase.loginDetailsAreRight("passwor", new ArrayList<String>(Arrays.asList("password"))));
-        assertFalse(UserDatabase.loginDetailsAreRight("password", new ArrayList<String>(Arrays.asList("password", ""))));
-        assertFalse(UserDatabase.loginDetailsAreRight("password", new ArrayList<String>(Arrays.asList(""))));
-        assertFalse(UserDatabase.loginDetailsAreRight("password", null));
-        assertFalse(UserDatabase.loginDetailsAreRight(null, new ArrayList<String>(Arrays.asList(""))));
-        Database.setConnection(null);
+        assertTrue(UserDatabaseLogic.loginDetailsAreRight("password", new ArrayList<String>(Arrays.asList("password"))));
+        assertFalse(UserDatabaseLogic.loginDetailsAreRight("passwor", new ArrayList<String>(Arrays.asList("password"))));
+        assertFalse(UserDatabaseLogic.loginDetailsAreRight("password", new ArrayList<String>(Arrays.asList("password", ""))));
+        assertFalse(UserDatabaseLogic.loginDetailsAreRight("password", new ArrayList<String>(Arrays.asList(""))));
+        assertFalse(UserDatabaseLogic.loginDetailsAreRight("password", null));
+        assertFalse(UserDatabaseLogic.loginDetailsAreRight(null, new ArrayList<String>(Arrays.asList(""))));
+        DatabaseLogic.setConnection(null);
     }
 
     public ArrayList<String> testGetArrayListFromResultSetHelper1(ResultSet resultSet){
@@ -66,11 +67,11 @@ public class DatabaseTest {
         //Test1
         ArrayList<String> predictedResponse1 = testGetArrayListFromResultSetHelper1(resultSet);
         String[] namesOfFieldsInResponse1 = new String[]{"password"};
-        assertArrayEquals(Database.getArrayListFromResultSet(resultSet, namesOfFieldsInResponse1).toArray(), predictedResponse1.toArray());
+        assertArrayEquals(DatabaseLogic.getArrayListFromResultSet(resultSet, namesOfFieldsInResponse1).toArray(), predictedResponse1.toArray());
         //Test2
         ArrayList<String> predictedResponse2 = testGetArrayListFromResultSetHelper2(resultSet);
         String[] namesOfFieldsInResponse2 = new String[]{"ISBN","Title"};
-        assertArrayEquals(Database.getArrayListFromResultSet(resultSet, namesOfFieldsInResponse2).toArray(), predictedResponse2.toArray());
+        assertArrayEquals(DatabaseLogic.getArrayListFromResultSet(resultSet, namesOfFieldsInResponse2).toArray(), predictedResponse2.toArray());
     }
 
     @Test
@@ -79,16 +80,39 @@ public class DatabaseTest {
         Book book2 = new Book("0000000000001", "", "Author");
         Book book3 = new Book("0000000000001", "Title", "");
         Book book4 = new Book("", "", "");
-        assertTrue(BookDatabase.bookMissesDetails(book1));
-        assertTrue(BookDatabase.bookMissesDetails(book2));
-        assertTrue(BookDatabase.bookMissesDetails(book3));
-        assertTrue(BookDatabase.bookMissesDetails(book4));
+        assertTrue(BookDatabaseLogic.bookMissesDetails(book1));
+        assertTrue(BookDatabaseLogic.bookMissesDetails(book2));
+        assertTrue(BookDatabaseLogic.bookMissesDetails(book3));
+        assertTrue(BookDatabaseLogic.bookMissesDetails(book4));
     }
 
     @Test
-    public void setQueryTypetest() {
-        assertEquals(BookDatabase.getQueryType("all"), Query.FETCH_BOOKS_BASE);
-        assertEquals(BookDatabase.getQueryType("das"), Query.FETCH_USER_BOOKS);
+    public void setQueryTypeTest() {
+        assertEquals(BookDatabaseLogic.getQueryType("all"), Query.FETCH_BOOKS_BASE);
+        assertEquals(BookDatabaseLogic.getQueryType("das"), Query.FETCH_USER_BOOKS);
     }
+
+    @Test
+    public void testGetUsersFromResultSet() {
+        ResultSet resultSet = Mockito.mock(ResultSet.class);
+        try {
+            Mockito.when(resultSet.next()).thenReturn(true).thenReturn(false);
+            Mockito.when(resultSet.getString("name")).thenReturn("Riad");
+            Mockito.when(resultSet.getString("email")).thenReturn("riadibadulla@gmail.com");
+            Mockito.when(resultSet.getString("city")).thenReturn("Baku");
+        } catch (SQLException se){
+            System.out.println(se);
+        }
+        ArrayList<User> usersExpected = new ArrayList<>();
+        User user = new User("Riad","riadibadulla@gmail.com","Baku");
+        usersExpected.add(user);
+        ArrayList<User> usersActual = UserDatabaseLogic.getUsersFromResultSet(resultSet);
+        assertEquals(usersActual.get(0).getName(), usersExpected.get(0).getName());
+        assertEquals(usersActual.get(0).getCity(), usersExpected.get(0).getCity());
+        assertEquals(usersActual.get(0).getEmail(), usersExpected.get(0).getEmail());
+
+    }
+
+
 }
 

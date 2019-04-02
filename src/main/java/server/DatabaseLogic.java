@@ -10,7 +10,7 @@ import java.util.ArrayList;
  * Class which is responsible for the database connections
  * @author 180029410 & 180019489
  */
-public class Database {
+public class DatabaseLogic {
 
     protected static Connection con = null;
     //private static String url = "jdbc:mysql://dag8.host.cs.st-andrews.ac.uk/";

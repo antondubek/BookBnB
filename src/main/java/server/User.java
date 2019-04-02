@@ -45,4 +45,9 @@ public class User {
         this.email = email;
         this. city = city;
     }
+
+    @Override
+    public String toString() {
+        return "name: " + this.name + " email: " + this.email + " city: " + this.city;
+    }
 }

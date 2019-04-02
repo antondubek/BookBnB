@@ -5,7 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public class BookDatabase extends Database {
+public class BookDatabaseLogic extends DatabaseLogic {
 
     /**
      * Insert a new book, opens a connection. Actual insertion is done in another method.
