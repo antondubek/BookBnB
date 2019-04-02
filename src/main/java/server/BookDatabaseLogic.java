@@ -186,8 +186,9 @@ public class BookDatabaseLogic extends DatabaseLogic {
 
         try (PreparedStatement statementToUpdateAvailability = con.prepareStatement(Query.UPDATE_BOOK_AVAILABILITY)){
 
-            statementToUpdateAvailability.setString(1, ISBN);
-            statementToUpdateAvailability.setBoolean(2, availability);
+
+            statementToUpdateAvailability.setBoolean(1, availability);
+            statementToUpdateAvailability.setString(2, ISBN);
             statementToUpdateAvailability.setString(3, email);
 
             statementToUpdateAvailability.executeUpdate();
