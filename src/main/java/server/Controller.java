@@ -16,6 +16,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 @RestController
 public class Controller {
 
+    @RequestMapping(method = RequestMethod.GET, value="/alive")
+    public ResponseEntity<String> alive(@RequestParam(value="command", defaultValue = "none") String command){
+        return new ResponseEntity<String>(HttpStatus.OK);
+    }
+
+
     /**
      * Register request method.
      * @param jsonString json contains fields of the user
@@ -83,7 +89,7 @@ public class Controller {
     }
 
     /**
-     * Searching for the user
+     * Searching for the user. if user is not found, returns user with empty fields.
      * @param jsonString
      * @return users
      */
@@ -91,17 +97,16 @@ public class Controller {
     public String loadProfile(@RequestBody String jsonString) {
         JSONObject data = new JSONObject(jsonString);
         String email = data.get("email").toString();
-
         ArrayList<User> user = UserDatabaseLogic.findUser(email);
-        if(user.size() != 1){
-            return "No user found with this email address";
+        User specificUser;
+
+        if(user.size() == 1){
+            specificUser = user.get(0);
+        } else {
+            specificUser = new User("","","");
         }
-
-        User specificUser = user.get(0);
-
         String JSON;
         ObjectMapper mapper = new ObjectMapper();
-
         try {
             JSON = mapper.writeValueAsString(specificUser);
         } catch (JsonProcessingException e) {
