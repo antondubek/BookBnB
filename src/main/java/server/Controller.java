@@ -198,6 +198,34 @@ public class Controller {
     }
 
     /**
+     * Fetches user's followers from the db.
+     * @param jsonString contains "email" of the user
+     * @return JSON with emails
+     */
+    @RequestMapping(method= RequestMethod.POST, value = "/fetchFollows")
+    public String getFollows(@RequestBody String jsonString) {
+        JSONObject data = new JSONObject(jsonString);
+        String email = data.get("email").toString();
+
+        ArrayList<String> emailsOfFollows = UserDatabaseLogic.fetchFollows(email);
+        String JSON;
+        ArrayList<String> JSONFollows = new ArrayList<>();
+        ObjectMapper mapper = new ObjectMapper();
+
+        for(String friend : emailsOfFollows) {
+            try {
+                JSON = mapper.writeValueAsString(friend);
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+                continue;
+            }
+
+            JSONFollows.add(JSON);
+        }
+        return JSONFollows.toString();
+    }
+
+    /**
      * Add book request method
      * @param jsonString
      * @return ok if the book is added to the database successfully
