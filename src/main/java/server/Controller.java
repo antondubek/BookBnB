@@ -167,6 +167,7 @@ public class Controller {
         String availability = data.get("available").toString();
         Boolean currentAvailability = Boolean.parseBoolean(availability);
         String ISBN = data.get("ISBN").toString();
+        String copyID   = data.get("copyID").toString();
 
         //TODO need to account for a the copy ID of a book, as one user may own multiple copies of a give book
 
@@ -178,7 +179,7 @@ public class Controller {
         } else {
             User specificUser = user.get(0);
 
-            updatedAvailability = BookDatabaseLogic.updateBookAvailability(specificUser.getEmail(), currentAvailability, ISBN);
+            updatedAvailability = BookDatabaseLogic.updateBookAvailability(specificUser.getEmail(), currentAvailability, ISBN, copyID);
         }
 
         return (updatedAvailability) ? new ResponseEntity<String>(HttpStatus.OK) : new ResponseEntity<String>(HttpStatus.BAD_REQUEST);

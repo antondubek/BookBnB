@@ -15,6 +15,6 @@ public class Query {
     public final static String CHECK_IF_BOOK_IN_DB = "SELECT ISBN FROM Book WHERE ISBN = ?;";
     public final static String INSERT_NEW_BOOK = "INSERT INTO Book VALUES (?, ?, ?, ?);";
     public final static String ADD_USER_TO_BOOK = "INSERT INTO Users_book (Users_id, Book_ISBN, available) VALUES ((SELECT id FROM Users WHERE email = ?), ?, false);";
-    public final static String UPDATE_BOOK_AVAILABILITY = "UPDATE Users_book SET available = ? WHERE Book_ISBN = ? AND Users_id = (SELECT id FROM Users WHERE email = ?);";
+    public final static String UPDATE_BOOK_AVAILABILITY = "UPDATE Users_book SET available = ? WHERE Book_ISBN = ? AND Users_id = (SELECT id FROM Users WHERE email = ?) AND copy_id = ?;";
 
 }

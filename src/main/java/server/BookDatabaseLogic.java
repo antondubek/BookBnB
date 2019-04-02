@@ -179,9 +179,10 @@ public class BookDatabaseLogic extends DatabaseLogic {
      * @param email
      * @param availability
      * @param ISBN
+     * @param copyID
      * @return
      */
-    public static Boolean updateBookAvailability(String email, Boolean availability, String ISBN) {
+    public static Boolean updateBookAvailability(String email, Boolean availability, String ISBN, String copyID) {
         openTheConnection();
 
         try (PreparedStatement statementToUpdateAvailability = con.prepareStatement(Query.UPDATE_BOOK_AVAILABILITY)){
@@ -190,13 +191,13 @@ public class BookDatabaseLogic extends DatabaseLogic {
             statementToUpdateAvailability.setBoolean(1, availability);
             statementToUpdateAvailability.setString(2, ISBN);
             statementToUpdateAvailability.setString(3, email);
+            statementToUpdateAvailability.setString(4, copyID);
 
             statementToUpdateAvailability.executeUpdate();
 
             con.close();
 
             return true;
-
 
         } catch (SQLException se) {
             System.out.println("SQL ERR: " + se);
