@@ -135,4 +135,26 @@ public class UserDatabaseLogic extends DatabaseLogic {
         return false;
     }
 
+    /**
+     * Fetch the follows, by email of user.
+     * @param email email of the user
+     * @return ArrayListOfUsers Follows
+     */
+    public static ArrayList<String> fetchFollows(String email){
+        openTheConnection();
+        ArrayList<String> data = new ArrayList<>();
+        try (PreparedStatement statementToSearchUserByMail = con.prepareStatement(Query.FETCH_FOLLOWS)){
+
+            statementToSearchUserByMail.setString(1,email);
+
+            ResultSet queryResults = statementToSearchUserByMail.executeQuery();
+            String[] namesOfFieldsInResponse = new String[]{"email"};
+            data = getArrayListFromResultSet(queryResults, namesOfFieldsInResponse);
+
+            con.close();
+        } catch (SQLException se) {
+            System.out.println("SQL ERR: " + se); //
+        }
+        return data;
+    }
 }
