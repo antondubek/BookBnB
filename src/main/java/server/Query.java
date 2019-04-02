@@ -9,7 +9,7 @@ public class Query {
     public final static String INSERT_NEW_USER_PASSWORD = "INSERT INTO Users_password VALUES ((SELECT id FROM Users WHERE email = ?), ?);";
     public final static String LOGIN = "SELECT password FROM Users_password INNER JOIN Users ON Users_password.users_id = Users.id WHERE Users.email = ?;";
     public final static String FETCH_BOOKS_BASE = "SELECT * FROM Book;";
-    public final static String FETCH_USER_BOOKS = "SELECT ISBN, title, author, book_version, available FROM Book " +
+    public final static String FETCH_USER_BOOKS = "SELECT ISBN, title, author, book_version, available, copy_id FROM Book " +
                                           "INNER JOIN Users_book ON Book.ISBN = Users_book.Book_ISBN INNER JOIN Users ON Users_book.Users_id = Users.id " +
                                           "WHERE EMAIL = ?;";
     public final static String CHECK_IF_BOOK_IN_DB = "SELECT ISBN FROM Book WHERE ISBN = ?;";
