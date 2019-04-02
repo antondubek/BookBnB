@@ -46,7 +46,7 @@ public class DatabaseLogic {
         try {
             while (queryResults.next()) {
                 for (String fieldName : namesOfFields){
-                    String element = queryResults.getString(fieldName);
+                    String element = queryResults.getString(fieldName); //TODO may need a method here to test input types
                     data.add(element);
                 }
             }

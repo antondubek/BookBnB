@@ -112,8 +112,7 @@ public class BookDatabaseLogic extends DatabaseLogic {
         String query = getQueryType(email);
         boolean booksAreForUser = !email.equals("all");
 
-        try (PreparedStatement statementToFetchBooks = con.prepareStatement(query)
-        ){
+        try (PreparedStatement statementToFetchBooks = con.prepareStatement(query)){
             if (booksAreForUser){
                 statementToFetchBooks.setString(1, email);
             }
@@ -153,7 +152,7 @@ public class BookDatabaseLogic extends DatabaseLogic {
         ArrayList<Book> books = new ArrayList<>();
         String[] namesOfFieldsInResponse;
         if (booksAreForUser){
-            namesOfFieldsInResponse = new String[]{"ISBN", "title", "author", "book_version", "available"};
+            namesOfFieldsInResponse = new String[]{"ISBN", "title", "author", "book_version", "available", "copy_id"};
         } else {
             namesOfFieldsInResponse = new String[]{"ISBN", "title", "author", "book_version"};
         }
@@ -169,9 +168,46 @@ public class BookDatabaseLogic extends DatabaseLogic {
             if (booksAreForUser && data.get(i+4) != null) {
                 nextBook.setAvailable(data.get(i+4));
             }
+
+            if (booksAreForUser) {
+                nextBook.setCopyID(data.get(i+5));
+            }
+
             books.add(nextBook);
         }
         return books;
+    }
+
+    /**
+     * Update the 'available' parameter of of a user's book. This is done by taking the book's ISBN and the user's
+     * email and running an UPDATE query
+     * @param email
+     * @param availability
+     * @param ISBN
+     * @param copyID
+     * @return
+     */
+    public static Boolean updateBookAvailability(String email, Boolean availability, String ISBN, String copyID) {
+        openTheConnection();
+
+        try (PreparedStatement statementToUpdateAvailability = con.prepareStatement(Query.UPDATE_BOOK_AVAILABILITY)){
+
+
+            statementToUpdateAvailability.setBoolean(1, availability);
+            statementToUpdateAvailability.setString(2, ISBN);
+            statementToUpdateAvailability.setString(3, email);
+            statementToUpdateAvailability.setString(4, copyID);
+
+            statementToUpdateAvailability.executeUpdate();
+
+            con.close();
+
+            return true;
+
+        } catch (SQLException se) {
+            System.out.println("SQL ERR: " + se);
+            return false;
+        }
     }
 
 }

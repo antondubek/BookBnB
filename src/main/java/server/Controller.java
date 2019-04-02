@@ -155,6 +155,37 @@ public class Controller {
     }
 
     /**
+     * Update whether or not a book is available for lending. If update successful, send STATUS OK, otherwise send 404
+     * @param jsonString JSON passed in the request body
+     * @return
+     */
+    @RequestMapping(method= RequestMethod.POST, value = "/profile/books/availability")
+    public ResponseEntity<String> updateBookAvailability(@RequestBody String jsonString) {
+        JSONObject data = new JSONObject(jsonString);
+
+        String email = data.get("email").toString();
+        String availability = data.get("available").toString();
+        Boolean currentAvailability = Boolean.parseBoolean(availability);
+        String ISBN = data.get("ISBN").toString();
+        String copyID   = data.get("copyID").toString();
+
+        //TODO need to account for a the copy ID of a book, as one user may own multiple copies of a give book
+
+        Boolean updatedAvailability;
+
+        ArrayList<User> user = UserDatabaseLogic.findUser(email);
+        if(user.size() != 1){
+            updatedAvailability = false;
+        } else {
+            User specificUser = user.get(0);
+
+            updatedAvailability = BookDatabaseLogic.updateBookAvailability(specificUser.getEmail(), currentAvailability, ISBN, copyID);
+        }
+
+        return (updatedAvailability) ? new ResponseEntity<String>(HttpStatus.OK) : new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+    }
+
+    /**
      * Add book request method
      * @param jsonString
      * @return ok if the book is added to the database successfully
@@ -163,6 +194,7 @@ public class Controller {
     public ResponseEntity<String> addBook(@RequestBody String jsonString) {
         JSONObject data = new JSONObject(jsonString);
 
+        //TODO BREAK THIS OUT INTO ITS OWN METHOD
         String ISBN = data.get("ISBN").toString();
         String title = data.get("title").toString();
         String author = data.get("author").toString();
