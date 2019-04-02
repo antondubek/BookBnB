@@ -185,6 +185,18 @@ public class Controller {
         return (updatedAvailability) ? new ResponseEntity<String>(HttpStatus.OK) : new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
     }
 
+    @RequestMapping(method= RequestMethod.POST, value = "/follow")
+    public ResponseEntity<String> follow(@RequestBody String jsonString) {
+        JSONObject data = new JSONObject(jsonString);
+
+        String email = data.get("email").toString();
+        String friendEmail = data.get("friendEmail").toString();
+
+        Boolean followSuccesfull = UserDatabaseLogic.followPeople(email, friendEmail);
+
+        return (followSuccesfull) ? new ResponseEntity<String>(HttpStatus.OK) : new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+    }
+
     /**
      * Add book request method
      * @param jsonString
