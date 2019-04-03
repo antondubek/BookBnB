@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -204,9 +205,19 @@ public class Controller {
      */
     @RequestMapping(method= RequestMethod.POST, value = "/fetchFollows")
     public String getFollows(@RequestBody String jsonString) {
-        JSONObject data = new JSONObject(jsonString);
-        String email = data.get("email").toString();
-
+        String email = "";
+        try {
+            JSONObject data = new JSONObject(jsonString);
+            email = data.get("email").toString();
+        } catch (JSONException se){
+            try{
+                System.out.println("Error occured");
+                String JSON = new ObjectMapper().writeValueAsString("");
+                return JSON;
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
+        }
         ArrayList<String> emailsOfFollows = UserDatabaseLogic.fetchFollows(email);
         String JSON;
         ArrayList<String> JSONFollows = new ArrayList<>();
