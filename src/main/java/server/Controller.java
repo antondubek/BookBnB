@@ -1,6 +1,8 @@
 package server;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Map;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -209,6 +211,18 @@ public class Controller {
 
         return (followSuccesfull) ? new ResponseEntity<String>(HttpStatus.OK) : new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
     }
+
+    @RequestMapping(method= RequestMethod.POST, value = "/follow/true")
+    public Map<String, Boolean> getIsFollowed(@RequestBody String jsonString) {
+        JSONObject data = new JSONObject(jsonString);
+
+        String email = data.get("email").toString();
+        String friendEmail = data.get("friendEmail").toString();
+
+        Boolean isFollowed = UserDatabaseLogic.userIsFollowed(email, friendEmail);
+        return Collections.singletonMap("userIsFollowed", isFollowed);
+    }
+
 
     /**
      * Fetches user's followers from the db.

@@ -181,4 +181,22 @@ public class UserDatabaseLogic extends DatabaseLogic {
         return false;
     }
 
+    public static Boolean userIsFollowed(String email, String friendEmail){
+        if (!openTheConnection()){
+            return false;
+        }
+        try (PreparedStatement statementToFollow = con.prepareStatement(Query.GET_IF_USER_IS_FOLLOWED)){
+            statementToFollow.setString(1,email);
+            statementToFollow.setString(2,friendEmail);
+            Integer queryResult = statementToFollow.executeUpdate();
+            System.out.println(queryResult);
+            con.close();
+            return true;
+        } catch (SQLException se) {
+            System.out.println("SQL ERR: " + se);
+        }
+        return false;
+    }
+
+
 }
