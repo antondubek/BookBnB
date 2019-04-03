@@ -140,9 +140,10 @@ public class UserDatabaseLogic extends DatabaseLogic {
      * @param email email of the user
      * @return ArrayListOfUsers Follows
      */
-    public static ArrayList<String> fetchFollows(String email){
+    public static ArrayList<User> fetchFollows(String email){
         openTheConnection();
         ArrayList<String> data = new ArrayList<>();
+        ArrayList<User> userWithEmail = new ArrayList<User>();
         try (PreparedStatement statementToSearchUserByMail = con.prepareStatement(Query.FETCH_FOLLOWS)){
 
             statementToSearchUserByMail.setString(1,email);
@@ -151,10 +152,14 @@ public class UserDatabaseLogic extends DatabaseLogic {
             String[] namesOfFieldsInResponse = new String[]{"email"};
             data = getArrayListFromResultSet(queryResults, namesOfFieldsInResponse);
 
+            for (String userEmail : data){
+                userWithEmail.add(new User("",userEmail,""));
+            }
+
             con.close();
         } catch (SQLException se) {
             System.out.println("SQL ERR: " + se); //
         }
-        return data;
+        return userWithEmail;
     }
 }

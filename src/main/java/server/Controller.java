@@ -218,12 +218,12 @@ public class Controller {
                 e.printStackTrace();
             }
         }
-        ArrayList<String> emailsOfFollows = UserDatabaseLogic.fetchFollows(email);
+        ArrayList<User> emailsOfFollows = UserDatabaseLogic.fetchFollows(email);
         String JSON;
         ArrayList<String> JSONFollows = new ArrayList<>();
         ObjectMapper mapper = new ObjectMapper();
 
-        for(String friend : emailsOfFollows) {
+        for(User friend : emailsOfFollows) {
             try {
                 JSON = mapper.writeValueAsString(friend);
             } catch (JsonProcessingException e) {
