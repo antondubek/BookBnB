@@ -188,10 +188,11 @@ public class UserDatabaseLogic extends DatabaseLogic {
         try (PreparedStatement statementToFollow = con.prepareStatement(Query.GET_IF_USER_IS_FOLLOWED)){
             statementToFollow.setString(1,email);
             statementToFollow.setString(2,friendEmail);
-            Integer queryResult = statementToFollow.executeUpdate();
-            System.out.println(queryResult);
+            ResultSet queryResult = statementToFollow.executeQuery();
             con.close();
-            return true;
+            if (queryResult.getInt("total") != 0){
+                return true;
+            }
         } catch (SQLException se) {
             System.out.println("SQL ERR: " + se);
         }
