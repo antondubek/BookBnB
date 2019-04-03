@@ -215,7 +215,7 @@ public class Controller {
      * @param jsonString contains "email" of the user
      * @return JSON with emails
      */
-    @RequestMapping(method= RequestMethod.POST, value = "/fetchFollows")
+    @RequestMapping(method= RequestMethod.POST, value = "/follow/fetch")
     public String getFollows(@RequestBody String jsonString) {
         String email = "";
 
