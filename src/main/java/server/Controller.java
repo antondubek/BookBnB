@@ -198,6 +198,18 @@ public class Controller {
         return (followSuccesfull) ? new ResponseEntity<String>(HttpStatus.OK) : new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
     }
 
+    @RequestMapping(method= RequestMethod.POST, value = "/follow/delete")
+    public ResponseEntity<String> deleteFollow(@RequestBody String jsonString) {
+        JSONObject data = new JSONObject(jsonString);
+
+        String email = data.get("email").toString();
+        String friendEmail = data.get("friendEmail").toString();
+
+        Boolean followSuccesfull = UserDatabaseLogic.deleteFollow(email, friendEmail);
+
+        return (followSuccesfull) ? new ResponseEntity<String>(HttpStatus.OK) : new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+    }
+
     /**
      * Fetches user's followers from the db.
      * @param jsonString contains "email" of the user
@@ -206,6 +218,7 @@ public class Controller {
     @RequestMapping(method= RequestMethod.POST, value = "/fetchFollows")
     public String getFollows(@RequestBody String jsonString) {
         String email = "";
+
         try {
             JSONObject data = new JSONObject(jsonString);
             email = data.get("email").toString();

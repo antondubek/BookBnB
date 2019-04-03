@@ -1,5 +1,6 @@
 package server;
 
+import javax.swing.text.StyledEditorKit;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -162,4 +163,22 @@ public class UserDatabaseLogic extends DatabaseLogic {
         }
         return userWithEmail;
     }
+
+    public static Boolean deleteFollow(String email, String friendEmail){
+        if (!openTheConnection()){
+            return false;
+        }
+        try (PreparedStatement statementToFollow = con.prepareStatement(Query.DELETE_FOLLOW)){
+            statementToFollow.setString(1,email);
+            statementToFollow.setString(2,friendEmail);
+            statementToFollow.executeUpdate();
+
+            con.close();
+            return true;
+        } catch (SQLException se) {
+            System.out.println("SQL ERR: " + se);
+        }
+        return false;
+    }
+
 }
