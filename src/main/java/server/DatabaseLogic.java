@@ -2,7 +2,6 @@ package server;
 
 import com.sun.org.apache.xpath.internal.operations.Bool;
 
-import javax.swing.text.StyledEditorKit;
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -13,8 +12,8 @@ import java.util.ArrayList;
 public class DatabaseLogic {
 
     protected static Connection con = null;
-    private static String url = "jdbc:mysql://dag8.host.cs.st-andrews.ac.uk/";
-    //private static String url = "jdbc:mysql://localhost:3307/";
+    //private static String url = "jdbc:mysql://dag8.host.cs.st-andrews.ac.uk/";
+    private static String url = "jdbc:mysql://localhost:3307/";
     private static String db = "dag8_RickDB";
     private static String driver = "com.mysql.cj.jdbc.Driver";
     private static String user = "ri31";

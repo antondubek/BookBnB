@@ -1,6 +1,5 @@
 package server;
 
-import javax.swing.text.StyledEditorKit;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
