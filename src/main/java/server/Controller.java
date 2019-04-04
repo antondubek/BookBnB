@@ -35,11 +35,20 @@ public class Controller {
 
         JSONObject data = new JSONObject(jsonString);
         User newUser = getUserFromJSON(data);
-        String password = data.get("password").toString();
+        String password = getPasswordFromJson(data);
 
         Boolean insert = UserDatabaseLogic.insertNewUser(newUser, password);
 
         return (insert) ? new ResponseEntity<String>(HttpStatus.OK) : new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+    }
+
+    /**
+     * gets password from Json
+     * @param data JSONObject
+     * @return data
+     */
+    public static String getPasswordFromJson(JSONObject data){
+        return data.get("password").toString();
     }
 
     /**
