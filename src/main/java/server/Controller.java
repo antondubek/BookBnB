@@ -282,6 +282,11 @@ public class Controller {
         return JSONFollows.toString();
     }
 
+    /**
+     * getFollowFields returns an array with email and email of following user
+     * @param data JSSONObject which contains "email" and "friendEmail" fields
+     * @return String[0] - email, String[1] - friendEmail
+     */
     public String[] getFollowFields(JSONObject data){
         String[] followFields = new String[2];
         followFields[0] = data.get("email").toString();
