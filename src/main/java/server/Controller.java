@@ -242,6 +242,17 @@ public class Controller {
         return Collections.singletonMap("userIsFollowed", isFollowed);
     }
 
+    /**
+     * getFollowFields returns an array with email and email of following user
+     * @param data JSSONObject which contains "email" and "friendEmail" fields
+     * @return String[0] - email, String[1] - friendEmail
+     */
+    public String[] getFollowFields(JSONObject data){
+        String[] followFields = new String[2];
+        followFields[0] = data.get("email").toString();
+        followFields[1] = data.get("friendEmail").toString();
+        return  followFields;
+    }
 
     /**
      * Fetches user's followers from the db.
@@ -280,18 +291,6 @@ public class Controller {
             JSONFollows.add(JSON);
         }
         return JSONFollows.toString();
-    }
-
-    /**
-     * getFollowFields returns an array with email and email of following user
-     * @param data JSSONObject which contains "email" and "friendEmail" fields
-     * @return String[0] - email, String[1] - friendEmail
-     */
-    public String[] getFollowFields(JSONObject data){
-        String[] followFields = new String[2];
-        followFields[0] = data.get("email").toString();
-        followFields[1] = data.get("friendEmail").toString();
-        return  followFields;
     }
 
     /**
