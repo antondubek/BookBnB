@@ -298,7 +298,7 @@ public class Controller {
      * @param emailsOfFollows
      * @return
      */
-    public ArrayList<String> getJSONFollows(ArrayList<User> emailsOfFollows){
+    public static ArrayList<String> getJSONFollows(ArrayList<User> emailsOfFollows){
         ArrayList<String> JSONFollows = new ArrayList<>();
         String JSON;
         ObjectMapper mapper = new ObjectMapper();

@@ -53,4 +53,18 @@ public class ControllerTest {
         assertEquals(Controller.getFollowFields(jsonObj1), followFields1);
 
     }
+
+    @Test
+    public void testGetJSONFollows(){
+        ArrayList<User> emailsOfFollows = new ArrayList<User>();
+        User emailOfFollow = new User("","evaristo@castro.it","");
+        emailsOfFollows.add(emailOfFollow);
+
+        ArrayList<String> JSONFollows = new ArrayList<String>();
+        String json1 = "{\"name\":\"\",\"email\":\"evaristo@castro.it\",\"city\":\"\"}";
+        JSONFollows.add(json1);
+
+        assertEquals(Controller.getJSONFollows(emailsOfFollows), JSONFollows);
+
+    }
 }
