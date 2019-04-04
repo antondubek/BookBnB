@@ -67,4 +67,15 @@ public class ControllerTest {
         assertEquals(Controller.getJSONFollows(emailsOfFollows), JSONFollows);
 
     }
+
+    @Test
+    public void testGetEmailToFetchFollowers(){
+        String json = "{\"email\":\"riadibadulla@gmail.com\"}\n";
+        assertEquals(Controller.getEmailToFetchFollowers(json), "riadibadulla@gmail.com");
+
+        String json1 = "{\"emai\":\"riadibadulla@gmail.com\"}\n";
+        assertEquals(Controller.getEmailToFetchFollowers(json1), "");
+    }
+
+
 }

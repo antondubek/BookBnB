@@ -321,7 +321,7 @@ public class Controller {
      * @param jsonString JSON in string
      * @return email, or "" if the json was send in wrong format
      */
-    public String getEmailToFetchFollowers(String jsonString){
+    public static String getEmailToFetchFollowers(String jsonString){
         try {
             JSONObject data = new JSONObject(jsonString);
             return data.get("email").toString();
