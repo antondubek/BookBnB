@@ -119,6 +119,13 @@ public class UserDatabaseLogic extends DatabaseLogic {
         return false;
     }
 
+    /**
+     * Either follows or unfollows the user depending on query.
+     * @param email of user
+     * @param friendEmail email of user which needs to be followed or unfollowed
+     * @param query query can be any query, usually follow or unfollow query
+     * @return true if execuion done successfully
+     */
     public static boolean manageFollow(String email, String friendEmail, String query){
         if (!openTheConnection()){
             return false;
@@ -136,10 +143,22 @@ public class UserDatabaseLogic extends DatabaseLogic {
         return false;
     }
 
+    /**
+     * Follow user
+     * @param email email of user
+     * @param friendEmail email of user to follow
+     * @return true if followed successfully
+     */
     public static boolean followPeople(String email, String friendEmail){
         return manageFollow(email, friendEmail, Query.FOLLOW_PEOPLE);
     }
 
+    /**
+     * Unfollow user
+     * @param email email of user
+     * @param friendEmail email of user to unfollow
+     * @return true if unfollowed successfully
+     */
     public static Boolean deleteFollow(String email, String friendEmail){
         return manageFollow(email, friendEmail, Query.DELETE_FOLLOW);
     }
@@ -172,7 +191,12 @@ public class UserDatabaseLogic extends DatabaseLogic {
         return userWithEmail;
     }
 
-
+    /**
+     * Checks if User is follows another user or not.
+     * @param email email of iuser
+     * @param friendEmail email of user which we check if is followed or not
+     * @return true if the friendEmail is folowed by email user.
+     */
     public static Boolean userIsFollowed(String email, String friendEmail){
         if (!openTheConnection()){
             return false;
