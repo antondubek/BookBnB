@@ -48,7 +48,14 @@ public class Controller {
      * @return data
      */
     public static String getPasswordFromJson(JSONObject data){
-        return data.get("password").toString();
+        String password;
+        try {
+            password = data.get("password").toString();
+        } catch (JSONException se){
+            System.out.println("Error occurred");
+            password = "";
+        }
+        return password;
     }
 
     /**
@@ -57,10 +64,15 @@ public class Controller {
      * @return User to register
      */
     public static User getUserFromJSON(JSONObject data){
-        String name = data.get("name").toString();
-        String email = data.get("email").toString();
-        String city = data.get("city").toString();
-        return new User(name, email, city);
+        try{
+            String name = data.get("name").toString();
+            String email = data.get("email").toString();
+            String city = data.get("city").toString();
+            return new User(name, email, city);
+        } catch (JSONException se) {
+            System.out.println("Error occurred");
+        }
+        return null;
     }
 
     /**
@@ -256,7 +268,7 @@ public class Controller {
      * @param data JSSONObject which contains "email" and "friendEmail" fields
      * @return String[0] - email, String[1] - friendEmail
      */
-    public String[] getFollowFields(JSONObject data){
+    public static String[] getFollowFields(JSONObject data){
         String[] followFields = new String[2];
         followFields[0] = data.get("email").toString();
         followFields[1] = data.get("friendEmail").toString();
