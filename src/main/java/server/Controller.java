@@ -267,8 +267,19 @@ public class Controller {
         }
 
         ArrayList<User> emailsOfFollows = UserDatabaseLogic.fetchFollows(email);
-        String JSON;
+        ArrayList<String> JSONFollows = getJSONFollows(emailsOfFollows);
+
+        return JSONFollows.toString();
+    }
+
+    /**
+     * Creates JSON of Follows in ArrayList
+     * @param emailsOfFollows
+     * @return
+     */
+    public ArrayList<String> getJSONFollows(ArrayList<User> emailsOfFollows){
         ArrayList<String> JSONFollows = new ArrayList<>();
+        String JSON;
         ObjectMapper mapper = new ObjectMapper();
 
         for(User friend : emailsOfFollows) {
@@ -281,7 +292,7 @@ public class Controller {
 
             JSONFollows.add(JSON);
         }
-        return JSONFollows.toString();
+        return JSONFollows;
     }
 
     /**
