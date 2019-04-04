@@ -261,20 +261,11 @@ public class Controller {
      */
     @RequestMapping(method= RequestMethod.POST, value = "/follow/fetch")
     public String getFollows(@RequestBody String jsonString) {
-        String email = "";
-
-        try {
-            JSONObject data = new JSONObject(jsonString);
-            email = data.get("email").toString();
-        } catch (JSONException se){
-            try{
-                System.out.println("Error occurred");
-                String JSON = new ObjectMapper().writeValueAsString("");
-                return JSON;
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
-            }
+        String email = getEmailToFetchFollowers(jsonString);
+        if (email.equals("")){
+            return email;
         }
+
         ArrayList<User> emailsOfFollows = UserDatabaseLogic.fetchFollows(email);
         String JSON;
         ArrayList<String> JSONFollows = new ArrayList<>();
@@ -291,6 +282,21 @@ public class Controller {
             JSONFollows.add(JSON);
         }
         return JSONFollows.toString();
+    }
+
+    /**
+     * get's Email from JSON String
+     * @param jsonString JSON in string
+     * @return email, or "" if the json was send in wrong format
+     */
+    public String getEmailToFetchFollowers(String jsonString){
+        try {
+            JSONObject data = new JSONObject(jsonString);
+            return data.get("email").toString();
+        } catch (JSONException se){
+            System.out.println("Error occurred");
+            return "";
+        }
     }
 
     /**
