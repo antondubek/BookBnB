@@ -119,11 +119,11 @@ public class UserDatabaseLogic extends DatabaseLogic {
         return false;
     }
 
-    public static boolean followPeople(String email, String friendEmail){
+    public static boolean manageFollow(String email, String friendEmail, String query){
         if (!openTheConnection()){
             return false;
         }
-        try (PreparedStatement statementToFollow = con.prepareStatement(Query.FOLLOW_PEOPLE)){
+        try (PreparedStatement statementToFollow = con.prepareStatement(query)){
             statementToFollow.setString(1,email);
             statementToFollow.setString(2,friendEmail);
             statementToFollow.executeUpdate();
@@ -131,9 +131,17 @@ public class UserDatabaseLogic extends DatabaseLogic {
             con.close();
             return true;
         } catch (SQLException se) {
-        System.out.println("SQL ERR: " + se);
-    }
+            System.out.println("SQL ERR: " + se);
+        }
         return false;
+    }
+
+    public static boolean followPeople(String email, String friendEmail){
+        return manageFollow(email, friendEmail, Query.FOLLOW_PEOPLE);
+    }
+
+    public static Boolean deleteFollow(String email, String friendEmail){
+        return manageFollow(email, friendEmail, Query.DELETE_FOLLOW);
     }
 
     /**
@@ -164,22 +172,6 @@ public class UserDatabaseLogic extends DatabaseLogic {
         return userWithEmail;
     }
 
-    public static Boolean deleteFollow(String email, String friendEmail){
-        if (!openTheConnection()){
-            return false;
-        }
-        try (PreparedStatement statementToFollow = con.prepareStatement(Query.DELETE_FOLLOW)){
-            statementToFollow.setString(1,email);
-            statementToFollow.setString(2,friendEmail);
-            statementToFollow.executeUpdate();
-
-            con.close();
-            return true;
-        } catch (SQLException se) {
-            System.out.println("SQL ERR: " + se);
-        }
-        return false;
-    }
 
     public static Boolean userIsFollowed(String email, String friendEmail){
         if (!openTheConnection()){
