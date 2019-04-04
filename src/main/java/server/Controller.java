@@ -31,19 +31,36 @@ public class Controller {
      * @return response if the registration is successful or not.
      */
     @RequestMapping(method= RequestMethod.POST, value = "/register")
-    public ResponseEntity<String> login(@RequestBody String jsonString){
+    public ResponseEntity<String> register(@RequestBody String jsonString){
 
         JSONObject data = new JSONObject(jsonString);
+        User newUser = getUserFromJSON(data);
+        String password = getPasswordFromJson(data);
 
-        String name = data.get("name").toString();
-        String email = data.get("email").toString();
-        String city = data.get("city").toString();
-        String password = data.get("password").toString();
-
-        User newUser = new User(name, email, city);
         Boolean insert = UserDatabaseLogic.insertNewUser(newUser, password);
 
         return (insert) ? new ResponseEntity<String>(HttpStatus.OK) : new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+    }
+
+    /**
+     * gets password from Json
+     * @param data JSONObject
+     * @return data
+     */
+    public static String getPasswordFromJson(JSONObject data){
+        return data.get("password").toString();
+    }
+
+    /**
+     * Gets user from JSNONObject
+     * @param data Json object which contains "name", "email", "city"
+     * @return User to register
+     */
+    public static User getUserFromJSON(JSONObject data){
+        String name = data.get("name").toString();
+        String email = data.get("email").toString();
+        String city = data.get("city").toString();
+        return new User(name, email, city);
     }
 
     /**
@@ -197,11 +214,10 @@ public class Controller {
     public ResponseEntity<String> follow(@RequestBody String jsonString) {
         JSONObject data = new JSONObject(jsonString);
 
-        String email = data.get("email").toString();
-        String friendEmail = data.get("friendEmail").toString();
+        String[] followFields = getFollowFields(data);
         Boolean followSuccessful;
-        if (!email.equals((friendEmail))) {
-            followSuccessful = UserDatabaseLogic.followPeople(email, friendEmail);
+        if (!followFields[0].equals((followFields[1]))) {
+            followSuccessful = UserDatabaseLogic.followPeople(followFields[0], followFields[1]);
         } else {
             followSuccessful = false;
         }
@@ -217,11 +233,8 @@ public class Controller {
     public ResponseEntity<String> deleteFollow(@RequestBody String jsonString) {
         JSONObject data = new JSONObject(jsonString);
 
-        String email = data.get("email").toString();
-        String friendEmail = data.get("friendEmail").toString();
-
-        Boolean followSuccesfull = UserDatabaseLogic.deleteFollow(email, friendEmail);
-
+        String[] followFields = getFollowFields(data);
+        Boolean followSuccesfull = UserDatabaseLogic.deleteFollow(followFields[0], followFields[1]);
         return (followSuccesfull) ? new ResponseEntity<String>(HttpStatus.OK) : new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
     }
 
@@ -233,14 +246,22 @@ public class Controller {
     @RequestMapping(method= RequestMethod.POST, value = "/follow/true")
     public Map<String, Boolean> getIsFollowed(@RequestBody String jsonString) {
         JSONObject data = new JSONObject(jsonString);
-
-        String email = data.get("email").toString();
-        String friendEmail = data.get("friendEmail").toString();
-
-        Boolean isFollowed = UserDatabaseLogic.userIsFollowed(email, friendEmail);
+        String[] followFields = getFollowFields(data);
+        Boolean isFollowed = UserDatabaseLogic.userIsFollowed(followFields[0], followFields[1]);
         return Collections.singletonMap("userIsFollowed", isFollowed);
     }
 
+    /**
+     * getFollowFields returns an array with email and email of following user
+     * @param data JSSONObject which contains "email" and "friendEmail" fields
+     * @return String[0] - email, String[1] - friendEmail
+     */
+    public String[] getFollowFields(JSONObject data){
+        String[] followFields = new String[2];
+        followFields[0] = data.get("email").toString();
+        followFields[1] = data.get("friendEmail").toString();
+        return  followFields;
+    }
 
     /**
      * Fetches user's followers from the db.
@@ -249,23 +270,25 @@ public class Controller {
      */
     @RequestMapping(method= RequestMethod.POST, value = "/follow/fetch")
     public String getFollows(@RequestBody String jsonString) {
-        String email = "";
-
-        try {
-            JSONObject data = new JSONObject(jsonString);
-            email = data.get("email").toString();
-        } catch (JSONException se){
-            try{
-                System.out.println("Error occured");
-                String JSON = new ObjectMapper().writeValueAsString("");
-                return JSON;
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
-            }
+        String email = getEmailToFetchFollowers(jsonString);
+        if (email.equals("")){
+            return email;
         }
+
         ArrayList<User> emailsOfFollows = UserDatabaseLogic.fetchFollows(email);
-        String JSON;
+        ArrayList<String> JSONFollows = getJSONFollows(emailsOfFollows);
+
+        return JSONFollows.toString();
+    }
+
+    /**
+     * Creates JSON of Follows in ArrayList
+     * @param emailsOfFollows
+     * @return
+     */
+    public ArrayList<String> getJSONFollows(ArrayList<User> emailsOfFollows){
         ArrayList<String> JSONFollows = new ArrayList<>();
+        String JSON;
         ObjectMapper mapper = new ObjectMapper();
 
         for(User friend : emailsOfFollows) {
@@ -278,7 +301,22 @@ public class Controller {
 
             JSONFollows.add(JSON);
         }
-        return JSONFollows.toString();
+        return JSONFollows;
+    }
+
+    /**
+     * get's Email from JSON String
+     * @param jsonString JSON in string
+     * @return email, or "" if the json was send in wrong format
+     */
+    public String getEmailToFetchFollowers(String jsonString){
+        try {
+            JSONObject data = new JSONObject(jsonString);
+            return data.get("email").toString();
+        } catch (JSONException se){
+            System.out.println("Error occurred");
+            return "";
+        }
     }
 
     /**
