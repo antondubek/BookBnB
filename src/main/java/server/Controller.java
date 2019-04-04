@@ -194,10 +194,13 @@ public class Controller {
 
         String email = data.get("email").toString();
         String friendEmail = data.get("friendEmail").toString();
-
-        Boolean followSuccesfull = UserDatabaseLogic.followPeople(email, friendEmail);
-
-        return (followSuccesfull) ? new ResponseEntity<String>(HttpStatus.OK) : new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+        Boolean followSuccessful;
+        if (!email.equals((friendEmail))) {
+            followSuccessful = UserDatabaseLogic.followPeople(email, friendEmail);
+        } else {
+            followSuccessful = false;
+        }
+        return (followSuccessful) ? new ResponseEntity<String>(HttpStatus.OK) : new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
     }
 
     @RequestMapping(method= RequestMethod.POST, value = "/follow/delete")

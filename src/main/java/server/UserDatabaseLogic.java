@@ -189,8 +189,14 @@ public class UserDatabaseLogic extends DatabaseLogic {
             statementToFollow.setString(1,email);
             statementToFollow.setString(2,friendEmail);
             ResultSet queryResult = statementToFollow.executeQuery();
+            Integer numberOfElementsInResult = 0;
+            if (queryResult != null)
+            {
+                queryResult.last();    // moves cursor to the last row
+                numberOfElementsInResult = queryResult.getRow(); // get row id
+            }
             con.close();
-            if (queryResult.getInt("total") != 0){
+            if ( numberOfElementsInResult!= 0){
                 return true;
             }
         } catch (SQLException se) {
