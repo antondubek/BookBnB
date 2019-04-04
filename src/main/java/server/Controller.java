@@ -205,11 +205,10 @@ public class Controller {
     public ResponseEntity<String> follow(@RequestBody String jsonString) {
         JSONObject data = new JSONObject(jsonString);
 
-        String email = data.get("email").toString();
-        String friendEmail = data.get("friendEmail").toString();
+        String[] followFields = getFollowFields(data);
         Boolean followSuccessful;
-        if (!email.equals((friendEmail))) {
-            followSuccessful = UserDatabaseLogic.followPeople(email, friendEmail);
+        if (!followFields[0].equals((followFields[1]))) {
+            followSuccessful = UserDatabaseLogic.followPeople(followFields[0], followFields[1]);
         } else {
             followSuccessful = false;
         }
@@ -225,11 +224,8 @@ public class Controller {
     public ResponseEntity<String> deleteFollow(@RequestBody String jsonString) {
         JSONObject data = new JSONObject(jsonString);
 
-        String email = data.get("email").toString();
-        String friendEmail = data.get("friendEmail").toString();
-
-        Boolean followSuccesfull = UserDatabaseLogic.deleteFollow(email, friendEmail);
-
+        String[] followFields = getFollowFields(data);
+        Boolean followSuccesfull = UserDatabaseLogic.deleteFollow(followFields[0], followFields[1]);
         return (followSuccesfull) ? new ResponseEntity<String>(HttpStatus.OK) : new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
     }
 
@@ -241,11 +237,8 @@ public class Controller {
     @RequestMapping(method= RequestMethod.POST, value = "/follow/true")
     public Map<String, Boolean> getIsFollowed(@RequestBody String jsonString) {
         JSONObject data = new JSONObject(jsonString);
-
-        String email = data.get("email").toString();
-        String friendEmail = data.get("friendEmail").toString();
-
-        Boolean isFollowed = UserDatabaseLogic.userIsFollowed(email, friendEmail);
+        String[] followFields = getFollowFields(data);
+        Boolean isFollowed = UserDatabaseLogic.userIsFollowed(followFields[0], followFields[1]);
         return Collections.singletonMap("userIsFollowed", isFollowed);
     }
 
@@ -264,7 +257,7 @@ public class Controller {
             email = data.get("email").toString();
         } catch (JSONException se){
             try{
-                System.out.println("Error occured");
+                System.out.println("Error occurred");
                 String JSON = new ObjectMapper().writeValueAsString("");
                 return JSON;
             } catch (JsonProcessingException e) {
@@ -287,6 +280,13 @@ public class Controller {
             JSONFollows.add(JSON);
         }
         return JSONFollows.toString();
+    }
+
+    public String[] getFollowFields(JSONObject data){
+        String[] followFields = new String[2];
+        followFields[0] = data.get("email").toString();
+        followFields[1] = data.get("friendEmail").toString();
+        return  followFields;
     }
 
     /**
