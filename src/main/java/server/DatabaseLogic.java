@@ -2,7 +2,6 @@ package server;
 
 import com.sun.org.apache.xpath.internal.operations.Bool;
 
-import javax.swing.text.StyledEditorKit;
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -55,5 +54,4 @@ public class DatabaseLogic {
         }
         return data;
     }
-
 }

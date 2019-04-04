@@ -16,5 +16,8 @@ public class Query {
     public final static String INSERT_NEW_BOOK = "INSERT INTO Book VALUES (?, ?, ?, ?);";
     public final static String ADD_USER_TO_BOOK = "INSERT INTO Users_book (Users_id, Book_ISBN, available) VALUES ((SELECT id FROM Users WHERE email = ?), ?, false);";
     public final static String UPDATE_BOOK_AVAILABILITY = "UPDATE Users_book SET available = ? WHERE Book_ISBN = ? AND Users_id = (SELECT id FROM Users WHERE email = ?) AND copy_id = ?;";
-
+    public final static String FOLLOW_PEOPLE = "INSERT INTO Users_followers (Users_id, follower) VALUES ((SELECT id FROM Users WHERE email = ?),(SELECT id FROM Users WHERE email = ?));";
+    public final static String FETCH_FOLLOWS = "select k.email  from Users_followers t left join Users e on t.Users_id = e.id left join Users k on t.follower = k.id where e.email = ?;";
+    public final static String DELETE_FOLLOW = "DELETE FROM Users_followers WHERE Users_id = (SELECT id FROM Users WHERE email = ?) and follower = (SELECT id FROM Users WHERE email = ?);";
+    public final static String GET_IF_USER_IS_FOLLOWED =  "SELECT Users_id FROM Users_followers WHERE Users_id = (SELECT id FROM Users WHERE email = ?) and follower = (SELECT id FROM Users WHERE email = ?);";
 }

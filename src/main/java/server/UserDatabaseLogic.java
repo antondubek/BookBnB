@@ -117,4 +117,108 @@ public class UserDatabaseLogic extends DatabaseLogic {
         }
         return false;
     }
+
+    /**
+     * Either follows or unfollows the user depending on query.
+     * @param email of user
+     * @param friendEmail email of user which needs to be followed or unfollowed
+     * @param query query can be any query, usually follow or unfollow query
+     * @return true if execuion done successfully
+     */
+    public static boolean manageFollow(String email, String friendEmail, String query){
+        if (!openTheConnection()){
+            return false;
+        }
+        try (PreparedStatement statementToFollow = con.prepareStatement(query)){
+            statementToFollow.setString(1,email);
+            statementToFollow.setString(2,friendEmail);
+            statementToFollow.executeUpdate();
+
+            con.close();
+            return true;
+        } catch (SQLException se) {
+            System.out.println("SQL ERR: " + se);
+        }
+        return false;
+    }
+
+    /**
+     * Follow user
+     * @param email email of user
+     * @param friendEmail email of user to follow
+     * @return true if followed successfully
+     */
+    public static boolean followPeople(String email, String friendEmail){
+        return manageFollow(email, friendEmail, Query.FOLLOW_PEOPLE);
+    }
+
+    /**
+     * Unfollow user
+     * @param email email of user
+     * @param friendEmail email of user to unfollow
+     * @return true if unfollowed successfully
+     */
+    public static Boolean deleteFollow(String email, String friendEmail){
+        return manageFollow(email, friendEmail, Query.DELETE_FOLLOW);
+    }
+
+    /**
+     * Fetch the follows, by email of user.
+     * @param email email of the user
+     * @return ArrayListOfUsers Follows
+     */
+    public static ArrayList<User> fetchFollows(String email){
+        openTheConnection();
+        ArrayList<String> data = new ArrayList<>();
+        ArrayList<User> userWithEmail = new ArrayList<User>();
+        try (PreparedStatement statementToSearchUserByMail = con.prepareStatement(Query.FETCH_FOLLOWS)){
+
+            statementToSearchUserByMail.setString(1,email);
+
+            ResultSet queryResults = statementToSearchUserByMail.executeQuery();
+            String[] namesOfFieldsInResponse = new String[]{"email"};
+            data = getArrayListFromResultSet(queryResults, namesOfFieldsInResponse);
+
+            for (String userEmail : data){
+                userWithEmail.add(new User("",userEmail,""));
+            }
+
+            con.close();
+        } catch (SQLException se) {
+            System.out.println("SQL ERR: " + se); //
+        }
+        return userWithEmail;
+    }
+
+    /**
+     * Checks if User is follows another user or not.
+     * @param email email of iuser
+     * @param friendEmail email of user which we check if is followed or not
+     * @return true if the friendEmail is folowed by email user.
+     */
+    public static Boolean userIsFollowed(String email, String friendEmail){
+        if (!openTheConnection()){
+            return false;
+        }
+        try (PreparedStatement statementToFollow = con.prepareStatement(Query.GET_IF_USER_IS_FOLLOWED)){
+            statementToFollow.setString(1,email);
+            statementToFollow.setString(2,friendEmail);
+            ResultSet queryResult = statementToFollow.executeQuery();
+            Integer numberOfElementsInResult = 0;
+            if (queryResult != null)
+            {
+                queryResult.last();    // moves cursor to the last row
+                numberOfElementsInResult = queryResult.getRow(); // get row id
+            }
+            con.close();
+            if ( numberOfElementsInResult!= 0){
+                return true;
+            }
+        } catch (SQLException se) {
+            System.out.println("SQL ERR: " + se);
+        }
+        return false;
+    }
+
+
 }

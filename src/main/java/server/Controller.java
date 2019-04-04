@@ -1,9 +1,12 @@
 package server;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Map;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -156,8 +159,8 @@ public class Controller {
 
     /**
      * Update whether or not a book is available for lending. If update successful, send STATUS OK, otherwise send 404
-     * @param jsonString JSON passed in the request body
-     * @return
+     * @param jsonString JSON passed in the request body, contains "email", "available", "ISBN", "copyID"
+     * @return HttpStatus Ok if updated successfully
      */
     @RequestMapping(method= RequestMethod.POST, value = "/profile/books/availability")
     public ResponseEntity<String> updateBookAvailability(@RequestBody String jsonString) {
@@ -183,6 +186,99 @@ public class Controller {
         }
 
         return (updatedAvailability) ? new ResponseEntity<String>(HttpStatus.OK) : new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+    }
+
+    /**
+     * RequestMapping to follow the user
+     * @param jsonString contains "email" and "friendEmail" which it needs to follow
+     * @return (HttpStatus.OK) if followed successfully
+     */
+    @RequestMapping(method= RequestMethod.POST, value = "/follow")
+    public ResponseEntity<String> follow(@RequestBody String jsonString) {
+        JSONObject data = new JSONObject(jsonString);
+
+        String email = data.get("email").toString();
+        String friendEmail = data.get("friendEmail").toString();
+        Boolean followSuccessful;
+        if (!email.equals((friendEmail))) {
+            followSuccessful = UserDatabaseLogic.followPeople(email, friendEmail);
+        } else {
+            followSuccessful = false;
+        }
+        return (followSuccessful) ? new ResponseEntity<String>(HttpStatus.OK) : new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+    }
+
+    /**
+     * RequestMapping to unfollow the user
+     * @param jsonString contains "email" and "friendEmail" which it needs to unfollow
+     * @return (HttpStatus.OK) if unfollowed successfully
+     */
+    @RequestMapping(method= RequestMethod.POST, value = "/follow/delete")
+    public ResponseEntity<String> deleteFollow(@RequestBody String jsonString) {
+        JSONObject data = new JSONObject(jsonString);
+
+        String email = data.get("email").toString();
+        String friendEmail = data.get("friendEmail").toString();
+
+        Boolean followSuccesfull = UserDatabaseLogic.deleteFollow(email, friendEmail);
+
+        return (followSuccesfull) ? new ResponseEntity<String>(HttpStatus.OK) : new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+    }
+
+    /**
+     * RequestMapping to check if the user is followed by another user
+     * @param jsonString contains "email" and "friendEmail" which it check if is followed or not
+     * @return JSon object string with field userIsFollowed, true if the user follows friendEmail
+     */
+    @RequestMapping(method= RequestMethod.POST, value = "/follow/true")
+    public Map<String, Boolean> getIsFollowed(@RequestBody String jsonString) {
+        JSONObject data = new JSONObject(jsonString);
+
+        String email = data.get("email").toString();
+        String friendEmail = data.get("friendEmail").toString();
+
+        Boolean isFollowed = UserDatabaseLogic.userIsFollowed(email, friendEmail);
+        return Collections.singletonMap("userIsFollowed", isFollowed);
+    }
+
+
+    /**
+     * Fetches user's followers from the db.
+     * @param jsonString contains "email" of the user
+     * @return JSON with emails
+     */
+    @RequestMapping(method= RequestMethod.POST, value = "/follow/fetch")
+    public String getFollows(@RequestBody String jsonString) {
+        String email = "";
+
+        try {
+            JSONObject data = new JSONObject(jsonString);
+            email = data.get("email").toString();
+        } catch (JSONException se){
+            try{
+                System.out.println("Error occured");
+                String JSON = new ObjectMapper().writeValueAsString("");
+                return JSON;
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
+        }
+        ArrayList<User> emailsOfFollows = UserDatabaseLogic.fetchFollows(email);
+        String JSON;
+        ArrayList<String> JSONFollows = new ArrayList<>();
+        ObjectMapper mapper = new ObjectMapper();
+
+        for(User friend : emailsOfFollows) {
+            try {
+                JSON = mapper.writeValueAsString(friend);
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+                continue;
+            }
+
+            JSONFollows.add(JSON);
+        }
+        return JSONFollows.toString();
     }
 
     /**

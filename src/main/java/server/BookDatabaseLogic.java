@@ -86,7 +86,6 @@ public class BookDatabaseLogic extends DatabaseLogic {
     }
 
 
-
     private static ArrayList<String> getAllBooksByISBN(String ISBN){
         try (PreparedStatement statementCheckIfBookInDB = con.prepareStatement(Query.CHECK_IF_BOOK_IN_DB)){
             statementCheckIfBookInDB.setString(1, ISBN);
