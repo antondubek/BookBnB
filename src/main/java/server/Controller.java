@@ -31,19 +31,27 @@ public class Controller {
      * @return response if the registration is successful or not.
      */
     @RequestMapping(method= RequestMethod.POST, value = "/register")
-    public ResponseEntity<String> login(@RequestBody String jsonString){
+    public ResponseEntity<String> register(@RequestBody String jsonString){
 
         JSONObject data = new JSONObject(jsonString);
-
-        String name = data.get("name").toString();
-        String email = data.get("email").toString();
-        String city = data.get("city").toString();
+        User newUser = getUserFromJSON(data);
         String password = data.get("password").toString();
 
-        User newUser = new User(name, email, city);
         Boolean insert = UserDatabaseLogic.insertNewUser(newUser, password);
 
         return (insert) ? new ResponseEntity<String>(HttpStatus.OK) : new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+    }
+
+    /**
+     * Gets user from JSNONObject
+     * @param data Json object which contains "name", "email", "city"
+     * @return User to register
+     */
+    public static User getUserFromJSON(JSONObject data){
+        String name = data.get("name").toString();
+        String email = data.get("email").toString();
+        String city = data.get("city").toString();
+        return new User(name, email, city);
     }
 
     /**
