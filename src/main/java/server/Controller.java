@@ -83,16 +83,7 @@ public class Controller {
         ArrayList<User> user = UserDatabaseLogic.findUser(email);
         User specificUser = ControllerHelper.getUserFromArrayList(user);
 
-        String JSON;
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            JSON = mapper.writeValueAsString(specificUser);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-            JSON = "error";
-        }
-
-        return JSON;
+        return ControllerHelper.createJSONFromUser(specificUser);
     }
 
     /**

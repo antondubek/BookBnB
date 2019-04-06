@@ -104,6 +104,18 @@ public class ControllerHelper {
         return specificUser;
     }
 
+    public static String createJSONFromUser(User specificUser){
+        String JSON;
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            JSON = mapper.writeValueAsString(specificUser);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            JSON = "error";
+        }
+        return JSON;
+    }
+
     /**
      * getFollowFields returns an array with email and email of following user
      * @param data JSSONObject which contains "email" and "friendEmail" fields
