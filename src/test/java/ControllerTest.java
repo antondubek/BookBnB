@@ -149,4 +149,14 @@ public class ControllerTest {
         String json1 = "{\"emai\":\"riadibadulla@gmail.com\"}\n";
         assertEquals(ControllerHelper.getEmailToFetchFollowers(json1), "");
     }
+
+    @Test
+    public void testGetAvailabilityFromJSON(){
+        JSONObject data = new JSONObject();
+        data.put("email", "rio@gmail.com");
+        data.put("available", "true");
+        assertTrue(ControllerHelper.getAvailabilityFromJSON(data));
+        data.put("available", "false");
+        assertFalse(ControllerHelper.getAvailabilityFromJSON(data));
+    }
 }
