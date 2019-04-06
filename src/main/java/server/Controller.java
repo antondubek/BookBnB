@@ -24,7 +24,6 @@ public class Controller {
         return new ResponseEntity<String>(HttpStatus.OK);
     }
 
-
     /**
      * Register request method.
      * @param jsonString json contains fields of the user
@@ -34,45 +33,12 @@ public class Controller {
     public ResponseEntity<String> register(@RequestBody String jsonString){
 
         JSONObject data = new JSONObject(jsonString);
-        User newUser = getUserFromJSON(data);
-        String password = getPasswordFromJson(data);
+        User newUser = ControllerHelper.getUserFromJSON(data);
+        String password = ControllerHelper.getPasswordFromJson(data);
 
         Boolean insert = UserDatabaseLogic.insertNewUser(newUser, password);
 
         return (insert) ? new ResponseEntity<String>(HttpStatus.OK) : new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
-    }
-
-    /**
-     * gets password from Json
-     * @param data JSONObject
-     * @return data
-     */
-    public static String getPasswordFromJson(JSONObject data){
-        String password;
-        try {
-            password = data.get("password").toString();
-        } catch (JSONException se){
-            System.out.println("Error occurred");
-            password = "";
-        }
-        return password;
-    }
-
-    /**
-     * Gets user from JSNONObject
-     * @param data Json object which contains "name", "email", "city"
-     * @return User to register
-     */
-    public static User getUserFromJSON(JSONObject data){
-        try{
-            String name = data.get("name").toString();
-            String email = data.get("email").toString();
-            String city = data.get("city").toString();
-            return new User(name, email, city);
-        } catch (JSONException se) {
-            System.out.println("Error occurred");
-        }
-        return null;
     }
 
     /**
@@ -226,7 +192,7 @@ public class Controller {
     public ResponseEntity<String> follow(@RequestBody String jsonString) {
         JSONObject data = new JSONObject(jsonString);
 
-        String[] followFields = getFollowFields(data);
+        String[] followFields = ControllerHelper.getFollowFields(data);
         Boolean followSuccessful;
         if (!followFields[0].equals((followFields[1]))) {
             followSuccessful = UserDatabaseLogic.followPeople(followFields[0], followFields[1]);
@@ -245,7 +211,7 @@ public class Controller {
     public ResponseEntity<String> deleteFollow(@RequestBody String jsonString) {
         JSONObject data = new JSONObject(jsonString);
 
-        String[] followFields = getFollowFields(data);
+        String[] followFields = ControllerHelper.getFollowFields(data);
         Boolean followSuccesfull = UserDatabaseLogic.deleteFollow(followFields[0], followFields[1]);
         return (followSuccesfull) ? new ResponseEntity<String>(HttpStatus.OK) : new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
     }
@@ -258,21 +224,9 @@ public class Controller {
     @RequestMapping(method= RequestMethod.POST, value = "/follow/true")
     public Map<String, Boolean> getIsFollowed(@RequestBody String jsonString) {
         JSONObject data = new JSONObject(jsonString);
-        String[] followFields = getFollowFields(data);
+        String[] followFields = ControllerHelper.getFollowFields(data);
         Boolean isFollowed = UserDatabaseLogic.userIsFollowed(followFields[0], followFields[1]);
         return Collections.singletonMap("userIsFollowed", isFollowed);
-    }
-
-    /**
-     * getFollowFields returns an array with email and email of following user
-     * @param data JSSONObject which contains "email" and "friendEmail" fields
-     * @return String[0] - email, String[1] - friendEmail
-     */
-    public static String[] getFollowFields(JSONObject data){
-        String[] followFields = new String[2];
-        followFields[0] = data.get("email").toString();
-        followFields[1] = data.get("friendEmail").toString();
-        return  followFields;
     }
 
     /**
@@ -282,53 +236,15 @@ public class Controller {
      */
     @RequestMapping(method= RequestMethod.POST, value = "/follow/fetch")
     public String getFollows(@RequestBody String jsonString) {
-        String email = getEmailToFetchFollowers(jsonString);
+        String email = ControllerHelper.getEmailToFetchFollowers(jsonString);
         if (email.equals("")){
             return email;
         }
 
         ArrayList<User> emailsOfFollows = UserDatabaseLogic.fetchFollows(email);
-        ArrayList<String> JSONFollows = getJSONFollows(emailsOfFollows);
+        ArrayList<String> JSONFollows = ControllerHelper.getJSONFollows(emailsOfFollows);
 
         return JSONFollows.toString();
-    }
-
-    /**
-     * Creates JSON of Follows in ArrayList
-     * @param emailsOfFollows
-     * @return
-     */
-    public static ArrayList<String> getJSONFollows(ArrayList<User> emailsOfFollows){
-        ArrayList<String> JSONFollows = new ArrayList<>();
-        String JSON;
-        ObjectMapper mapper = new ObjectMapper();
-
-        for(User friend : emailsOfFollows) {
-            try {
-                JSON = mapper.writeValueAsString(friend);
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
-                continue;
-            }
-
-            JSONFollows.add(JSON);
-        }
-        return JSONFollows;
-    }
-
-    /**
-     * get's Email from JSON String
-     * @param jsonString JSON in string
-     * @return email, or "" if the json was send in wrong format
-     */
-    public static String getEmailToFetchFollowers(String jsonString){
-        try {
-            JSONObject data = new JSONObject(jsonString);
-            return data.get("email").toString();
-        } catch (JSONException se){
-            System.out.println("Error occurred");
-            return "";
-        }
     }
 
     /**
