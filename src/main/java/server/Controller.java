@@ -116,6 +116,7 @@ public class Controller {
      */
     @RequestMapping(method= RequestMethod.POST, value = "/profile/books/availability")
     public ResponseEntity<String> updateBookAvailability(@RequestBody String jsonString) {
+        //TODO need to account for a the copy ID of a book, as one user may own multiple copies of a give book
         JSONObject data = new JSONObject(jsonString);
 
         String email = data.get("email").toString();
@@ -123,8 +124,6 @@ public class Controller {
         Boolean currentAvailability = Boolean.parseBoolean(availability);
         String ISBN = data.get("ISBN").toString();
         String copyID   = data.get("copyID").toString();
-
-        //TODO need to account for a the copy ID of a book, as one user may own multiple copies of a give book
 
         Boolean updatedAvailability;
 
@@ -213,18 +212,8 @@ public class Controller {
     public ResponseEntity<String> addBook(@RequestBody String jsonString) {
         JSONObject data = new JSONObject(jsonString);
 
-        //TODO BREAK THIS OUT INTO ITS OWN METHOD
-        String ISBN = data.get("ISBN").toString();
-        String title = data.get("title").toString();
-        String author = data.get("author").toString();
-        String edition = data.get("edition").toString();
-        String email = data.get("email").toString();
-
-        Book newBook = new Book(ISBN, title, author);
-
-        if(edition != null && !edition.equals("")) {
-            newBook.setEdition(edition);
-        }
+        String email = ControllerHelper.getEmailFromJson(data);
+        Book newBook = ControllerHelper.getBookFromJSON(data);
 
         Boolean insert = BookDatabaseLogic.insertNewBook(newBook, email);
 

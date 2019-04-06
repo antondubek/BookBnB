@@ -142,4 +142,16 @@ public class ControllerHelper {
             return "";
         }
     }
+
+    public static Book getBookFromJSON(JSONObject data){
+        String ISBN = data.get("ISBN").toString();
+        String title = data.get("title").toString();
+        String author = data.get("author").toString();
+        String edition = data.get("edition").toString();
+        Book newBook = new Book(ISBN, title, author);
+        if(edition != null && !edition.equals("")) {
+            newBook.setEdition(edition);
+        }
+        return newBook;
+    }
 }
