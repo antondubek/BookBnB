@@ -64,10 +64,10 @@ public class Controller {
      */
     @RequestMapping(method = RequestMethod.GET, value="/book")
     public String allBooks(@RequestParam(value="command", defaultValue = "none") String command){
-        if(!command.equals("all")){ return "error"; }
-
+        if(!command.equals("all")){
+            return "error";
+        }
         ArrayList<Book> books = BookDatabaseLogic.fetchAllBooks("all");
-
         return ControllerHelper.getJSONBooks(books).toString();
     }
 
@@ -79,15 +79,10 @@ public class Controller {
     @RequestMapping(method= RequestMethod.POST, value = "/profile")
     public String loadProfile(@RequestBody String jsonString) {
         JSONObject data = new JSONObject(jsonString);
-        String email = data.get("email").toString();
+        String email = ControllerHelper.getEmailFromJson(data);
         ArrayList<User> user = UserDatabaseLogic.findUser(email);
-        User specificUser;
+        User specificUser = ControllerHelper.getUserFromArrayList(user);
 
-        if(user.size() == 1){
-            specificUser = user.get(0);
-        } else {
-            specificUser = new User("","","");
-        }
         String JSON;
         ObjectMapper mapper = new ObjectMapper();
         try {

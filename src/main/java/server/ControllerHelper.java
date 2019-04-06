@@ -71,19 +71,6 @@ public class ControllerHelper {
         return JSONBooks;
     }
 
-
-    /**
-     * getFollowFields returns an array with email and email of following user
-     * @param data JSSONObject which contains "email" and "friendEmail" fields
-     * @return String[0] - email, String[1] - friendEmail
-     */
-    public static String[] getFollowFields(JSONObject data){
-        String[] followFields = new String[2];
-        followFields[0] = data.get("email").toString();
-        followFields[1] = data.get("friendEmail").toString();
-        return  followFields;
-    }
-
     /**
      * Creates JSON of Follows in ArrayList
      * @param emailsOfFollows
@@ -105,6 +92,28 @@ public class ControllerHelper {
             JSONFollows.add(JSON);
         }
         return JSONFollows;
+    }
+
+    public static User getUserFromArrayList(ArrayList<User> user){
+        User specificUser;
+        if(user.size() == 1){
+            specificUser = user.get(0);
+        } else {
+            specificUser = new User("","","");
+        }
+        return specificUser;
+    }
+
+    /**
+     * getFollowFields returns an array with email and email of following user
+     * @param data JSSONObject which contains "email" and "friendEmail" fields
+     * @return String[0] - email, String[1] - friendEmail
+     */
+    public static String[] getFollowFields(JSONObject data){
+        String[] followFields = new String[2];
+        followFields[0] = data.get("email").toString();
+        followFields[1] = data.get("friendEmail").toString();
+        return  followFields;
     }
 
     /**
