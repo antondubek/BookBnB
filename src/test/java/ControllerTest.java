@@ -109,6 +109,39 @@ public class ControllerTest {
     }
 
     @Test
+    public void testCreateJSONFromUser(){
+        User user1 = new User("Riad", "rio@gmail.com", "baku");
+        String json1 = "{\"name\":\"Riad\",\"email\":\"rio@gmail.com\",\"city\":\"baku\"}";
+        assertEquals(ControllerHelper.createJSONFromUser(user1),json1);
+        //TODO: test catch block as well
+    }
+
+    @Test
+    public void testGetBookFromJSON(){
+        JSONObject data = new JSONObject();
+        data.put("ISBN","12345");
+        data.put("title", "Dance with dragons");
+        data.put("author", "George Martin");
+        data.put("edition", "");
+
+        Book actualBook = ControllerHelper.getBookFromJSON(data);
+
+        String expectedISBN = "12345";
+        String expectedTitle = "Dance with dragons";
+        String expectedAuthor = "George Martin";
+        String actualISBN = actualBook.getISBN();
+        String actualTitle = actualBook.getTitle();
+        String actualAuthor = actualBook.getAuthor();
+        String actualEdition = actualBook.getEdition();
+
+        assertEquals(actualAuthor,expectedAuthor);
+        assertEquals(actualTitle, expectedTitle);
+        assertEquals(actualISBN, expectedISBN);
+        assertNull(actualEdition);
+
+    }
+
+    @Test
     public void testGetEmailToFetchFollowers(){
         String json = "{\"email\":\"riadibadulla@gmail.com\"}\n";
         assertEquals(ControllerHelper.getEmailToFetchFollowers(json), "riadibadulla@gmail.com");
