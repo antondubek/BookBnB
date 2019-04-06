@@ -47,12 +47,12 @@ public class Controller {
      * @return status if login was successful
      */
     @RequestMapping(method= RequestMethod.POST, value = "/login")
-    public ResponseEntity<String> logintest(@RequestBody String jsonString){
+    public ResponseEntity<String> login(@RequestBody String jsonString){
 
         JSONObject data = new JSONObject(jsonString);
 
-        String email = data.get("email").toString();
-        String password = data.get("password").toString();
+        String email = ControllerHelper.getEmailFromJson(data);
+        String password = ControllerHelper.getPasswordFromJson(data);
 
         return (UserDatabaseLogic.loginIsSuccessful(password, email)) ? new ResponseEntity<String>(HttpStatus.OK) : new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
     }
