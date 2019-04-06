@@ -161,4 +161,18 @@ public class ControllerHelper {
         return currentAvailability;
     }
 
+    public static Boolean updateAvailability(String email, Boolean currentAvailability, String ISBN, String copyID){
+        Boolean updatedAvailability;
+
+        ArrayList<User> user = UserDatabaseLogic.findUser(email);
+        if(user.size() != 1){
+            updatedAvailability = false;
+        } else {
+            User specificUser = user.get(0);
+
+            updatedAvailability = BookDatabaseLogic.updateBookAvailability(specificUser.getEmail(), currentAvailability, ISBN, copyID);
+        }
+        return updatedAvailability;
+    }
+
 }

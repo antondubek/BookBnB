@@ -121,17 +121,7 @@ public class Controller {
         String ISBN = data.get("ISBN").toString();
         String copyID   = data.get("copyID").toString();
 
-        Boolean updatedAvailability;
-
-        ArrayList<User> user = UserDatabaseLogic.findUser(email);
-        if(user.size() != 1){
-            updatedAvailability = false;
-        } else {
-            User specificUser = user.get(0);
-
-            updatedAvailability = BookDatabaseLogic.updateBookAvailability(specificUser.getEmail(), currentAvailability, ISBN, copyID);
-        }
-
+        Boolean updatedAvailability = ControllerHelper.updateAvailability(email, currentAvailability, ISBN, copyID);
         return (updatedAvailability) ? new ResponseEntity<String>(HttpStatus.OK) : new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
     }
 
