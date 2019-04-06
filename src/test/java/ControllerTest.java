@@ -88,6 +88,27 @@ public class ControllerTest {
     }
 
     @Test
+    public void testGetUserFromArrayList(){
+        User user1 = new User("Riad", "rio@gmail.com", "baku");
+        User user2 = new User("Evaristo", "eva@gmail.com", "castro");
+        ArrayList<User> users = new ArrayList<User>();
+        users.add(user1);
+
+        User userActual = ControllerHelper.getUserFromArrayList(users);
+
+        assertEquals(userActual.getEmail(),"rio@gmail.com");
+        assertEquals(userActual.getCity(),"baku");
+        assertEquals(userActual.getName(),"Riad");
+
+        users.add(user2);
+        userActual = ControllerHelper.getUserFromArrayList(users);
+        assertEquals(userActual.getEmail(),"");
+        assertEquals(userActual.getCity(),"");
+        assertEquals(userActual.getName(),"");
+
+    }
+
+    @Test
     public void testGetEmailToFetchFollowers(){
         String json = "{\"email\":\"riadibadulla@gmail.com\"}\n";
         assertEquals(ControllerHelper.getEmailToFetchFollowers(json), "riadibadulla@gmail.com");
