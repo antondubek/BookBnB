@@ -54,6 +54,24 @@ public class ControllerHelper {
         return null;
     }
 
+    public static ArrayList<String> getJSONBooks(ArrayList<Book> books){
+        String JSON;
+        ArrayList<String> JSONBooks = new ArrayList<>();
+        ObjectMapper mapper = new ObjectMapper();
+
+        for(Book book : books) {
+            try {
+                JSON = mapper.writeValueAsString(book);
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+                continue;
+            }
+            JSONBooks.add(JSON);
+        }
+        return JSONBooks;
+    }
+
+
     /**
      * getFollowFields returns an array with email and email of following user
      * @param data JSSONObject which contains "email" and "friendEmail" fields

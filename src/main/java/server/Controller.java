@@ -68,22 +68,7 @@ public class Controller {
 
         ArrayList<Book> books = BookDatabaseLogic.fetchAllBooks("all");
 
-        String JSON;
-        ArrayList<String> JSONBooks = new ArrayList<>();
-        ObjectMapper mapper = new ObjectMapper();
-
-        for(Book book : books) {
-            try {
-                JSON = mapper.writeValueAsString(book);
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
-                continue;
-            }
-
-            JSONBooks.add(JSON);
-        }
-
-        return JSONBooks.toString();
+        return ControllerHelper.getJSONBooks(books).toString();
     }
 
     /**
