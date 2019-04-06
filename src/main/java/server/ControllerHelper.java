@@ -26,6 +26,11 @@ public class ControllerHelper {
         return password;
     }
 
+    /**
+     * Gets email from the JSON object
+     * @param data JOSN object received from client
+     * @return Email in String.
+     */
     public static String getEmailFromJson(JSONObject data) {
         String email;
         try {
@@ -54,6 +59,11 @@ public class ControllerHelper {
         return null;
     }
 
+    /**
+     * Gets JSON String ArrayList From ArrayList of books
+     * @param books ArrayList of type Book
+     * @return ArrayList of String in JSON format
+     */
     public static ArrayList<String> getJSONBooks(ArrayList<Book> books){
         String JSON;
         ArrayList<String> JSONBooks = new ArrayList<>();
@@ -94,6 +104,11 @@ public class ControllerHelper {
         return JSONFollows;
     }
 
+    /**
+     * Get user from ArrayList of users.
+     * @param user ArraList of users
+     * @return first element of user arrayList.
+     */
     public static User getUserFromArrayList(ArrayList<User> user){
         User specificUser;
         if(user.size() == 1){
@@ -104,6 +119,11 @@ public class ControllerHelper {
         return specificUser;
     }
 
+    /**
+     * Creates JSON String from User object
+     * @param specificUser User object
+     * @return JSON string
+     */
     public static String createJSONFromUser(User specificUser){
         String JSON;
         ObjectMapper mapper = new ObjectMapper();
@@ -143,6 +163,11 @@ public class ControllerHelper {
         }
     }
 
+    /**
+     * Get Book object from JSON object.
+     * @param data JSON object which contains Book fields
+     * @return Book object
+     */
     public static Book getBookFromJSON(JSONObject data){
         String ISBN = data.get("ISBN").toString();
         String title = data.get("title").toString();
@@ -155,12 +180,25 @@ public class ControllerHelper {
         return newBook;
     }
 
+    /**
+     * get availability boolean from JSON
+     * @param data JSON object
+     * @return boolean of availability of book from JSON object
+     */
     public static Boolean getAvailabilityFromJSON(JSONObject data){
         String availability = data.get("available").toString();
         Boolean currentAvailability = Boolean.parseBoolean(availability);
         return currentAvailability;
     }
 
+    /**
+     * Update availability of the book, of the user with specific copy ID.
+     * @param email email of the user, who owns a book
+     * @param currentAvailability What was the availability of the book before the update
+     * @param ISBN ISBN of the book
+     * @param copyID copy ID of the specified book
+     * @return if the update was successful.
+     */
     public static Boolean updateAvailability(String email, Boolean currentAvailability, String ISBN, String copyID){
         Boolean updatedAvailability;
 
