@@ -1,5 +1,6 @@
 import org.json.JSONObject;
 import org.junit.Test;
+import server.Book;
 import server.Controller;
 import server.ControllerHelper;
 import server.User;
@@ -51,6 +52,15 @@ public class ControllerTest {
         assertEquals(testingUser1.getCity(), "London");
 
         assertNull(ControllerHelper.getUserFromJSON(jsonObj2));
+    }
+
+    @Test
+    public void testGetJSONBooks(){
+        ArrayList<Book> books = new ArrayList<Book>();
+        books.add(new Book("1234567890","Song of Ice and Fire", "George Martin"));
+        ArrayList<String> JSONBooks = ControllerHelper.getJSONBooks(books);
+        String expectedJSON = "{\"ISBN\":\"1234567890\",\"title\":\"Song of Ice and Fire\",\"author\":\"George Martin\",\"edition\":null,\"available\":null,\"copyID\":null,\"isbn\":\"1234567890\"}";
+        assertEquals(JSONBooks.get(0), expectedJSON);
     }
 
     @Test
