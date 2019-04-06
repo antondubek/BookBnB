@@ -92,34 +92,20 @@ public class Controller {
      * @return
      */
     @RequestMapping(method= RequestMethod.POST, value = "/profile/books")
-    public String loadUserbooks(@RequestBody String jsonString) {
+    public String loadUserBooks(@RequestBody String jsonString) {
         JSONObject data = new JSONObject(jsonString);
-        String email = data.get("email").toString();
+        String email = ControllerHelper.getEmailFromJson(data);
 
         ArrayList<User> user = UserDatabaseLogic.findUser(email);
         if(user.size() != 1){
             return "No user found with this email address";
         }
 
-        User specificUser = user.get(0);
+        User specificUser = ControllerHelper.getUserFromArrayList(user);
 
         ArrayList<Book> books = BookDatabaseLogic.fetchAllBooks(specificUser.getEmail());
-        String JSON;
-        ArrayList<String> JSONBooks = new ArrayList<>();
-        ObjectMapper mapper = new ObjectMapper();
 
-        for(Book book : books) {
-            try {
-                JSON = mapper.writeValueAsString(book);
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
-                continue;
-            }
-
-            JSONBooks.add(JSON);
-        }
-
-        return JSONBooks.toString();
+        return ControllerHelper.getJSONBooks(books).toString();
 
     }
 
