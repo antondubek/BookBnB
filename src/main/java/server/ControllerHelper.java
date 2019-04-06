@@ -6,6 +6,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class ControllerHelper {
 
@@ -23,6 +24,17 @@ public class ControllerHelper {
             password = "";
         }
         return password;
+    }
+
+    public static String getEmailFromJson(JSONObject data) {
+        String email;
+        try {
+            email = data.get("email").toString();
+        } catch (JSONException se) {
+            System.out.println("Error occurred");
+            email = "";
+        }
+        return email;
     }
 
     /**
