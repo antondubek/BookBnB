@@ -22,6 +22,18 @@ public class ControllerTest {
     }
 
     @Test
+    public void testGetEmailFromJson(){
+        JSONObject jsonObj1 = new JSONObject();
+        jsonObj1.put("email", "riadibadulla@gmail.com");
+
+        JSONObject jsonObj2 = new JSONObject();
+        jsonObj2.put("em", "sdfj@ada.co,");
+
+        assertEquals(ControllerHelper.getEmailFromJson(jsonObj1), "riadibadulla@gmail.com");
+        assertEquals(ControllerHelper.getEmailFromJson(jsonObj2), "");
+    }
+
+    @Test
     public void testGetUserFromJSON(){
         JSONObject jsonObj1 = new JSONObject();
         jsonObj1.put("name", "name1");
