@@ -154,4 +154,11 @@ public class ControllerHelper {
         }
         return newBook;
     }
+
+    public static Boolean getAvailabilityFromJSON(JSONObject data){
+        String availability = data.get("available").toString();
+        Boolean currentAvailability = Boolean.parseBoolean(availability);
+        return currentAvailability;
+    }
+
 }

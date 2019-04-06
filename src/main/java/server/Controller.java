@@ -4,9 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -119,9 +116,8 @@ public class Controller {
         //TODO need to account for a the copy ID of a book, as one user may own multiple copies of a give book
         JSONObject data = new JSONObject(jsonString);
 
-        String email = data.get("email").toString();
-        String availability = data.get("available").toString();
-        Boolean currentAvailability = Boolean.parseBoolean(availability);
+        String email = ControllerHelper.getEmailFromJson(data);
+        Boolean currentAvailability = ControllerHelper.getAvailabilityFromJSON(data);
         String ISBN = data.get("ISBN").toString();
         String copyID   = data.get("copyID").toString();
 
@@ -211,12 +207,9 @@ public class Controller {
     @RequestMapping(method= RequestMethod.POST, value = "/profile/addBook")
     public ResponseEntity<String> addBook(@RequestBody String jsonString) {
         JSONObject data = new JSONObject(jsonString);
-
         String email = ControllerHelper.getEmailFromJson(data);
         Book newBook = ControllerHelper.getBookFromJSON(data);
-
         Boolean insert = BookDatabaseLogic.insertNewBook(newBook, email);
-
         return (insert) ? new ResponseEntity<String>(HttpStatus.OK) : new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
     }
 }
