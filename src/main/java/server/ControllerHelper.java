@@ -6,7 +6,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class ControllerHelper {
 
@@ -211,6 +210,64 @@ public class ControllerHelper {
             updatedAvailability = BookDatabaseLogic.updateBookAvailability(specificUser.getEmail(), currentAvailability, ISBN, copyID);
         }
         return updatedAvailability;
+    }
+
+    /**
+     * Turn an ArrayList of Lender objects into JSON that will be sent back to the client
+     * @param lenders an ArrayList of Lender objects representing users who are willing to lend a given book
+     * @return JSON to send to the client
+     */
+    public static ArrayList<String> getJSONLenders(ArrayList<Lender> lenders){
+        String JSON;
+        ArrayList<String> JSONLenders = new ArrayList<>();
+        ObjectMapper mapper = new ObjectMapper();
+
+        for(Lender lender : lenders) {
+            try {
+                JSON = mapper.writeValueAsString(lender);
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+                continue;
+            }
+            JSONLenders.add(JSON);
+        }
+        return JSONLenders;
+    }
+
+    /**
+     * Takes a JSON object and extracts needed data to make a borrow request. Returns a Lender object containing that
+     * data
+     * @param data JSON
+     * @return Lender object needed for borrow request
+     */
+    public static Lender getBorrowRequestFields(JSONObject data) {
+        String lender_ID = data.get("lenderID").toString();
+        String copy_ID =  data.get("copyID").toString();
+
+        return new Lender(lender_ID, "", "", "", copy_ID);
+    }
+
+    /**
+     * Gets JSON String ArrayList From ArrayList of BorrowedBooks
+     * @param books ArrayList of type BorrowedBook
+     * @return ArrayList of String in JSON format containing the borrowed books
+     */
+    public static ArrayList<String> getJSONBorrowedBooks(ArrayList<BorrowedBook> books){
+        JSONObject pendingBook = new JSONObject();
+        ArrayList<String> JSONBooks = new ArrayList<>();
+
+        for(BorrowedBook book : books) {
+            pendingBook.put("ISBN", book.getISBN());
+            pendingBook.put("title", book.getTitle());
+            pendingBook.put("author", book.getAuthor());
+            pendingBook.put("status", book.getStatus());
+            pendingBook.put("name", book.getPersonOfInterest());
+            pendingBook.put("startDate", book.getStartDate());
+            pendingBook.put("endDate", book.getEndDate());
+
+            JSONBooks.add(pendingBook.toString());
+        }
+        return JSONBooks;
     }
 
 }

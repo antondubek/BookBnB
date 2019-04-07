@@ -209,4 +209,51 @@ public class BookDatabaseLogic extends DatabaseLogic {
         }
     }
 
+    /**
+     * Query to return all the available lenders of a particular book
+     * @param ISBN the unique identifier for the book
+     * @return an ArrayList of Lender objects representing users who are willing to lender the book
+     */
+    public static ArrayList<Lender> fetchAllLenders(String ISBN) {
+        ArrayList<Lender> lenders = new ArrayList<>();
+        if(ISBN == null || ISBN.equals("")){
+            return lenders;
+        }
+
+        openTheConnection();
+
+        try (PreparedStatement statementToFetchLenders = con.prepareStatement(Query.GET_LENDERS)){
+
+            statementToFetchLenders.setString(1, ISBN);
+
+            ResultSet queryResults = statementToFetchLenders.executeQuery();
+            lenders = getLendersFromResultSet(queryResults);
+
+            con.close();
+        } catch (SQLException se) {
+            System.out.println("SQL ERR: " + se); //
+        }
+        return lenders;
+
+    }
+
+    /**
+     *  Method to extract the query results and create Lender objects to send back to the client. These lenders are
+     *  associated with a particular book.
+     * @param queryResults results from the SELECT query
+     * @return an arraylist of Lender objects
+     */
+    private static ArrayList<Lender> getLendersFromResultSet(ResultSet queryResults){
+        ArrayList<Lender> lenders = new ArrayList<>();
+        String[] namesOfFieldsInResponse = new String[]{"Users_id", "name", "city", "loan_length", "copy_id"};
+
+        ArrayList<String> data = getArrayListFromResultSet(queryResults, namesOfFieldsInResponse);
+
+        for (int i = 0; i <= data.size()-namesOfFieldsInResponse.length; i+=namesOfFieldsInResponse.length){
+            Lender nextLender = new Lender(data.get(i), data.get(i+1), data.get(i+2), data.get(i+3), data.get(i+4));
+
+            lenders.add(nextLender);
+        }
+        return lenders;
+    }
 }

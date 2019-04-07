@@ -69,6 +69,18 @@ public class Controller {
     }
 
     /**
+     * Mapping to find all the available lenders of a particular book
+     * @param ISBN unique identifier of the book, used to find available lenders
+     * @return
+     */
+    @RequestMapping(method = RequestMethod.GET, value="/book/lenders")
+    public String allLendersOfBook(@RequestParam(value="ISBN", defaultValue = "none") String ISBN){
+
+        ArrayList<Lender> Lenders = BookDatabaseLogic.fetchAllLenders(ISBN);
+        return ControllerHelper.getJSONLenders(Lenders).toString();
+    }
+
+    /**
      * Searching for the user. if user is not found, returns user with empty fields.
      * @param jsonString
      * @return users
@@ -113,7 +125,6 @@ public class Controller {
      */
     @RequestMapping(method= RequestMethod.POST, value = "/profile/books/availability")
     public ResponseEntity<String> updateBookAvailability(@RequestBody String jsonString) {
-        //TODO need to account for a the copy ID of a book, as one user may own multiple copies of a give book
         JSONObject data = new JSONObject(jsonString);
 
         String email = ControllerHelper.getEmailFromJson(data);
@@ -202,4 +213,64 @@ public class Controller {
         Boolean insert = BookDatabaseLogic.insertNewBook(newBook, email);
         return (insert) ? new ResponseEntity<String>(HttpStatus.OK) : new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
     }
+
+    /**
+     * Mapping for a user to request to borrow a book
+     * @param jsonString containing information needed for a user to request to borrow a book from a lender
+     * @return ok if the request to borrow was made successfully, error if otherwise
+     */
+    @RequestMapping(method= RequestMethod.POST, value = "/request")
+    public ResponseEntity<String> requestToBorrow(@RequestBody String jsonString) {
+        JSONObject data = new JSONObject(jsonString);
+        String email = ControllerHelper.getEmailFromJson(data);
+        Lender requestForSpecificLender = ControllerHelper.getBorrowRequestFields(data);
+        Boolean insert = UserDatabaseLogic.requestToBorrow(email, requestForSpecificLender);
+        return (insert) ? new ResponseEntity<String>(HttpStatus.OK) : new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+    }
+
+    /**
+     * This returns the list of all lenders that a user is borrowing from along with some information about what is
+     * being borrow
+     * @param jsonString JSON containing parameters needed for getting this information
+     * @return a list of all lenders that a user is borrowing from plus some other key information
+     */
+    @RequestMapping(method = RequestMethod.POST, value = "/request/borrow")
+    public String getBorrowRequests(@RequestBody String jsonString) {
+        JSONObject data = new JSONObject(jsonString);
+        String email = ControllerHelper.getEmailFromJson(data);
+
+        ArrayList<BorrowedBook> pendingBorrowRequests = UserDatabaseLogic.booksRequestedToBorrowOrLoan(email, true);
+
+        ArrayList<String> JSONPendingBooks = ControllerHelper.getJSONBorrowedBooks(pendingBorrowRequests);
+
+        return JSONPendingBooks.toString();
+
+    }
+
+    @RequestMapping(method = RequestMethod.POST, value = "/request/loan")
+    public String getLoanRequests(@RequestBody String jsonString) {
+        JSONObject data = new JSONObject(jsonString);
+        String email = ControllerHelper.getEmailFromJson(data);
+
+        ArrayList<BorrowedBook> pendingBorrowRequests = UserDatabaseLogic.booksRequestedToBorrowOrLoan(email, false);
+
+        ArrayList<String> JSONPendingBooks = ControllerHelper.getJSONBorrowedBooks(pendingBorrowRequests);
+
+        return JSONPendingBooks.toString();
+
+    }
+
+    @RequestMapping(method = RequestMethod.POST, value = "/request/process")
+    public String processBorrowRequest(@RequestBody String jsonString) {
+        JSONObject data = new JSONObject(jsonString);
+        String email = ControllerHelper.getEmailFromJson(data);
+
+        ArrayList<BorrowedBook> pendingBorrowRequests = UserDatabaseLogic.booksRequestedToBorrowOrLoan(email, false);
+
+        ArrayList<String> JSONPendingBooks = ControllerHelper.getJSONBorrowedBooks(pendingBorrowRequests);
+
+        return JSONPendingBooks.toString();
+
+    }
+
 }
