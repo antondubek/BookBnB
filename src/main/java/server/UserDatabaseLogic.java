@@ -241,7 +241,12 @@ public class UserDatabaseLogic extends DatabaseLogic {
         return false;
     }
 
-
+    /**
+     * Fetches information pertaining to the books a user has requested to borrow or is borrowing
+     * @param email the user's email
+     * @param pending whether or not to look for pending requests
+     * @return
+     */
     public static ArrayList<BorrowedBook> booksRequestedToBorrow(String email, boolean pending) {
         ArrayList<BorrowedBook> pendingBorrowedBooks = new ArrayList<>();
 
