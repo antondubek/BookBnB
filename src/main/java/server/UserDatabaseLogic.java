@@ -18,7 +18,6 @@ public class UserDatabaseLogic extends DatabaseLogic {
             return loginDetailsAreRight(password, getDataFromDataBaseForLogin(email));
         }
         return false;
-
     }
 
     private static ArrayList<String> getDataFromDataBaseForLogin(String email){
@@ -170,24 +169,18 @@ public class UserDatabaseLogic extends DatabaseLogic {
     public static ArrayList<User> fetchFollows(String email){
         openTheConnection();
         ArrayList<String> data = new ArrayList<>();
-        ArrayList<User> userWithEmail = new ArrayList<User>();
+        ArrayList<User> user= new ArrayList<User>();
         try (PreparedStatement statementToSearchUserByMail = con.prepareStatement(Query.FETCH_FOLLOWS)){
 
             statementToSearchUserByMail.setString(1,email);
 
             ResultSet queryResults = statementToSearchUserByMail.executeQuery();
-            String[] namesOfFieldsInResponse = new String[]{"email"};
-            data = getArrayListFromResultSet(queryResults, namesOfFieldsInResponse);
-
-            for (String userEmail : data){
-                userWithEmail.add(new User("",userEmail,""));
-            }
-
+            user = getUsersFromResultSet(queryResults);
             con.close();
         } catch (SQLException se) {
             System.out.println("SQL ERR: " + se); //
         }
-        return userWithEmail;
+        return user;
     }
 
     /**
