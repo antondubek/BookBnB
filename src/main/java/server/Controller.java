@@ -202,4 +202,18 @@ public class Controller {
         Boolean insert = BookDatabaseLogic.insertNewBook(newBook, email);
         return (insert) ? new ResponseEntity<String>(HttpStatus.OK) : new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
     }
+
+    /**
+     * Add book request method
+     * @param jsonString
+     * @return ok if the book is added to the database successfully
+     */
+    @RequestMapping(method= RequestMethod.POST, value = "/loanLength")
+    public ResponseEntity<String> setLoanLength(@RequestBody String jsonString) {
+        JSONObject data = new JSONObject(jsonString);
+        String loanLength = data.getString("loanLength");
+        String copyID = data.getString("copyID");
+        Boolean insert = BookDatabaseLogic.setLendingTerms(loanLength,copyID);
+        return (insert) ? new ResponseEntity<String>(HttpStatus.OK) : new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+    }
 }
