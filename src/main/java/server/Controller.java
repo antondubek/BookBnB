@@ -228,4 +228,23 @@ public class Controller {
         return (insert) ? new ResponseEntity<String>(HttpStatus.OK) : new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
     }
 
+    /**
+     * This returns the list of all lenders that a user is borrowing from along with some information about what is
+     * being borrow
+     * @param jsonString JSON containing parameters needed for getting this information
+     * @return a list of all lenders that a user is borrowing from plus some other key information
+     */
+    @RequestMapping(method = RequestMethod.POST, value = "/request/borrow")
+    public String getBorrowRequests(@RequestBody String jsonString) {
+        JSONObject data = new JSONObject(jsonString);
+        String email = ControllerHelper.getEmailFromJson(data);
+
+        ArrayList<BorrowedBook> pendingBorrowRequests = UserDatabaseLogic.pendingRequestsToBorrow(email);
+
+        ArrayList<String> JSONPendingBooks = ControllerHelper.getJSONBorrowedBooks(pendingBorrowRequests);
+
+        return JSONPendingBooks.toString();
+
+    }
+
 }

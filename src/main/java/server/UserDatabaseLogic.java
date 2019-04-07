@@ -241,5 +241,83 @@ public class UserDatabaseLogic extends DatabaseLogic {
         return false;
     }
 
+    public static ArrayList<BorrowedBook> pendingRequestsToBorrow(String email) {
+        ArrayList<BorrowedBook> pendingBorrowedBooks = new ArrayList<>();
+
+        if(email == null || email.equals("")){
+            return pendingBorrowedBooks;
+        }
+
+        openTheConnection();
+
+        try (PreparedStatement statementToFetchLenders = con.prepareStatement(Query.SHOW_REQUESTS_TO_BORROW)){
+
+            statementToFetchLenders.setString(1, email);
+            System.out.println(statementToFetchLenders);
+
+            ResultSet queryResults = statementToFetchLenders.executeQuery();
+            pendingBorrowedBooks = getPendingBorrowedBooksFromResultSet(queryResults);
+
+            con.close();
+        } catch (SQLException se) {
+            System.out.println("SQL ERR: " + se);
+        }
+
+
+        return pendingBorrowedBooks;
+    }
+
+    private static ArrayList<BorrowedBook> getPendingBorrowedBooksFromResultSet(ResultSet queryResults){
+        ArrayList<BorrowedBook> pendingBorrowedBooks = new ArrayList<>();
+        String[] namesOfFieldsInResponse = new String[]{"ISBN", "title", "author", "status", "name"};
+
+        ArrayList<String> data = getArrayListFromResultSet(queryResults, namesOfFieldsInResponse);
+
+        for (int i = 0; i <= data.size()-namesOfFieldsInResponse.length; i+=namesOfFieldsInResponse.length){
+            BorrowedBook nextPending = new BorrowedBook(data.get(i), data.get(i+1), data.get(i+2), data.get(i+3), data.get(i+4));
+            System.out.println(data.get(i) + data.get(i+1) + data.get(i+2) + data.get(i+3) + data.get(i+4));
+
+            pendingBorrowedBooks.add(nextPending);
+        }
+
+        System.out.println(pendingBorrowedBooks.toString());
+        return pendingBorrowedBooks;
+    }
+
+    /**
+     * Gets book objects from the ResultSet.
+     * @param queryResults Query results for getting books from the database
+     * @param pending True if books are for 1 user, false if all books should be returned
+     * @return ArrayList of books
+     */
+//    public static ArrayList<BorrowedBook> getPendingBorrowedBooksFromResultSet(ResultSet queryResults, boolean pending){
+//        ArrayList<Book> books = new ArrayList<>();
+//        String[] namesOfFieldsInResponse;
+//        if (pending){
+//            namesOfFieldsInResponse = new String[]{"ISBN", "title", "author", "status", "name"};
+//        } else {
+//            namesOfFieldsInResponse = new String[]{"ISBN", "title", "author", "status", "name"};
+//        }
+//
+//        ArrayList<String> data = getArrayListFromResultSet(queryResults, namesOfFieldsInResponse);
+//
+//        for (int i = 0; i <= data.size()-namesOfFieldsInResponse.length; i+=namesOfFieldsInResponse.length){
+//            Book nextBook = new Book(data.get(i), data.get(i+1), data.get(i+2));
+//            if (data.get(i+3) != null) {
+//                nextBook.setEdition(data.get(i+3));
+//            }
+//
+//            if (booksAreForUser && data.get(i+4) != null) {
+//                nextBook.setAvailable(data.get(i+4));
+//            }
+//
+//            if (booksAreForUser) {
+//                nextBook.setCopyID(data.get(i+5));
+//            }
+//
+//            books.add(nextBook);
+//        }
+////        return books;
+//    }
 
 }

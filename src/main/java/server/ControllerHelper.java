@@ -248,4 +248,27 @@ public class ControllerHelper {
         return new Lender(lender_ID, "", "", "", copy_ID);
     }
 
+    /**
+     * Gets JSON String ArrayList From ArrayList of BorrowedBooks
+     * @param books ArrayList of type BorrowedBook
+     * @return ArrayList of String in JSON format containing the borrowed books
+     */
+    public static ArrayList<String> getJSONBorrowedBooks(ArrayList<BorrowedBook> books){
+        JSONObject pendingBook = new JSONObject();
+        ArrayList<String> JSONBooks = new ArrayList<>();
+
+        for(BorrowedBook book : books) {
+            pendingBook.put("ISBN", book.getISBN());
+            pendingBook.put("title", book.getTitle());
+            pendingBook.put("author", book.getAuthor());
+            pendingBook.put("status", book.getStatus());
+            pendingBook.put("lenderName", book.getLenderName());
+            pendingBook.put("startDate", book.getStartDate());
+            pendingBook.put("endDate", book.getEndDate());
+
+            JSONBooks.add(pendingBook.toString());
+        }
+        return JSONBooks;
+    }
+
 }
