@@ -42,15 +42,10 @@ public class Query {
     public final static String REQUEST_TO_BORROW = "INSERT INTO Request (borrower_id, lender_id, Book_ISBN, copy_id, status) " +
                                                 "VALUES ((SELECT id FROM Users WHERE email = ?), ?, (SELECT Book_ISBN from Users_book WHERE copy_id = ?), ?, ?);";
 
-    public final static String SHOW_REQUESTS_TO_BORROW = "SELECT ISBN, title, author, status, name " +
-                                                "FROM Request INNER JOIN Users ON lender_id = id " +
-                                                "INNER JOIN Book ON Book_ISBN = ISBN " +
-                                                "WHERE borrower_id = (SELECT id FROM Users WHERE email = ?) AND status = 'pending';";
-
     public final static  String BORROW_REQUESTS_NOT_PENDING = "SELECT ISBN, title, author, status, GroupOne.name AS Lender_Name, loan_start, loan_end " +
                                         "FROM Request INNER JOIN Users AS GroupOne ON lender_id = GroupOne.id " +
                                         "INNER JOIN Book ON Book_ISBN = ISBN " +
                                         "INNER JOIN Users AS GroupTwo ON borrower_id = GroupTwo.id " +
                                         "NATURAL JOIN Users_book " +
-                                        "WHERE GroupTwo.email = ? AND status = 'approved';";
+                                        "WHERE GroupTwo.email = ?;";
 }

@@ -244,10 +244,9 @@ public class UserDatabaseLogic extends DatabaseLogic {
     /**
      * Fetches information pertaining to the books a user has requested to borrow or is borrowing
      * @param email the user's email
-     * @param pending whether or not to look for pending requests
      * @return
      */
-    public static ArrayList<BorrowedBook> booksRequestedToBorrow(String email, boolean pending) {
+    public static ArrayList<BorrowedBook> booksRequestedToBorrow(String email) {
         ArrayList<BorrowedBook> pendingBorrowedBooks = new ArrayList<>();
 
         if(email == null || email.equals("")){
@@ -256,12 +255,12 @@ public class UserDatabaseLogic extends DatabaseLogic {
 
         openTheConnection();
 
-        try (PreparedStatement statementToFetchBooksToBorrow = con.prepareStatement(statementToFetchBooksToBorrow(pending))){
+        try (PreparedStatement statementToFetchBooksToBorrow = con.prepareStatement(Query.BORROW_REQUESTS_NOT_PENDING)){
 
             statementToFetchBooksToBorrow.setString(1, email);
 
             ResultSet queryResults = statementToFetchBooksToBorrow.executeQuery();
-            pendingBorrowedBooks = getPendingBorrowedBooksFromResultSet(queryResults, pending);
+            pendingBorrowedBooks = getPendingBorrowedBooksFromResultSet(queryResults);
 
             con.close();
         } catch (SQLException se) {
@@ -272,30 +271,24 @@ public class UserDatabaseLogic extends DatabaseLogic {
         return pendingBorrowedBooks;
     }
 
-    private static String statementToFetchBooksToBorrow(boolean pending){
-        return (pending) ? Query.SHOW_REQUESTS_TO_BORROW : Query.BORROW_REQUESTS_NOT_PENDING;
-    }
 
     /**
      * Gets BorrowedBook objects from the ResultSet.
      * @param queryResults Query results for getting BorrowedBooks from the database
-     * @param pending True if books have not been borrowed yet but are in a "pending" status
      * @return ArrayList of BorrowedBooks
      */
-    public static ArrayList<BorrowedBook> getPendingBorrowedBooksFromResultSet(ResultSet queryResults, boolean pending){
+    public static ArrayList<BorrowedBook> getPendingBorrowedBooksFromResultSet(ResultSet queryResults){
         ArrayList<BorrowedBook> borrowedBooks = new ArrayList<>();
-        String[] namesOfFieldsInResponse;
-        if (pending){
-            namesOfFieldsInResponse = new String[]{"ISBN", "title", "author", "status", "name"};
-        } else {
-            namesOfFieldsInResponse = new String[]{"ISBN", "title", "author", "status", "Lender_Name", "loan_start", "loan_end"};
-        }
+        String[] namesOfFieldsInResponse = new String[]{"ISBN", "title", "author", "status", "Lender_Name", "loan_start", "loan_end"};
 
         ArrayList<String> data = getArrayListFromResultSet(queryResults, namesOfFieldsInResponse);
 
         for (int i = 0; i <= data.size()-namesOfFieldsInResponse.length; i+=namesOfFieldsInResponse.length){
             BorrowedBook nextBorrowed = new BorrowedBook(data.get(i), data.get(i+1), data.get(i+2), data.get(i+3), data.get(i+4));
-            if (!pending) {
+            if (data.get(i+5) == null) {
+                nextBorrowed.setStartDate("");
+                nextBorrowed.setEndDate("");
+            } else {
                 nextBorrowed.setStartDate(data.get(i+5));
                 nextBorrowed.setEndDate(data.get(i+6));
             }
