@@ -254,7 +254,6 @@ public class UserDatabaseLogic extends DatabaseLogic {
         try (PreparedStatement statementToFetchBooksToBorrow = con.prepareStatement(statementToFetchBooksToBorrow(pending))){
 
             statementToFetchBooksToBorrow.setString(1, email);
-            System.out.println(statementToFetchBooksToBorrow);
 
             ResultSet queryResults = statementToFetchBooksToBorrow.executeQuery();
             pendingBorrowedBooks = getPendingBorrowedBooksFromResultSet(queryResults, pending);
@@ -284,7 +283,7 @@ public class UserDatabaseLogic extends DatabaseLogic {
         if (pending){
             namesOfFieldsInResponse = new String[]{"ISBN", "title", "author", "status", "name"};
         } else {
-            namesOfFieldsInResponse = new String[]{"ISBN", "title", "author", "status", "name", "loan_start", "loan_end"};
+            namesOfFieldsInResponse = new String[]{"ISBN", "title", "author", "status", "Lender_Name", "loan_start", "loan_end"};
         }
 
         ArrayList<String> data = getArrayListFromResultSet(queryResults, namesOfFieldsInResponse);

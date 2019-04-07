@@ -10,9 +10,7 @@ public class BorrowedBook extends Book {
     BorrowedBook(String ISBN, String title, String author, String status, String lenderName) {
         super(ISBN, title, author);
         this.status = status;
-        System.out.println("Status equals: " + this.status);
         this.lenderName = lenderName;
-        System.out.println("Lender equals: " + this.lenderName);
     }
 
     //overloaded constructor //TODO delete this
