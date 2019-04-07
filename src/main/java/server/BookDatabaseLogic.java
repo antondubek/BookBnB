@@ -209,4 +209,28 @@ public class BookDatabaseLogic extends DatabaseLogic {
         }
     }
 
+    /**
+     * Sets the loan length
+     * @param loanLenght
+     * @param copyID
+     * @return true if the query was executed successfully
+     */
+    public static Boolean setLendingTerms(String loanLenght, String copyID) {
+        openTheConnection();
+
+        try (PreparedStatement statementToUpdateAvailability = con.prepareStatement(Query.SET_LOAN_TERMS)){
+
+            statementToUpdateAvailability.setString(1, loanLenght);
+            statementToUpdateAvailability.setString(2, copyID);
+
+            statementToUpdateAvailability.executeUpdate();
+            con.close();
+            return true;
+
+        } catch (SQLException se) {
+            System.out.println("SQL ERR: " + se);
+            return false;
+        }
+    }
+
 }
