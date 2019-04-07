@@ -239,7 +239,9 @@ public class Controller {
         JSONObject data = new JSONObject(jsonString);
         String email = ControllerHelper.getEmailFromJson(data);
 
-        ArrayList<BorrowedBook> pendingBorrowRequests = UserDatabaseLogic.pendingRequestsToBorrow(email);
+        ArrayList<BorrowedBook> pendingBorrowRequests = UserDatabaseLogic.booksRequestedToBorrow(email, true);
+        ArrayList<BorrowedBook> borrowRequests = UserDatabaseLogic.booksRequestedToBorrow(email, false);
+        pendingBorrowRequests.addAll(borrowRequests);
 
         ArrayList<String> JSONPendingBooks = ControllerHelper.getJSONBorrowedBooks(pendingBorrowRequests);
 

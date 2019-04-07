@@ -46,4 +46,11 @@ public class Query {
                                                 "FROM Request INNER JOIN Users ON lender_id = id " +
                                                 "INNER JOIN Book ON Book_ISBN = ISBN " +
                                                 "WHERE borrower_id = (SELECT id FROM Users WHERE email = ?) AND status = 'pending';";
+
+    public final static  String BORROW_REQUESTS_NOT_PENDING = "SELECT ISBN, name, status, title, author, UB2.loan_start, UB2.loan_end FROM Request INNER JOIN Users_book ON borrower_id = loan_to " +
+                                                        "INNER JOIN Users_book AS UB1 ON Request.copy_id = UB1.copy_id " +
+                                                        "INNER JOIN Users_book AS UB2 ON Request.borrower_id = UB2.loan_to " +
+                                                        "INNER JOIN Users ON borrower_id = Users.id " +
+                                                        "INNER JOIN Book ON Users_book.Book_ISBN = ISBN " +
+                                                        "WHERE email = ? AND status = 'approved'";
 }

@@ -15,7 +15,7 @@ public class BorrowedBook extends Book {
         System.out.println("Lender equals: " + this.lenderName);
     }
 
-    //overloaded constructor
+    //overloaded constructor //TODO delete this
     BorrowedBook(String ISBN, String title, String author, String status, String lenderName, String startDate, String endDate) {
         this(ISBN, title, author, status, lenderName);
         this.startDate = startDate;
@@ -43,5 +43,22 @@ public class BorrowedBook extends Book {
 
     public String getEndDate() {
         return endDate;
+    }
+
+    //Setters
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public void setLenderName(String lenderName) {
+        this.lenderName = lenderName;
+    }
+
+    public void setStartDate(String startDate) {
+        this.startDate = startDate;
+    }
+
+    public void setEndDate(String endDate) {
+        this.endDate = endDate;
     }
 }
