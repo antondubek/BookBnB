@@ -213,4 +213,21 @@ public class ControllerHelper {
         return updatedAvailability;
     }
 
+    public static ArrayList<String> getJSONLenders(ArrayList<Lender> lenders){
+        String JSON;
+        ArrayList<String> JSONLenders = new ArrayList<>();
+        ObjectMapper mapper = new ObjectMapper();
+
+        for(Lender lender : lenders) {
+            try {
+                JSON = mapper.writeValueAsString(lender);
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+                continue;
+            }
+            JSONLenders.add(JSON);
+        }
+        return JSONLenders;
+    }
+
 }

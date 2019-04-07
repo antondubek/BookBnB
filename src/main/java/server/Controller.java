@@ -69,6 +69,18 @@ public class Controller {
     }
 
     /**
+     * Mapping to find all the available lenders of a particular book
+     * @param ISBN unique identifier of the book, used to find available lenders
+     * @return
+     */
+    @RequestMapping(method = RequestMethod.GET, value="/book/lenders")
+    public String allLendersOfBook(@RequestParam(value="ISBN", defaultValue = "none") String ISBN){
+
+        ArrayList<Lender> Lenders = BookDatabaseLogic.fetchAllLenders(ISBN);
+        return ControllerHelper.getJSONLenders(Lenders).toString();
+    }
+
+    /**
      * Searching for the user. if user is not found, returns user with empty fields.
      * @param jsonString
      * @return users

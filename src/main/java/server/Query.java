@@ -20,4 +20,7 @@ public class Query {
     public final static String FETCH_FOLLOWS = "select k.email, k.city, k.name from Users_followers t left join Users e on t.Users_id = e.id left join Users k on t.follower = k.id where e.email = ?;";
     public final static String DELETE_FOLLOW = "DELETE FROM Users_followers WHERE Users_id = (SELECT id FROM Users WHERE email = ?) and follower = (SELECT id FROM Users WHERE email = ?);";
     public final static String GET_IF_USER_IS_FOLLOWED =  "SELECT Users_id FROM Users_followers WHERE Users_id = (SELECT id FROM Users WHERE email = ?) and follower = (SELECT id FROM Users WHERE email = ?);";
+    public final static String GET_LENDERS = "SELECT Users_id, name, city, loan_length " +
+                                            "FROM Users_book INNER JOIN Users on Users_id = id " +
+                                            "WHERE Book_ISBN = ? AND available = TRUE;";
 }
