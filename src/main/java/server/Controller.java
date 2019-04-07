@@ -174,7 +174,7 @@ public class Controller {
     /**
      * Fetches user's followers from the db.
      * @param jsonString contains "email" of the user
-     * @return JSON with emails
+     * @return JSON with users
      */
     @RequestMapping(method= RequestMethod.POST, value = "/follow/fetch")
     public String getFollows(@RequestBody String jsonString) {
