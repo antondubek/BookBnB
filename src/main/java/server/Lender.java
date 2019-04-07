@@ -8,6 +8,7 @@ public class Lender {
     private String name;
     private String city;
     private String loanLength;
+    private String copyID;
 
 
     //Getters
@@ -25,6 +26,8 @@ public class Lender {
 
     public String getID() { return ID; }
 
+    public String getcopyID() { return copyID; }
+
     //setters
     public void setLoanLength(String loanLength){
         this.loanLength = loanLength;
@@ -40,17 +43,20 @@ public class Lender {
 
     public void setID(String ID) { this.ID = ID; }
 
+    public void setCopyID(String copyID) { this.copyID = copyID; }
+
     /**
      * Lender constructor.
      * @param name name of the registered user who is lending a book
      * @param loanLength length of time the user is willing to lender the book for
      * @param city city where the user lends his books.
      */
-    public Lender(String ID, String name, String city, String loanLength ){
+    public Lender(String ID, String name, String city, String loanLength, String copyID ){
         this.name = name;
         this.loanLength = loanLength;
         this.city = city;
         this.ID = ID;
+        this.copyID = copyID;
     }
 
     @Override

@@ -245,16 +245,15 @@ public class BookDatabaseLogic extends DatabaseLogic {
      */
     private static ArrayList<Lender> getLendersFromResultSet(ResultSet queryResults){
         ArrayList<Lender> lenders = new ArrayList<>();
-        String[] namesOfFieldsInResponse = new String[]{"Users_id", "name", "city", "loan_length"};
+        String[] namesOfFieldsInResponse = new String[]{"Users_id", "name", "city", "loan_length", "copy_id"};
 
         ArrayList<String> data = getArrayListFromResultSet(queryResults, namesOfFieldsInResponse);
 
         for (int i = 0; i <= data.size()-namesOfFieldsInResponse.length; i+=namesOfFieldsInResponse.length){
-            Lender nextLender = new Lender(data.get(i), data.get(i+1), data.get(i+2), data.get(i+3));
+            Lender nextLender = new Lender(data.get(i), data.get(i+1), data.get(i+2), data.get(i+3), data.get(i+4));
 
             lenders.add(nextLender);
         }
         return lenders;
     }
-
 }

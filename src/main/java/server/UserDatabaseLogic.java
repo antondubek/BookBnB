@@ -213,5 +213,33 @@ public class UserDatabaseLogic extends DatabaseLogic {
         return false;
     }
 
+    /**
+     * Update the request table in the DB so users can make requests to borrow books
+     * @param email email of the borrower
+     * @param lender Lender who owns the book
+     * @return boolean showing the borrow request was made successfully
+     */
+    public static boolean requestToBorrow(String email, Lender lender) {
+        openTheConnection();
+
+        try (PreparedStatement requestToBorrow = con.prepareStatement(Query.REQUEST_TO_BORROW)){
+
+            requestToBorrow.setString(1,email);                 //borrower's email
+            requestToBorrow.setString(2,lender.getID());        //Lender's ID
+            requestToBorrow.setString(3,lender.getcopyID());    //Lender's copy ID
+            requestToBorrow.setString(4,lender.getcopyID());    //Lender's copy ID
+            requestToBorrow.setString(5,"pending");    //set the status manually
+
+
+            requestToBorrow.executeUpdate();
+
+            con.close();
+            return true;
+        } catch (SQLException se) {
+            System.out.println("SQL ERR: " + se);
+        }
+        return false;
+    }
+
 
 }

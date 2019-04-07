@@ -213,6 +213,11 @@ public class ControllerHelper {
         return updatedAvailability;
     }
 
+    /**
+     * Turn an ArrayList of Lender objects into JSON that will be sent back to the client
+     * @param lenders an ArrayList of Lender objects representing users who are willing to lend a given book
+     * @return JSON to send to the client
+     */
     public static ArrayList<String> getJSONLenders(ArrayList<Lender> lenders){
         String JSON;
         ArrayList<String> JSONLenders = new ArrayList<>();
@@ -228,6 +233,19 @@ public class ControllerHelper {
             JSONLenders.add(JSON);
         }
         return JSONLenders;
+    }
+
+    /**
+     * Takes a JSON object and extracts needed data to make a borrow request. Returns a Lender object containing that
+     * data
+     * @param data JSON
+     * @return Lender object needed for borrow request
+     */
+    public static Lender getBorrowRequestFields(JSONObject data) {
+        String lender_ID = data.get("lenderID").toString();
+        String copy_ID =  data.get("copyID").toString();
+
+        return new Lender(lender_ID, "", "", "", copy_ID);
     }
 
 }

@@ -125,7 +125,6 @@ public class Controller {
      */
     @RequestMapping(method= RequestMethod.POST, value = "/profile/books/availability")
     public ResponseEntity<String> updateBookAvailability(@RequestBody String jsonString) {
-        //TODO need to account for a the copy ID of a book, as one user may own multiple copies of a give book
         JSONObject data = new JSONObject(jsonString);
 
         String email = ControllerHelper.getEmailFromJson(data);
@@ -214,4 +213,19 @@ public class Controller {
         Boolean insert = BookDatabaseLogic.insertNewBook(newBook, email);
         return (insert) ? new ResponseEntity<String>(HttpStatus.OK) : new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
     }
+
+    /**
+     * Mapping for a user to request to borrow a book
+     * @param jsonString containing information needed for a user to request to borrow a book from a lender
+     * @return ok if the request to borrow was made successfully, error if otherwise
+     */
+    @RequestMapping(method= RequestMethod.POST, value = "/request")
+    public ResponseEntity<String> requestToBorrow(@RequestBody String jsonString) {
+        JSONObject data = new JSONObject(jsonString);
+        String email = ControllerHelper.getEmailFromJson(data);
+        Lender requestForSpecificLender = ControllerHelper.getBorrowRequestFields(data);
+        Boolean insert = UserDatabaseLogic.requestToBorrow(email, requestForSpecificLender);
+        return (insert) ? new ResponseEntity<String>(HttpStatus.OK) : new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+    }
+
 }
