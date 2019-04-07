@@ -239,7 +239,33 @@ public class Controller {
         JSONObject data = new JSONObject(jsonString);
         String email = ControllerHelper.getEmailFromJson(data);
 
-        ArrayList<BorrowedBook> pendingBorrowRequests = UserDatabaseLogic.booksRequestedToBorrow(email);
+        ArrayList<BorrowedBook> pendingBorrowRequests = UserDatabaseLogic.booksRequestedToBorrowOrLoan(email, true);
+
+        ArrayList<String> JSONPendingBooks = ControllerHelper.getJSONBorrowedBooks(pendingBorrowRequests);
+
+        return JSONPendingBooks.toString();
+
+    }
+
+    @RequestMapping(method = RequestMethod.POST, value = "/request/loan")
+    public String getLoanRequests(@RequestBody String jsonString) {
+        JSONObject data = new JSONObject(jsonString);
+        String email = ControllerHelper.getEmailFromJson(data);
+
+        ArrayList<BorrowedBook> pendingBorrowRequests = UserDatabaseLogic.booksRequestedToBorrowOrLoan(email, false);
+
+        ArrayList<String> JSONPendingBooks = ControllerHelper.getJSONBorrowedBooks(pendingBorrowRequests);
+
+        return JSONPendingBooks.toString();
+
+    }
+
+    @RequestMapping(method = RequestMethod.POST, value = "/request/process")
+    public String processBorrowRequest(@RequestBody String jsonString) {
+        JSONObject data = new JSONObject(jsonString);
+        String email = ControllerHelper.getEmailFromJson(data);
+
+        ArrayList<BorrowedBook> pendingBorrowRequests = UserDatabaseLogic.booksRequestedToBorrowOrLoan(email, false);
 
         ArrayList<String> JSONPendingBooks = ControllerHelper.getJSONBorrowedBooks(pendingBorrowRequests);
 

@@ -228,7 +228,7 @@ public class UserDatabaseLogic extends DatabaseLogic {
             requestToBorrow.setString(2,lender.getID());        //Lender's ID
             requestToBorrow.setString(3,lender.getcopyID());    //Lender's copy ID
             requestToBorrow.setString(4,lender.getcopyID());    //Lender's copy ID
-            requestToBorrow.setString(5,"pending");    //set the status manually
+            requestToBorrow.setString(5,"pending");         //set the status manually
 
 
             requestToBorrow.executeUpdate();
@@ -246,7 +246,7 @@ public class UserDatabaseLogic extends DatabaseLogic {
      * @param email the user's email
      * @return
      */
-    public static ArrayList<BorrowedBook> booksRequestedToBorrow(String email) {
+    public static ArrayList<BorrowedBook> booksRequestedToBorrowOrLoan(String email, boolean requestBorrowedBooks) {
         ArrayList<BorrowedBook> pendingBorrowedBooks = new ArrayList<>();
 
         if(email == null || email.equals("")){
@@ -255,12 +255,12 @@ public class UserDatabaseLogic extends DatabaseLogic {
 
         openTheConnection();
 
-        try (PreparedStatement statementToFetchBooksToBorrow = con.prepareStatement(Query.BORROW_REQUESTS_NOT_PENDING)){
+        try (PreparedStatement statementToFetchBooksToBorrow = con.prepareStatement(loanOrBorrowQuery(requestBorrowedBooks))){
 
             statementToFetchBooksToBorrow.setString(1, email);
 
             ResultSet queryResults = statementToFetchBooksToBorrow.executeQuery();
-            pendingBorrowedBooks = getPendingBorrowedBooksFromResultSet(queryResults);
+            pendingBorrowedBooks = getBorrowedOrLoanedBooksFromResultSet(queryResults);
 
             con.close();
         } catch (SQLException se) {
@@ -271,31 +271,41 @@ public class UserDatabaseLogic extends DatabaseLogic {
         return pendingBorrowedBooks;
     }
 
+    /**
+     * Determines whether to call the query for books a user is borrowing and wants to borrow or books the user
+     * is loaning and/or has been requested to lend
+     * @param requestBorrowedBooks a boolean that is true if looking for borrowed book, false if for loaned books
+     * @return a string containing a query
+     */
+    private static String loanOrBorrowQuery(boolean requestBorrowedBooks) {
+        return (requestBorrowedBooks) ? Query.BORROW_REQUESTS : Query.LOAN_REQUESTS;
+    }
+
 
     /**
      * Gets BorrowedBook objects from the ResultSet.
      * @param queryResults Query results for getting BorrowedBooks from the database
      * @return ArrayList of BorrowedBooks
      */
-    public static ArrayList<BorrowedBook> getPendingBorrowedBooksFromResultSet(ResultSet queryResults){
-        ArrayList<BorrowedBook> borrowedBooks = new ArrayList<>();
-        String[] namesOfFieldsInResponse = new String[]{"ISBN", "title", "author", "status", "Lender_Name", "loan_start", "loan_end"};
+    private static ArrayList<BorrowedBook> getBorrowedOrLoanedBooksFromResultSet(ResultSet queryResults){
+        ArrayList<BorrowedBook> borrowedOrLoanedBooks = new ArrayList<>();
+        String[] namesOfFieldsInResponse = new String[]{"ISBN", "title", "author", "status", "person_of_interest", "loan_start", "loan_end"};
 
         ArrayList<String> data = getArrayListFromResultSet(queryResults, namesOfFieldsInResponse);
 
         for (int i = 0; i <= data.size()-namesOfFieldsInResponse.length; i+=namesOfFieldsInResponse.length){
-            BorrowedBook nextBorrowed = new BorrowedBook(data.get(i), data.get(i+1), data.get(i+2), data.get(i+3), data.get(i+4));
+            BorrowedBook nextBorrowedOrLoaned = new BorrowedBook(data.get(i), data.get(i+1), data.get(i+2), data.get(i+3), data.get(i+4));
             if (data.get(i+5) == null) {
-                nextBorrowed.setStartDate("");
-                nextBorrowed.setEndDate("");
+                nextBorrowedOrLoaned.setStartDate("");
+                nextBorrowedOrLoaned.setEndDate("");
             } else {
-                nextBorrowed.setStartDate(data.get(i+5));
-                nextBorrowed.setEndDate(data.get(i+6));
+                nextBorrowedOrLoaned.setStartDate(data.get(i+5));
+                nextBorrowedOrLoaned.setEndDate(data.get(i+6));
             }
 
-            borrowedBooks.add(nextBorrowed);
+            borrowedOrLoanedBooks.add(nextBorrowedOrLoaned);
         }
-       return borrowedBooks;
+       return borrowedOrLoanedBooks;
     }
 
 }

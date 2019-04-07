@@ -3,26 +3,19 @@ package server;
 public class BorrowedBook extends Book {
 
     private String status;
-    private String lenderName;
+    private String personOfInterest;  //This field represents the name of the person either lending or borrowing the book, depending on how it is used
     private String startDate;
     private String endDate;
 
-    BorrowedBook(String ISBN, String title, String author, String status, String lenderName) {
+    BorrowedBook(String ISBN, String title, String author, String status, String personOfInterest) {
         super(ISBN, title, author);
         this.status = status;
-        this.lenderName = lenderName;
-    }
-
-    //overloaded constructor //TODO delete this
-    BorrowedBook(String ISBN, String title, String author, String status, String lenderName, String startDate, String endDate) {
-        this(ISBN, title, author, status, lenderName);
-        this.startDate = startDate;
-        this.endDate = endDate;
+        this.personOfInterest = personOfInterest;
     }
 
     @Override
     public String toString() {
-        return "status " + status + "lenderName " + lenderName + "start date " + startDate + "end date" + endDate;
+        return "status " + status + "personOfInterest " + personOfInterest + "start date " + startDate + "end date" + endDate;
     }
 
 
@@ -31,8 +24,8 @@ public class BorrowedBook extends Book {
         return status;
     }
 
-    public String getLenderName() {
-        return lenderName;
+    public String getPersonOfInterest() {
+        return personOfInterest;
     }
 
     public String getStartDate() {
@@ -48,8 +41,8 @@ public class BorrowedBook extends Book {
         this.status = status;
     }
 
-    public void setLenderName(String lenderName) {
-        this.lenderName = lenderName;
+    public void setPersonOfInterest(String personOfInterest) {
+        this.personOfInterest = personOfInterest;
     }
 
     public void setStartDate(String startDate) {

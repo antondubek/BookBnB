@@ -42,10 +42,17 @@ public class Query {
     public final static String REQUEST_TO_BORROW = "INSERT INTO Request (borrower_id, lender_id, Book_ISBN, copy_id, status) " +
                                                 "VALUES ((SELECT id FROM Users WHERE email = ?), ?, (SELECT Book_ISBN from Users_book WHERE copy_id = ?), ?, ?);";
 
-    public final static  String BORROW_REQUESTS_NOT_PENDING = "SELECT ISBN, title, author, status, GroupOne.name AS Lender_Name, loan_start, loan_end " +
+    public final static  String BORROW_REQUESTS = "SELECT ISBN, title, author, status, GroupOne.name AS person_of_interest, loan_start, loan_end " +
                                         "FROM Request INNER JOIN Users AS GroupOne ON lender_id = GroupOne.id " +
                                         "INNER JOIN Book ON Book_ISBN = ISBN " +
                                         "INNER JOIN Users AS GroupTwo ON borrower_id = GroupTwo.id " +
                                         "NATURAL JOIN Users_book " +
                                         "WHERE GroupTwo.email = ?;";
+
+    public final static  String LOAN_REQUESTS = "SELECT ISBN, title, author, status, GroupTwo.name AS person_of_interest, loan_start, loan_end " +
+                            "FROM Request INNER JOIN Users AS GroupOne ON lender_id = GroupOne.id " +
+                            "INNER JOIN Book ON Book_ISBN = ISBN " +
+                            "INNER JOIN Users AS GroupTwo ON borrower_id = GroupTwo.id " +
+                            "NATURAL JOIN Users_book " +
+                            "WHERE GroupOne.email = ?;";
 }

@@ -6,7 +6,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class ControllerHelper {
 
@@ -262,7 +261,7 @@ public class ControllerHelper {
             pendingBook.put("title", book.getTitle());
             pendingBook.put("author", book.getAuthor());
             pendingBook.put("status", book.getStatus());
-            pendingBook.put("lenderName", book.getLenderName());
+            pendingBook.put("name", book.getPersonOfInterest());
             pendingBook.put("startDate", book.getStartDate());
             pendingBook.put("endDate", book.getEndDate());
 
