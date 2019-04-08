@@ -206,7 +206,7 @@ public class Controller {
      * @return JSON with users
      */
     @RequestMapping(method= RequestMethod.POST, value = "/follow/following")
-    public String getFollows(@RequestBody String jsonString) {
+    public String getWhoUserIsFollowing(@RequestBody String jsonString) {
         String email = ControllerHelper.getEmailToFetchFollowers(jsonString);
         if (email.equals("")){
             return email;

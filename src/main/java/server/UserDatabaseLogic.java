@@ -183,6 +183,12 @@ public class UserDatabaseLogic extends DatabaseLogic {
         return user;
     }
 
+    /**
+     * This method decides whether to search for followers or who the user is following
+     * @param followers a boolean, if true, want to use the query to fetch the list of who follows the user
+     *                  if false want to get the list of users that this user is following
+     * @return a string containing the query template
+     */
     private static String queryToFetchWhoFollowsUser (boolean followers){
         return (followers) ? Query.FETCH_USERS_FOLLOWERS : Query.FETCH_WHO_USER_FOLLOWS;
     }
