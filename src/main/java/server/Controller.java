@@ -215,6 +215,7 @@ public class Controller {
     }
 
     /**
+<<<<<<< HEAD
      * Mapping for a user to request to borrow a book
      * @param jsonString containing information needed for a user to request to borrow a book from a lender
      * @return ok if the request to borrow was made successfully, error if otherwise
@@ -271,6 +272,20 @@ public class Controller {
 
         return JSONPendingBooks.toString();
 
+    }
+
+    /**
+     * Add book request method
+     * @param jsonString
+     * @return ok if the book is added to the database successfully
+     */
+    @RequestMapping(method= RequestMethod.POST, value = "/loanLength")
+    public ResponseEntity<String> setLoanLength(@RequestBody String jsonString) {
+        JSONObject data = new JSONObject(jsonString);
+        String loanLength = data.getString("loanLength");
+        String copyID = data.getString("copyID");
+        Boolean insert = BookDatabaseLogic.setLendingTerms(loanLength,copyID);
+        return (insert) ? new ResponseEntity<String>(HttpStatus.OK) : new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
     }
 
 }

@@ -55,4 +55,6 @@ public class Query {
                             "INNER JOIN Users AS GroupTwo ON borrower_id = GroupTwo.id " +
                             "NATURAL JOIN Users_book " +
                             "WHERE GroupOne.email = ?;";
+    public final static String SET_LOAN_TERMS = "UPDATE Users_book SET loan_length = ? WHERE copy_id = ?;";
+
 }
