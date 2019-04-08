@@ -30,7 +30,9 @@ public class Query {
 
     public final static String FETCH_USERS_FOLLOWERS = "select k.email, k.city, k.name from Users_followers t left join Users e on t.Users_id = e.id left join Users k on t.follower = k.id where e.email = ?;";
 
-    public final static String FETCH_WHO_USER_FOLLOWS = "select k.email, k.city, k.name from Users_followers t left join Users e on t.Users_id = e.id left join Users k on t.Users_id = k.id where e.email = ?;";
+    public final static String FETCH_WHO_USER_FOLLOWS = "select k.email, k.city, k.name " +
+                                                    "from Users_followers t left join Users e on t.follower = e.id left join Users k on t.Users_id = k.id " +
+                                                    "where e.email = 'test@amakepeace.com';";
 
     public final static String DELETE_FOLLOW = "DELETE FROM Users_followers WHERE Users_id = (SELECT id FROM Users WHERE email = ?) and follower = (SELECT id FROM Users WHERE email = ?);";
 
