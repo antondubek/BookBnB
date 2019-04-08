@@ -183,7 +183,7 @@ public class Controller {
     }
 
     /**
-     * Fetches user's followers from the db.
+     * Fetches the user's followers (people who follow that user) from the db.
      * @param jsonString contains "email" of the user
      * @return JSON with users
      */
@@ -194,11 +194,30 @@ public class Controller {
             return email;
         }
 
-        ArrayList<User> emailsOfFollows = UserDatabaseLogic.fetchFollows(email);
+        ArrayList<User> emailsOfFollows = UserDatabaseLogic.fetchFollows(email, true);
         ArrayList<String> JSONFollows = ControllerHelper.getJSONFollows(emailsOfFollows);
 
         return JSONFollows.toString();
     }
+
+    /**
+     * Fetches from the database the list of all users who the user follows (people who that user follows)
+     * @param jsonString contains "email" of the user
+     * @return JSON with users
+     */
+    @RequestMapping(method= RequestMethod.POST, value = "/follow/following")
+    public String getFollows(@RequestBody String jsonString) {
+        String email = ControllerHelper.getEmailToFetchFollowers(jsonString);
+        if (email.equals("")){
+            return email;
+        }
+
+        ArrayList<User> emailsOfFollows = UserDatabaseLogic.fetchFollows(email, false);
+        ArrayList<String> JSONFollows = ControllerHelper.getJSONFollows(emailsOfFollows);
+
+        return JSONFollows.toString();
+    }
+
 
     /**
      * Add book request method

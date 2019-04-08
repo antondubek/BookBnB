@@ -166,11 +166,11 @@ public class UserDatabaseLogic extends DatabaseLogic {
      * @param email email of the user
      * @return ArrayListOfUsers Follows
      */
-    public static ArrayList<User> fetchFollows(String email){
+    public static ArrayList<User> fetchFollows(String email, boolean followers){
         openTheConnection();
         ArrayList<String> data = new ArrayList<>();
         ArrayList<User> user= new ArrayList<User>();
-        try (PreparedStatement statementToSearchUserByMail = con.prepareStatement(Query.FETCH_FOLLOWS)){
+        try (PreparedStatement statementToSearchUserByMail = con.prepareStatement(queryToFetchWhoFollowsUser(followers))){
 
             statementToSearchUserByMail.setString(1,email);
 
@@ -181,6 +181,10 @@ public class UserDatabaseLogic extends DatabaseLogic {
             System.out.println("SQL ERR: " + se); //
         }
         return user;
+    }
+
+    private static String queryToFetchWhoFollowsUser (boolean followers){
+        return (followers) ? Query.FETCH_USERS_FOLLOWERS : Query.FETCH_WHO_USER_FOLLOWS;
     }
 
     /**
