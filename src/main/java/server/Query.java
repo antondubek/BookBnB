@@ -60,5 +60,6 @@ public class Query {
                             "NATURAL JOIN Users_book " +
                             "WHERE GroupOne.email = ?;";
     public final static String SET_LOAN_TERMS = "UPDATE Users_book SET loan_length = ? WHERE copy_id = ?;";
+    public final static String GET_LOAN_TERMS = "select loan_length from Users_book where copy_id = ?;";
 
 }
