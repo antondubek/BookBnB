@@ -14,7 +14,7 @@ public class Query {
 
     public final static String FETCH_BOOKS_BASE = "SELECT * FROM Book;";
 
-    public final static String FETCH_USER_BOOKS = "SELECT ISBN, title, author, book_version, available, copy_id FROM Book " +
+    public final static String FETCH_USER_BOOKS = "SELECT ISBN, title, author, book_version, available, copy_id, loan_length FROM Book " +
                                           "INNER JOIN Users_book ON Book.ISBN = Users_book.Book_ISBN INNER JOIN Users ON Users_book.Users_id = Users.id " +
                                           "WHERE EMAIL = ?;";
 
