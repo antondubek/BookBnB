@@ -294,17 +294,32 @@ public class Controller {
     }
 
     /**
-     * Add book request method
+     * Set loan length
      * @param jsonString
-     * @return ok if the book is added to the database successfully
+     * @return ok if the table is updated successfully
      */
-    @RequestMapping(method= RequestMethod.POST, value = "/loanLength")
+    @RequestMapping(method= RequestMethod.POST, value = "/loanLength/set")
     public ResponseEntity<String> setLoanLength(@RequestBody String jsonString) {
         JSONObject data = new JSONObject(jsonString);
         String loanLength = data.getString("loanLength");
         String copyID = data.getString("copyID");
         Boolean insert = BookDatabaseLogic.setLendingTerms(loanLength,copyID);
         return (insert) ? new ResponseEntity<String>(HttpStatus.OK) : new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+    }
+
+    /**
+     * Get loan length
+     * @param jsonString with copyID
+     * @return JSON with loanLength
+     */
+    @RequestMapping(method= RequestMethod.POST, value = "/loanLength/get")
+    public String getLoanLength(@RequestBody String jsonString) {
+        JSONObject data = new JSONObject(jsonString);
+        String copyID = data.getString("copyID");
+        String loanLenght = BookDatabaseLogic.getLendingTerms(copyID);
+        JSONObject output = new JSONObject();
+        output.put("loanLength",loanLenght);
+        return output.toString();
     }
 
 }
