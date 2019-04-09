@@ -266,6 +266,11 @@ public class Controller {
 
     }
 
+    /**
+     *
+     * @param jsonString
+     * @return
+     */
     @RequestMapping(method = RequestMethod.POST, value = "/request/loan")
     public String getLoanRequests(@RequestBody String jsonString) {
         JSONObject data = new JSONObject(jsonString);
@@ -279,6 +284,11 @@ public class Controller {
 
     }
 
+    /**
+     *
+     * @param jsonString
+     * @return
+     */
     @RequestMapping(method = RequestMethod.POST, value = "/request/process")
     public String processBorrowRequest(@RequestBody String jsonString) {
         JSONObject data = new JSONObject(jsonString);
@@ -292,6 +302,11 @@ public class Controller {
 
     }
 
+    /**
+     *
+     * @param jsonString
+     * @return
+     */
     @RequestMapping(method = RequestMethod.POST, value = "/request/approveOrDenyRequest")
     public ResponseEntity<String> updateBorrowRequest(@RequestBody String jsonString) {
         JSONObject data = new JSONObject(jsonString);
@@ -302,5 +317,21 @@ public class Controller {
         Boolean updateSuccessful = ControllerHelper.processRequestStatus(status, requestNumberDate);
 
         return (updateSuccessful) ? new ResponseEntity<String>(HttpStatus.OK) : new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+    }
+
+    /**
+     *
+     * @param jsonString
+     * @return
+     */
+    @RequestMapping(method = RequestMethod.POST, value = "/recall")
+    public ResponseEntity<String> recallLoan(@RequestBody String jsonString) {
+        JSONObject data = new JSONObject(jsonString);
+
+        String requestNumber = data.get("requestNumber").toString();
+
+        Boolean recallSuccessful = UserDatabaseLogic.recallBook(requestNumber);
+
+        return (recallSuccessful) ? new ResponseEntity<String>(HttpStatus.OK) : new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
     }
 }

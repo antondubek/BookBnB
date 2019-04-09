@@ -265,6 +265,7 @@ public class ControllerHelper {
             pendingBook.put("startDate", book.getStartDate());
             pendingBook.put("endDate", book.getEndDate());
             pendingBook.put("requestNumber", book.getRequestNumber());
+            pendingBook.put("copyID", book.getCopyID());
 
             JSONBooks.add(pendingBook.toString());
         }

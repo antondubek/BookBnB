@@ -307,7 +307,7 @@ public class UserDatabaseLogic extends DatabaseLogic {
      */
     private static ArrayList<BorrowedBook> getBorrowedOrLoanedBooksFromResultSet(ResultSet queryResults){
         ArrayList<BorrowedBook> borrowedOrLoanedBooks = new ArrayList<>();
-        String[] namesOfFieldsInResponse = new String[]{"ISBN", "title", "author", "status", "person_of_interest", "loan_start", "loan_end", "request_number"};
+        String[] namesOfFieldsInResponse = new String[]{"ISBN", "title", "author", "status", "person_of_interest", "loan_start", "loan_end", "request_number", "copy_id"};
 
         ArrayList<String> data = getArrayListFromResultSet(queryResults, namesOfFieldsInResponse);
 
@@ -317,10 +317,12 @@ public class UserDatabaseLogic extends DatabaseLogic {
                 nextBorrowedOrLoaned.setStartDate("");
                 nextBorrowedOrLoaned.setEndDate("");
                 nextBorrowedOrLoaned.setRequestNumber(data.get(i+7));
+                nextBorrowedOrLoaned.setCopyID(data.get(8));
             } else {
                 nextBorrowedOrLoaned.setStartDate(data.get(i+5));
                 nextBorrowedOrLoaned.setEndDate(data.get(i+6));
                 nextBorrowedOrLoaned.setRequestNumber(data.get(i+7));
+                nextBorrowedOrLoaned.setCopyID(data.get(8));
             }
 
             borrowedOrLoanedBooks.add(nextBorrowedOrLoaned);
@@ -329,7 +331,12 @@ public class UserDatabaseLogic extends DatabaseLogic {
     }
 
     //TODO REFACTOR THIS METHOD
-
+    /**
+     *
+     * @param status
+     * @param requestNumberDateCopyId
+     * @return
+     */
     public static boolean processApprovalOrDenialOfBorrowRequest(String status, ArrayList<String> requestNumberDateCopyId) {
         openTheConnection();
 
@@ -364,5 +371,25 @@ public class UserDatabaseLogic extends DatabaseLogic {
         return false;
     }
 
+    public static boolean recallBook(String requestNumber) {
+        openTheConnection();
+
+        try(PreparedStatement recallBookQuery = con.prepareStatement(Query.RECALL_BOOK);
+        PreparedStatement updateStatus = con.prepareStatement(Query.UPDATE_STATUS_AT_END_OF_LOAN)){
+
+            recallBookQuery.setInt(1, Integer.parseInt(requestNumber));
+            recallBookQuery.executeUpdate();
+
+            updateStatus.setInt(1, Integer.parseInt(requestNumber));
+            updateStatus.executeUpdate();
+
+            con.close();
+            return true;
+
+        } catch (SQLException se) {
+            System.out.println("SQL ERR: " + se);
+        }
+        return false;
+    }
 
 }

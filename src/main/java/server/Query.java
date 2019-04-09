@@ -46,14 +46,14 @@ public class Query {
     public final static String REQUEST_TO_BORROW = "INSERT INTO Request (borrower_id, lender_id, Book_ISBN, copy_id, status) " +
                                                 "VALUES ((SELECT id FROM Users WHERE email = ?), ?, (SELECT Book_ISBN from Users_book WHERE copy_id = ?), ?, ?);";
 
-    public final static  String BORROW_REQUESTS = "SELECT ISBN, title, author, status, GroupOne.name AS person_of_interest, loan_start, loan_end, request_number " +
+    public final static  String BORROW_REQUESTS = "SELECT ISBN, title, author, status, GroupOne.name AS person_of_interest, loan_start, loan_end, request_number, copy_id " +
                                         "FROM Request INNER JOIN Users AS GroupOne ON lender_id = GroupOne.id " +
                                         "INNER JOIN Book ON Book_ISBN = ISBN " +
                                         "INNER JOIN Users AS GroupTwo ON borrower_id = GroupTwo.id " +
                                         "NATURAL JOIN Users_book " +
                                         "WHERE GroupTwo.email = ?;";
 
-    public final static  String LOAN_REQUESTS = "SELECT ISBN, title, author, status, GroupTwo.name AS person_of_interest, loan_start, loan_end, request_number " +
+    public final static  String LOAN_REQUESTS = "SELECT ISBN, title, author, status, GroupTwo.name AS person_of_interest, loan_start, loan_end, request_number, copy_id " +
                                                 "FROM Request INNER JOIN Users AS GroupOne ON lender_id = GroupOne.id " +
                                                 "INNER JOIN Book ON Book_ISBN = ISBN " +
                                                 "INNER JOIN Users AS GroupTwo ON borrower_id = GroupTwo.id " +
@@ -69,5 +69,7 @@ public class Query {
                                                     "loan_end = Users_book.loan_start + Users_book.loan_length " +
                                                     "WHERE copy_id = (SELECT copy_id FROM Request WHERE request_number = ?);";
 
+    public static String RECALL_BOOK = "UPDATE Users_book SET loan_to = null, loan_start = null, loan_end = null WHERE copy_id = (SELECT copy_id FROM Request WHERE request_number = ?);";
 
+    public static String UPDATE_STATUS_AT_END_OF_LOAN = "UPDATE Request SET status = 'recalled' WHERE request_number = ? ";
 }
