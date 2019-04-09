@@ -292,4 +292,15 @@ public class Controller {
 
     }
 
+    @RequestMapping(method = RequestMethod.POST, value = "/request/approveOrDenyRequest")
+    public ResponseEntity<String> updateBorrowRequest(@RequestBody String jsonString) {
+        JSONObject data = new JSONObject(jsonString);
+
+        ArrayList<String> requestNumberDate = ControllerHelper.getRequestNumberDateStatusFromJSON(data);
+
+        String status = requestNumberDate.get(0);
+        Boolean updateSuccessful = ControllerHelper.processRequestStatus(status, requestNumberDate);
+
+        return (updateSuccessful) ? new ResponseEntity<String>(HttpStatus.OK) : new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+    }
 }

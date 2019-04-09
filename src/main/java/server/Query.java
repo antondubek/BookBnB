@@ -32,7 +32,7 @@ public class Query {
 
     public final static String FETCH_WHO_USER_FOLLOWS = "select k.email, k.city, k.name " +
                                                     "from Users_followers t left join Users e on t.follower = e.id left join Users k on t.Users_id = k.id " +
-                                                    "where e.email = 'test@amakepeace.com';";
+                                                    "where e.email = ?;";
 
     public final static String DELETE_FOLLOW = "DELETE FROM Users_followers WHERE Users_id = (SELECT id FROM Users WHERE email = ?) and follower = (SELECT id FROM Users WHERE email = ?);";
 
@@ -46,17 +46,28 @@ public class Query {
     public final static String REQUEST_TO_BORROW = "INSERT INTO Request (borrower_id, lender_id, Book_ISBN, copy_id, status) " +
                                                 "VALUES ((SELECT id FROM Users WHERE email = ?), ?, (SELECT Book_ISBN from Users_book WHERE copy_id = ?), ?, ?);";
 
-    public final static  String BORROW_REQUESTS = "SELECT ISBN, title, author, status, GroupOne.name AS person_of_interest, loan_start, loan_end " +
+    public final static  String BORROW_REQUESTS = "SELECT ISBN, title, author, status, GroupOne.name AS person_of_interest, loan_start, loan_end, request_number " +
                                         "FROM Request INNER JOIN Users AS GroupOne ON lender_id = GroupOne.id " +
                                         "INNER JOIN Book ON Book_ISBN = ISBN " +
                                         "INNER JOIN Users AS GroupTwo ON borrower_id = GroupTwo.id " +
                                         "NATURAL JOIN Users_book " +
                                         "WHERE GroupTwo.email = ?;";
 
-    public final static  String LOAN_REQUESTS = "SELECT ISBN, title, author, status, GroupTwo.name AS person_of_interest, loan_start, loan_end " +
-                            "FROM Request INNER JOIN Users AS GroupOne ON lender_id = GroupOne.id " +
-                            "INNER JOIN Book ON Book_ISBN = ISBN " +
-                            "INNER JOIN Users AS GroupTwo ON borrower_id = GroupTwo.id " +
-                            "NATURAL JOIN Users_book " +
-                            "WHERE GroupOne.email = ?;";
+    public final static  String LOAN_REQUESTS = "SELECT ISBN, title, author, status, GroupTwo.name AS person_of_interest, loan_start, loan_end, request_number " +
+                                                "FROM Request INNER JOIN Users AS GroupOne ON lender_id = GroupOne.id " +
+                                                "INNER JOIN Book ON Book_ISBN = ISBN " +
+                                                "INNER JOIN Users AS GroupTwo ON borrower_id = GroupTwo.id " +
+                                                "NATURAL JOIN Users_book " +
+                                                "WHERE GroupOne.email = ?;";
+
+    public final static String UPDATE_BORROW_REQUEST = "UPDATE Request SET status = ? WHERE request_number = ?;";
+
+    public final static String UPDATE_FOR_NEW_LOAN = "UPDATE Users_book SET " +
+                                                    "available = false, " +
+                                                    "loan_to = (SELECT borrower_id FROM Request WHERE request_number = ?), " +
+                                                    "loan_start = ?, " +
+                                                    "loan_end = Users_book.loan_start + Users_book.loan_length " +
+                                                    "WHERE copy_id = (SELECT copy_id FROM Request WHERE request_number = ?);";
+
+
 }
