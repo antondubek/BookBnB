@@ -275,12 +275,12 @@ public class BookDatabaseLogic extends DatabaseLogic {
     public static Boolean setLendingTerms(String loanLength, String copyID) {
         openTheConnection();
 
-        try (PreparedStatement statementToUpdateAvailability = con.prepareStatement(Query.SET_LOAN_TERMS)) {
+        try (PreparedStatement statementToSetLoanTerms = con.prepareStatement(Query.SET_LOAN_TERMS)) {
 
-            statementToUpdateAvailability.setString(1, loanLength);
-            statementToUpdateAvailability.setString(2, copyID);
+            statementToSetLoanTerms.setString(1, loanLength);
+            statementToSetLoanTerms.setString(2, copyID);
 
-            statementToUpdateAvailability.executeUpdate();
+            statementToSetLoanTerms.executeUpdate();
             con.close();
             return true;
 
@@ -288,5 +288,26 @@ public class BookDatabaseLogic extends DatabaseLogic {
             System.out.println("SQL ERR: " + se);
             return false;
         }
+    }
+
+    public static String getLendingTerms(String copyID){
+        openTheConnection();
+        try (PreparedStatement statementToGetLoanTerms = con.prepareStatement(Query.GET_LOAN_TERMS)) {
+
+            statementToGetLoanTerms.setString(1, copyID);
+
+            ResultSet queryResults = statementToGetLoanTerms.executeQuery();
+            ArrayList<String> result = getArrayListFromResultSet(queryResults,new String[]{"loan_length"});
+            con.close();
+            return result.get(0);
+
+        } catch (SQLException se) {
+            System.out.println("SQL ERR: " + se);
+            return null;
+        } catch (ArrayIndexOutOfBoundsException e){
+            System.out.println("SQL ERR: " + e);
+            return null;
+        }
+
     }
 }
