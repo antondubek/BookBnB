@@ -10,6 +10,7 @@ public class Book {
     private String edition;     //Optional field
     private Boolean available;  //if the user sets the book to available, so people can borrow it
     private String copyID;      //Optional field. used when sending books associated with a particular user
+    private String loanLength;  //Optional field, used to
 
     //Getters
 
@@ -34,6 +35,7 @@ public class Book {
     }
 
     public String getCopyID() { return copyID; }
+    public String getLoanLength(){return loanLength;}
 
     /**
      * Constructor for book.
@@ -64,4 +66,5 @@ public class Book {
     public void setAvailable(String available) { this.available = available.equals("1"); }
 
     public void setCopyID(String copyID) { this.copyID = copyID; }
+    public void setLoanLength(String loanLength){this.loanLength = loanLength;}
 }
