@@ -6,6 +6,7 @@ public class BorrowedBook extends Book {
     private String personOfInterest;  //This field represents the name of the person either lending or borrowing the book, depending on how it is used
     private String startDate;
     private String endDate;
+    private String requestNumber;
 
     BorrowedBook(String ISBN, String title, String author, String status, String personOfInterest) {
         super(ISBN, title, author);
@@ -36,6 +37,8 @@ public class BorrowedBook extends Book {
         return endDate;
     }
 
+    public String getRequestNumber() { return requestNumber; }
+
     //Setters
     public void setStatus(String status) {
         this.status = status;
@@ -52,4 +55,6 @@ public class BorrowedBook extends Book {
     public void setEndDate(String endDate) {
         this.endDate = endDate;
     }
+
+    public void setRequestNumber(String requestNumber){ this.requestNumber = requestNumber; }
 }

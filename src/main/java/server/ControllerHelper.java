@@ -264,10 +264,42 @@ public class ControllerHelper {
             pendingBook.put("name", book.getPersonOfInterest());
             pendingBook.put("startDate", book.getStartDate());
             pendingBook.put("endDate", book.getEndDate());
+            pendingBook.put("requestNumber", book.getRequestNumber());
+            pendingBook.put("copyID", book.getCopyID());
 
             JSONBooks.add(pendingBook.toString());
         }
         return JSONBooks;
+    }
+
+    /**
+     * Removes JSON fields sent from the client, turns them to strings then add them to an array list
+     * @param data data received from client
+     * @return
+     */
+    public static ArrayList<String> getRequestNumberDateStatusFromJSON(JSONObject data) {
+        ArrayList<String> requestNumberDateStatus = new ArrayList<>();
+
+        requestNumberDateStatus.add(data.get("status").toString());
+        requestNumberDateStatus.add(data.get("requestNumber").toString());
+        requestNumberDateStatus.add(data.get("startDate").toString());
+
+        return requestNumberDateStatus;
+    }
+
+    /**
+     * Processes the status of the borrow request to ensure that only approval and denial requests get processed
+     * @param status a string containing the request status
+     * @param requestNumberDate a String ArrayList containing parameters used to process the request
+     * @return a boolean showing whether the request was successfuly
+     */
+    public static boolean processRequestStatus(String status, ArrayList<String> requestNumberDate) {
+
+        if(status.equals("approved") || status.equals("denied")){
+            return  UserDatabaseLogic.processApprovalOrDenialOfBorrowRequest(status, requestNumberDate);
+        } else {
+            return false;
+        }
     }
 
 }

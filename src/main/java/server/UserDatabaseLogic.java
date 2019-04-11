@@ -3,7 +3,11 @@ package server;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Hashtable;
 
 public class UserDatabaseLogic extends DatabaseLogic {
 
@@ -164,13 +168,15 @@ public class UserDatabaseLogic extends DatabaseLogic {
     /**
      * Fetch the follows, by email of user.
      * @param email email of the user
+     * @param fetchFollowersOfUser a boolean that determines whether to fetch the followers of a given user (if true)
+     *                             or to fetch the list of who a user follows (if false)
      * @return ArrayListOfUsers Follows
      */
-    public static ArrayList<User> fetchFollows(String email, boolean followers){
+    public static ArrayList<User> fetchFollows(String email, boolean fetchFollowersOfUser){
         openTheConnection();
         ArrayList<String> data = new ArrayList<>();
         ArrayList<User> user= new ArrayList<User>();
-        try (PreparedStatement statementToSearchUserByMail = con.prepareStatement(queryToFetchWhoFollowsUser(followers))){
+        try (PreparedStatement statementToSearchUserByMail = con.prepareStatement(queryToFetchWhoFollowsUser(fetchFollowersOfUser))){
 
             statementToSearchUserByMail.setString(1,email);
 
@@ -184,13 +190,13 @@ public class UserDatabaseLogic extends DatabaseLogic {
     }
 
     /**
-     * This method decides whether to search for followers or who the user is following
-     * @param followers a boolean, if true, want to use the query to fetch the list of who follows the user
+     * This method decides whether to search for fetchFollowersOfUser or who the user is following
+     * @param fetchFollowersOfUser a boolean, if true, want to use the query to fetch the list of who follows the user
      *                  if false want to get the list of users that this user is following
      * @return a string containing the query template
      */
-    private static String queryToFetchWhoFollowsUser (boolean followers){
-        return (followers) ? Query.FETCH_USERS_FOLLOWERS : Query.FETCH_WHO_USER_FOLLOWS;
+    private static String queryToFetchWhoFollowsUser (boolean fetchFollowersOfUser){
+        return (fetchFollowersOfUser) ? Query.FETCH_USERS_FOLLOWERS : Query.FETCH_WHO_USER_FOLLOWS;
     }
 
     /**
@@ -254,6 +260,8 @@ public class UserDatabaseLogic extends DatabaseLogic {
     /**
      * Fetches information pertaining to the books a user has requested to borrow or is borrowing
      * @param email the user's email
+     * @param requestBorrowedBooks a boolean that if true, returns the books you have requested to borrow, if false
+     *                             will return the books that others have requested to borrow off you
      * @return
      */
     public static ArrayList<BorrowedBook> booksRequestedToBorrowOrLoan(String email, boolean requestBorrowedBooks) {
@@ -265,11 +273,11 @@ public class UserDatabaseLogic extends DatabaseLogic {
 
         openTheConnection();
 
-        try (PreparedStatement statementToFetchBooksToBorrow = con.prepareStatement(loanOrBorrowQuery(requestBorrowedBooks))){
+        try (PreparedStatement statementToFetchBooksToBorrowOrLoan = con.prepareStatement(loanOrBorrowQuery(requestBorrowedBooks))){
 
-            statementToFetchBooksToBorrow.setString(1, email);
+            statementToFetchBooksToBorrowOrLoan.setString(1, email);
 
-            ResultSet queryResults = statementToFetchBooksToBorrow.executeQuery();
+            ResultSet queryResults = statementToFetchBooksToBorrowOrLoan.executeQuery();
             pendingBorrowedBooks = getBorrowedOrLoanedBooksFromResultSet(queryResults);
 
             con.close();
@@ -299,7 +307,7 @@ public class UserDatabaseLogic extends DatabaseLogic {
      */
     private static ArrayList<BorrowedBook> getBorrowedOrLoanedBooksFromResultSet(ResultSet queryResults){
         ArrayList<BorrowedBook> borrowedOrLoanedBooks = new ArrayList<>();
-        String[] namesOfFieldsInResponse = new String[]{"ISBN", "title", "author", "status", "person_of_interest", "loan_start", "loan_end"};
+        String[] namesOfFieldsInResponse = new String[]{"ISBN", "title", "author", "status", "person_of_interest", "loan_start", "loan_end", "request_number", "copy_id"};
 
         ArrayList<String> data = getArrayListFromResultSet(queryResults, namesOfFieldsInResponse);
 
@@ -308,14 +316,80 @@ public class UserDatabaseLogic extends DatabaseLogic {
             if (data.get(i+5) == null) {
                 nextBorrowedOrLoaned.setStartDate("");
                 nextBorrowedOrLoaned.setEndDate("");
+                nextBorrowedOrLoaned.setRequestNumber(data.get(i+7));
+                nextBorrowedOrLoaned.setCopyID(data.get(8));
             } else {
                 nextBorrowedOrLoaned.setStartDate(data.get(i+5));
                 nextBorrowedOrLoaned.setEndDate(data.get(i+6));
+                nextBorrowedOrLoaned.setRequestNumber(data.get(i+7));
+                nextBorrowedOrLoaned.setCopyID(data.get(8));
             }
 
             borrowedOrLoanedBooks.add(nextBorrowedOrLoaned);
         }
        return borrowedOrLoanedBooks;
+    }
+
+    //TODO REFACTOR THIS METHOD
+    /**
+     *
+     * @param status
+     * @param requestNumberDateCopyId
+     * @return
+     */
+    public static boolean processApprovalOrDenialOfBorrowRequest(String status, ArrayList<String> requestNumberDateCopyId) {
+        openTheConnection();
+
+        try (PreparedStatement updateBorrowRequest = con.prepareStatement(Query.UPDATE_BORROW_REQUEST);
+             PreparedStatement updateLoanConditionsUponApproval = con.prepareStatement(Query.UPDATE_FOR_NEW_LOAN)){
+
+            updateBorrowRequest.setString(1, status);
+            updateBorrowRequest.setInt(2, Integer.parseInt(requestNumberDateCopyId.get(1)));
+
+            updateBorrowRequest.executeUpdate();
+
+            if(status.equals("approved")) {
+
+                updateLoanConditionsUponApproval.setInt(1, Integer.parseInt(requestNumberDateCopyId.get(1)));
+
+                java.util.Date start_date = new SimpleDateFormat("yyyy-MM-dd").parse(requestNumberDateCopyId.get(2));
+                java.sql.Date loanStartInSQL = new java.sql.Date(start_date.getTime());
+
+                updateLoanConditionsUponApproval.setDate(2, loanStartInSQL);
+                updateLoanConditionsUponApproval.setInt(3, Integer.parseInt(requestNumberDateCopyId.get(1)));
+
+                updateLoanConditionsUponApproval.executeUpdate();
+            }
+
+            con.close();
+            return true;
+        } catch (SQLException se) {
+            System.out.println("SQL ERR: " + se);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public static boolean recallBook(String requestNumber) {
+        openTheConnection();
+
+        try(PreparedStatement recallBookQuery = con.prepareStatement(Query.RECALL_BOOK);
+        PreparedStatement updateStatus = con.prepareStatement(Query.UPDATE_STATUS_AT_END_OF_LOAN)){
+
+            recallBookQuery.setInt(1, Integer.parseInt(requestNumber));
+            recallBookQuery.executeUpdate();
+
+            updateStatus.setInt(1, Integer.parseInt(requestNumber));
+            updateStatus.executeUpdate();
+
+            con.close();
+            return true;
+
+        } catch (SQLException se) {
+            System.out.println("SQL ERR: " + se);
+        }
+        return false;
     }
 
 }
