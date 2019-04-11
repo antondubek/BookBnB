@@ -151,7 +151,7 @@ public class BookDatabaseLogic extends DatabaseLogic {
         ArrayList<Book> books = new ArrayList<>();
         String[] namesOfFieldsInResponse;
         if (booksAreForUser){
-            namesOfFieldsInResponse = new String[]{"ISBN", "title", "author", "book_version", "available", "copy_id"};
+            namesOfFieldsInResponse = new String[]{"ISBN", "title", "author", "book_version", "available", "copy_id", "isLoaned"};
         } else {
             namesOfFieldsInResponse = new String[]{"ISBN", "title", "author", "book_version"};
         }
@@ -170,6 +170,9 @@ public class BookDatabaseLogic extends DatabaseLogic {
 
             if (booksAreForUser) {
                 nextBook.setCopyID(data.get(i+5));
+                if (data.get(i+6) != null) {
+                    nextBook.setIsLoaned(true);
+                }
             }
 
             books.add(nextBook);

@@ -10,6 +10,7 @@ public class Book {
     private String edition;     //Optional field
     private Boolean available;  //if the user sets the book to available, so people can borrow it
     private String copyID;      //Optional field. used when sending books associated with a particular user
+    private Boolean isLoaned;
 
     //Getters
 
@@ -35,6 +36,8 @@ public class Book {
 
     public String getCopyID() { return copyID; }
 
+    public boolean getIsLoaned(){ return isLoaned; }
+
     /**
      * Constructor for book.
      * @param ISBN ISBN of the book.
@@ -45,6 +48,7 @@ public class Book {
         this.ISBN = ISBN;
         this.title = title;
         this.author = author;
+        this.isLoaned = false;
     }
 
     @Override
@@ -64,4 +68,6 @@ public class Book {
     public void setAvailable(String available) { this.available = available.equals("1"); }
 
     public void setCopyID(String copyID) { this.copyID = copyID; }
+
+    public void setIsLoaned(Boolean isLoaned) { this.isLoaned = isLoaned; }
 }

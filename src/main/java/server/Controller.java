@@ -115,7 +115,6 @@ public class Controller {
         ArrayList<Book> books = BookDatabaseLogic.fetchAllBooks(specificUser.getEmail());
 
         return ControllerHelper.getJSONBooks(books).toString();
-
     }
 
     /**
@@ -218,7 +217,6 @@ public class Controller {
         return JSONFollows.toString();
     }
 
-
     /**
      * Add book request method
      * @param jsonString
@@ -267,9 +265,10 @@ public class Controller {
     }
 
     /**
-     *
-     * @param jsonString
-     * @return
+     * Request mapping to return a list of users who have request to loan books from the given users along with the
+     * books they hvae requested to borrow
+     * @param jsonString JSON containing parameters needed for getting this information
+     * @return a string containing JSON with the requested information
      */
     @RequestMapping(method = RequestMethod.POST, value = "/request/loan")
     public String getLoanRequests(@RequestBody String jsonString) {
@@ -281,13 +280,12 @@ public class Controller {
         ArrayList<String> JSONPendingBooks = ControllerHelper.getJSONBorrowedBooks(pendingBorrowRequests);
 
         return JSONPendingBooks.toString();
-
     }
 
     /**
-     *
-     * @param jsonString
-     * @return
+     * Request mapping to handle when a user makes a request to borrow a book
+     * @param jsonString JSON containing parameters needed for performing this action
+     * @return JSON string containing a list of BorrowedBooks
      */
     @RequestMapping(method = RequestMethod.POST, value = "/request/process")
     public String processBorrowRequest(@RequestBody String jsonString) {
@@ -299,13 +297,12 @@ public class Controller {
         ArrayList<String> JSONPendingBooks = ControllerHelper.getJSONBorrowedBooks(pendingBorrowRequests);
 
         return JSONPendingBooks.toString();
-
     }
 
     /**
-     *
-     * @param jsonString
-     * @return
+     * Request mapping to handle the act of a user approving or denying a loan request
+     * @param jsonString JSON containing parameters needed for performing this action
+     * @return a status response of OK if the loan request response was processed correctly, a bad request otherwise
      */
     @RequestMapping(method = RequestMethod.POST, value = "/request/approveOrDenyRequest")
     public ResponseEntity<String> updateBorrowRequest(@RequestBody String jsonString) {
@@ -320,9 +317,9 @@ public class Controller {
     }
 
     /**
-     *
-     * @param jsonString
-     * @return
+     * Request mapping to handle when a user recalls a book
+     * @param jsonString JSON containing parameters needed for performing this action
+     * @return a status response of OK if the recall action was processed correctly, a bad request otherwise
      */
     @RequestMapping(method = RequestMethod.POST, value = "/recall")
     public ResponseEntity<String> recallLoan(@RequestBody String jsonString) {
@@ -330,8 +327,25 @@ public class Controller {
 
         String requestNumber = data.get("requestNumber").toString();
 
-        Boolean recallSuccessful = UserDatabaseLogic.recallBook(requestNumber);
+        boolean recallSuccessful = UserDatabaseLogic.returnOrRecallBook(requestNumber, false);
 
         return (recallSuccessful) ? new ResponseEntity<String>(HttpStatus.OK) : new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
     }
+
+    /**
+     * Request mapping to handle when a user checks in a book they have lent out after it has been returned from loan
+     * @param jsonString JSON containing parameters needed for performing this action
+     * @return a status response of OK if the return action was processed correctly, a bad request otherwise
+     */
+    @RequestMapping(method = RequestMethod.POST, value = "/returnBook")
+    public ResponseEntity<String> returnBook(@RequestBody String jsonString) {
+        JSONObject data = new JSONObject(jsonString);
+
+        String requestNumber = data.get("requestNumber").toString();
+
+        boolean returnSuccessful = UserDatabaseLogic.returnOrRecallBook(requestNumber, true);
+
+        return (returnSuccessful) ? new ResponseEntity<String>(HttpStatus.OK) : new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+    }
+
 }

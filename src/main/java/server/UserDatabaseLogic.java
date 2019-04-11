@@ -6,8 +6,6 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Hashtable;
 
 public class UserDatabaseLogic extends DatabaseLogic {
 
@@ -349,16 +347,7 @@ public class UserDatabaseLogic extends DatabaseLogic {
             updateBorrowRequest.executeUpdate();
 
             if(status.equals("approved")) {
-
-                updateLoanConditionsUponApproval.setInt(1, Integer.parseInt(requestNumberDateCopyId.get(1)));
-
-                java.util.Date start_date = new SimpleDateFormat("yyyy-MM-dd").parse(requestNumberDateCopyId.get(2));
-                java.sql.Date loanStartInSQL = new java.sql.Date(start_date.getTime());
-
-                updateLoanConditionsUponApproval.setDate(2, loanStartInSQL);
-                updateLoanConditionsUponApproval.setInt(3, Integer.parseInt(requestNumberDateCopyId.get(1)));
-
-                updateLoanConditionsUponApproval.executeUpdate();
+                approveRequest(updateLoanConditionsUponApproval, requestNumberDateCopyId);
             }
 
             con.close();
@@ -371,16 +360,40 @@ public class UserDatabaseLogic extends DatabaseLogic {
         return false;
     }
 
-    public static boolean recallBook(String requestNumber) {
+    private static void approveRequest(PreparedStatement updateLoanConditionsUponApproval, ArrayList<String> requestNumberDateCopyId) throws SQLException, ParseException {
+
+        updateLoanConditionsUponApproval.setInt(1, Integer.parseInt(requestNumberDateCopyId.get(1)));
+
+        java.util.Date start_date = new SimpleDateFormat("yyyy-MM-dd").parse(requestNumberDateCopyId.get(2));
+        java.sql.Date loanStartInSQL = new java.sql.Date(start_date.getTime());
+
+        updateLoanConditionsUponApproval.setDate(2, loanStartInSQL);
+        updateLoanConditionsUponApproval.setInt(3, Integer.parseInt(requestNumberDateCopyId.get(1)));
+
+        updateLoanConditionsUponApproval.executeUpdate();
+    }
+
+    /**
+     * This method updates the database when the user wants to recall one of the books the have lent or check back in
+     * a book they lent which has now been returned. While these are two separate actions, the database logic to handle
+     * them is almost identical so they were combined into one.
+     * @param requestNumber a string containing the request number associated with this loan
+     * @param returnBook a boolean that if true, means the book is being returned, not recalled
+     * @return a boolean, true if the database update was successful, false if otherwise
+     */
+    public static boolean returnOrRecallBook(String requestNumber, boolean returnBook) {
         openTheConnection();
 
-        try(PreparedStatement recallBookQuery = con.prepareStatement(Query.RECALL_BOOK);
-        PreparedStatement updateStatus = con.prepareStatement(Query.UPDATE_STATUS_AT_END_OF_LOAN)){
+        try(PreparedStatement recallBookQuery = con.prepareStatement(Query.RETURN_OR_RECALL_BOOK);
+            PreparedStatement updateStatus = con.prepareStatement(Query.UPDATE_STATUS_AT_END_OF_LOAN)){
 
             recallBookQuery.setInt(1, Integer.parseInt(requestNumber));
             recallBookQuery.executeUpdate();
 
-            updateStatus.setInt(1, Integer.parseInt(requestNumber));
+            String status = (returnBook) ? "returned" : "recalled";
+
+            updateStatus.setString(1, status);
+            updateStatus.setInt(2, Integer.parseInt(requestNumber));
             updateStatus.executeUpdate();
 
             con.close();
