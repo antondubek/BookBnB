@@ -14,7 +14,7 @@ public class Query {
 
     public final static String FETCH_BOOKS_BASE = "SELECT * FROM Book;";
 
-    public final static String FETCH_USER_BOOKS = "SELECT ISBN, title, author, book_version, available, copy_id FROM Book " +
+    public final static String FETCH_USER_BOOKS = "SELECT ISBN, title, author, book_version, available, copy_id, loan_to AS isLoaned FROM Book " +
                                           "INNER JOIN Users_book ON Book.ISBN = Users_book.Book_ISBN INNER JOIN Users ON Users_book.Users_id = Users.id " +
                                           "WHERE EMAIL = ?;";
 
@@ -69,7 +69,14 @@ public class Query {
                                                     "loan_end = Users_book.loan_start + Users_book.loan_length " +
                                                     "WHERE copy_id = (SELECT copy_id FROM Request WHERE request_number = ?);";
 
-    public static String RECALL_BOOK = "UPDATE Users_book SET loan_to = null, loan_start = null, loan_end = null WHERE copy_id = (SELECT copy_id FROM Request WHERE request_number = ?);";
+    public static String RETURN_OR_RECALL_BOOK = "UPDATE Users_book SET loan_to = null, loan_start = null, loan_end = null WHERE copy_id = (SELECT copy_id FROM Request WHERE request_number = ?);";
 
-    public static String UPDATE_STATUS_AT_END_OF_LOAN = "UPDATE Request SET status = 'recalled' WHERE request_number = ? ";
+    public static String UPDATE_STATUS_AT_END_OF_LOAN = "UPDATE Request SET status = ? WHERE request_number = ? ";
+
+    public static String AVERAGE_BOOK_RATING = "SELECT AVG(rating) FROM Users_rating GROUP BY(Book_ISBN);";
+
+    public static String AVERAGE_USER_REPUTATION = "SELECT AVG(rating), borrower FROM Reputation GROUP BY(borrower);"; //SELECT AVG(rating), borrower FROM Reputation WHERE borrower = '3' GROUP BY(borrower);
+
+
+
 }
