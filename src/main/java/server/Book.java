@@ -11,6 +11,7 @@ public class Book {
     private Boolean available;  //if the user sets the book to available, so people can borrow it
     private String copyID;      //Optional field. used when sending books associated with a particular user
     private Boolean isLoaned;
+    private String loanLength;  //Optional field, used to
 
     //Getters
 
@@ -35,6 +36,7 @@ public class Book {
     }
 
     public String getCopyID() { return copyID; }
+    public String getLoanLength(){return loanLength;}
 
     public boolean getIsLoaned(){ return isLoaned; }
 
@@ -70,4 +72,7 @@ public class Book {
     public void setCopyID(String copyID) { this.copyID = copyID; }
 
     public void setIsLoaned(Boolean isLoaned) { this.isLoaned = isLoaned; }
+
+    public void setLoanLength(String loanLength){this.loanLength = loanLength;}
+
 }
