@@ -348,4 +348,20 @@ public class Controller {
         return (returnSuccessful) ? new ResponseEntity<String>(HttpStatus.OK) : new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
     }
 
+    /**
+     * Request mapping to handle when a user checks in a book they have lent out after it has been returned from loan
+     * @param jsonString JSON containing parameters needed for performing this action
+     * @return a status response of OK if the return action was processed correctly, a bad request otherwise
+     */
+    @RequestMapping(method = RequestMethod.POST, value = "/rating/user")
+    public String getAverageRatingOfBook(@RequestBody String jsonString) {
+        JSONObject data = new JSONObject(jsonString);
+        String ISBN = data.get("ISBN").toString();
+
+        String rating = BookDatabaseLogic.getAverageRating(ISBN);
+        JSONObject output = new JSONObject(jsonString);
+        output.put("AverageRating",rating);
+        return output.toString();
+    }
+
 }

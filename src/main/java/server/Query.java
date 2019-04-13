@@ -73,10 +73,9 @@ public class Query {
 
     public static String UPDATE_STATUS_AT_END_OF_LOAN = "UPDATE Request SET status = ? WHERE request_number = ? ";
 
-    public static String AVERAGE_BOOK_RATING = "SELECT AVG(rating) FROM Users_rating GROUP BY(Book_ISBN);";
+    public static String AVERAGE_BOOK_RATING = "SELECT AVG(rating) FROM Users_rating WHERE Book_ISBN = ? GROUP BY(Book_ISBN);";
 
     public static String AVERAGE_USER_REPUTATION = "SELECT AVG(rating), borrower FROM Reputation GROUP BY(borrower);"; //SELECT AVG(rating), borrower FROM Reputation WHERE borrower = '3' GROUP BY(borrower);
-
 
 
 }

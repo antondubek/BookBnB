@@ -259,4 +259,26 @@ public class BookDatabaseLogic extends DatabaseLogic {
         }
         return lenders;
     }
+
+    /**
+     *
+     * @param ISBN
+     * @return
+     */
+    public static String getAverageRating(String ISBN){
+        openTheConnection();
+
+        try (PreparedStatement statementToFetchLenders = con.prepareStatement(Query.AVERAGE_BOOK_RATING)){
+
+            statementToFetchLenders.setString(1, ISBN);
+
+            ResultSet queryResults = statementToFetchLenders.executeQuery();
+            String averageRating = getArrayListFromResultSet(queryResults,new String[]{"AVG(rating)"}).get(0);
+            con.close();
+            return averageRating;
+        } catch (SQLException se) {
+            System.out.println("SQL ERR: " + se); //
+        }
+        return "";
+    }
 }
