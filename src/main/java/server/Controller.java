@@ -350,11 +350,11 @@ public class Controller {
     }
 
     /**
-     * Request mapping to handle when a user checks in a book they have lent out after it has been returned from loan
+     *
      * @param jsonString JSON containing parameters needed for performing this action
      * @return a status response of OK if the return action was processed correctly, a bad request otherwise
      */
-    @RequestMapping(method = RequestMethod.POST, value = "/rating/user")
+    @RequestMapping(method = RequestMethod.POST, value = "/rating/book")
     public String getAverageRatingOfBook(@RequestBody String jsonString) {
         JSONObject data = new JSONObject(jsonString);
         String ISBN = data.get("ISBN").toString();
@@ -365,7 +365,26 @@ public class Controller {
         return output.toString();
     }
 
-    /*
+    /**
+     *
+     * @param jsonString JSON containing parameters needed for performing this action
+     * @return a status response of OK if the return action was processed correctly, a bad request otherwise
+     */
+    @RequestMapping(method = RequestMethod.POST, value = "/rating/book/set")
+    public ResponseEntity<String> setRatingOfBook(@RequestBody String jsonString) {
+        JSONObject data = new JSONObject(jsonString);
+        String email = data.get("email").toString();
+        String ISBN = data.get("ISBN").toString();
+        Integer rating = Integer.parseInt(data.get("rating").toString());
+        String review = data.get("review").toString();
+
+        Boolean ratingIsSet = BookDatabaseLogic.setRating(email,ISBN,rating,review);
+
+        return (ratingIsSet) ? new ResponseEntity<String>(HttpStatus.OK) : new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+    }
+
+
+    /**
      * Set loan length
      * @param jsonString
      * @return ok if the table is updated successfully

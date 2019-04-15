@@ -278,11 +278,11 @@ public class BookDatabaseLogic extends DatabaseLogic {
     public static String getAverageRating(String ISBN){
         openTheConnection();
 
-        try (PreparedStatement statementToFetchLenders = con.prepareStatement(Query.AVERAGE_BOOK_RATING)){
+        try (PreparedStatement statementToGetRating = con.prepareStatement(Query.AVERAGE_BOOK_RATING)){
 
-            statementToFetchLenders.setString(1, ISBN);
+            statementToGetRating.setString(1, ISBN);
 
-            ResultSet queryResults = statementToFetchLenders.executeQuery();
+            ResultSet queryResults = statementToGetRating.executeQuery();
             String averageRating = getArrayListFromResultSet(queryResults,new String[]{"AVG(rating)"}).get(0);
             con.close();
             return averageRating;
@@ -292,7 +292,37 @@ public class BookDatabaseLogic extends DatabaseLogic {
         return "";
     }
 
-    /*
+    /**
+     *
+     * @param ISBN
+     * @return
+     */
+    public static Boolean setRating(String email, String ISBN, Integer rating,String review){
+        openTheConnection();
+
+        try (PreparedStatement statementToSetRating = con.prepareStatement(Query.SET_BOOK_RATING)){
+
+            statementToSetRating.setString(1, email);
+            statementToSetRating.setString(2, ISBN);
+            statementToSetRating.setInt(3, rating);
+            statementToSetRating.setString(4, review);
+            statementToSetRating.setDate(5, getCurrentDate());
+
+            statementToSetRating.executeUpdate();
+            con.close();
+            return true;
+        } catch (SQLException se) {
+            System.out.println("SQL ERR: " + se); //
+        }
+        return false;
+    }
+
+    private static java.sql.Date getCurrentDate() {
+        java.util.Date today = new java.util.Date();
+        return new java.sql.Date(today.getDate());
+    }
+
+    /**
      * Sets the loan length
      *
      * @param loanLength
