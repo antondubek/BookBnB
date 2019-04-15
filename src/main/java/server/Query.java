@@ -14,7 +14,7 @@ public class Query {
 
     public final static String FETCH_BOOKS_BASE = "SELECT * FROM Book;";
 
-    public final static String FETCH_USER_BOOKS = "SELECT ISBN, title, author, book_version, available, copy_id, loan_to AS isLoaned FROM Book " +
+    public final static String FETCH_USER_BOOKS = "SELECT ISBN, title, author, book_version, available, copy_id, loan_length, loan_to AS isLoaned FROM Book " +
                                           "INNER JOIN Users_book ON Book.ISBN = Users_book.Book_ISBN INNER JOIN Users ON Users_book.Users_id = Users.id " +
                                           "WHERE EMAIL = ?;";
 
@@ -77,5 +77,7 @@ public class Query {
 
     public static String AVERAGE_USER_REPUTATION = "SELECT AVG(rating), borrower FROM Reputation GROUP BY(borrower);"; //SELECT AVG(rating), borrower FROM Reputation WHERE borrower = '3' GROUP BY(borrower);
 
+    public final static String SET_LOAN_TERMS = "UPDATE Users_book SET loan_length = ? WHERE copy_id = ?;";
+    public final static String GET_LOAN_TERMS = "select loan_length from Users_book where copy_id = ?;";
 
 }
