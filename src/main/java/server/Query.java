@@ -75,7 +75,7 @@ public class Query {
 
     public static String AVERAGE_BOOK_RATING = "SELECT AVG(rating) FROM Users_rating WHERE Book_ISBN = ? GROUP BY(Book_ISBN);";
 
-    public static String AVERAGE_USER_REPUTATION = "SELECT AVG(rating), borrower FROM Reputation GROUP BY(borrower);"; //SELECT AVG(rating), borrower FROM Reputation WHERE borrower = '3' GROUP BY(borrower);
+    public static String AVERAGE_USER_REPUTATION = "SELECT AVG(rating), borrower FROM Reputation WHERE borrower = (SELECT id FROM Users WHERE email = ?) GROUP BY(borrower);";
 
     public final static String SET_LOAN_TERMS = "UPDATE Users_book SET loan_length = ? WHERE copy_id = ?;";
     public final static String GET_LOAN_TERMS = "select loan_length from Users_book where copy_id = ?;";

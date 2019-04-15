@@ -405,4 +405,26 @@ public class UserDatabaseLogic extends DatabaseLogic {
         return false;
     }
 
+    /**
+     *
+     * @param email
+     * @return
+     */
+    public static String getAverageRating(String email){
+        openTheConnection();
+
+        try (PreparedStatement statementToGetRating = con.prepareStatement(Query.AVERAGE_USER_REPUTATION)){
+
+            statementToGetRating.setString(1, email);
+
+            ResultSet queryResults = statementToGetRating.executeQuery();
+            String averageRating = getArrayListFromResultSet(queryResults,new String[]{"AVG(rating)"}).get(0);
+            con.close();
+            return averageRating;
+        } catch (SQLException se) {
+            System.out.println("SQL ERR: " + se); //
+        }
+        return "";
+    }
+
 }

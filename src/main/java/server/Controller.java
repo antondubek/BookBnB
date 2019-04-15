@@ -370,6 +370,22 @@ public class Controller {
      * @param jsonString JSON containing parameters needed for performing this action
      * @return a status response of OK if the return action was processed correctly, a bad request otherwise
      */
+    @RequestMapping(method = RequestMethod.POST, value = "/rating/user")
+    public String getAverageRatingOfUser(@RequestBody String jsonString) {
+        JSONObject data = new JSONObject(jsonString);
+        String email = data.get("email").toString();
+
+        String rating = UserDatabaseLogic.getAverageRating(email);
+        JSONObject output = new JSONObject(jsonString);
+        output.put("AverageRating",rating);
+        return output.toString();
+    }
+
+    /**
+     *
+     * @param jsonString JSON containing parameters needed for performing this action
+     * @return a status response of OK if the return action was processed correctly, a bad request otherwise
+     */
     @RequestMapping(method = RequestMethod.POST, value = "/rating/book/set")
     public ResponseEntity<String> setRatingOfBook(@RequestBody String jsonString) {
         JSONObject data = new JSONObject(jsonString);
@@ -412,4 +428,6 @@ public class Controller {
         output.put("loanLength",loanLenght);
         return output.toString();
     }
+
+
 }
