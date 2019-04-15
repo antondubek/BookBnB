@@ -79,5 +79,7 @@ public class Query {
 
     public final static String SET_LOAN_TERMS = "UPDATE Users_book SET loan_length = ? WHERE copy_id = ?;";
     public final static String GET_LOAN_TERMS = "select loan_length from Users_book where copy_id = ?;";
-
+    public final static String SET_BOOK_RATING = "INSERT INTO Users_rating (Users_id, Book_ISBN, rating,review,review_date) "+
+            "VALUES (?,?,?,?,?)";
+    //"VALUES (6,\"0001112223\",5,\"fsdsdfdsfsdsdff\",\"2019-10-10\")"
 }
