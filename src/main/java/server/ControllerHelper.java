@@ -296,7 +296,7 @@ public class ControllerHelper {
     public static boolean processRequestStatus(String status, ArrayList<String> requestNumberDate) {
 
         if(status.equals("approved") || status.equals("denied")){
-            return  UserDatabaseLogic.processApprovalOrDenialOfBorrowRequest(status, requestNumberDate);
+            return  BorrowBookFlowDatabaseLogic.processApprovalOrDenialOfBorrowRequest(status, requestNumberDate);
         } else {
             return false;
         }
