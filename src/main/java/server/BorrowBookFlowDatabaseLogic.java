@@ -10,9 +10,7 @@ import java.util.ArrayList;
 public class BorrowBookFlowDatabaseLogic extends DatabaseLogic {
 
     /**
-     * <<<<<<< HEAD
      * Query to return all the available lenders of a particular book
-     *
      * @param ISBN the unique identifier for the book
      * @return an ArrayList of Lender objects representing users who are willing to lender the book
      */
@@ -42,7 +40,6 @@ public class BorrowBookFlowDatabaseLogic extends DatabaseLogic {
     /**
      * Method to extract the query results and create Lender objects to send back to the client. These lenders are
      * associated with a particular book.
-     *
      * @param queryResults results from the SELECT query
      * @return an arraylist of Lender objects
      */
@@ -62,9 +59,8 @@ public class BorrowBookFlowDatabaseLogic extends DatabaseLogic {
 
     /**
      * Sets the loan length
-     *
-     * @param loanLength
-     * @param copyID
+     * @param loanLength string containing the desired loan length the user wants to configure for their book
+     * @param copyID the copyID of the book to update
      * @return true if the query was executed successfully
      */
     public static Boolean setLendingTerms(String loanLength, String copyID) {
@@ -85,6 +81,11 @@ public class BorrowBookFlowDatabaseLogic extends DatabaseLogic {
         }
     }
 
+    /**
+     * A method to fetch the lending terms of a particular book from the database and send it back to the client
+     * @param copyID of the book to fetch the lending terms from
+     * @return a string containing the terms
+     */
     public static String getLendingTerms(String copyID){
         openTheConnection();
         try (PreparedStatement statementToGetLoanTerms = con.prepareStatement(Query.GET_LOAN_TERMS)) {
@@ -139,7 +140,7 @@ public class BorrowBookFlowDatabaseLogic extends DatabaseLogic {
      * @param email the user's email
      * @param requestBorrowedBooks a boolean that if true, returns the books you have requested to borrow, if false
      *                             will return the books that others have requested to borrow off you
-     * @return
+     * @return an array list containing the borrowedbook objects
      */
     public static ArrayList<BorrowedBook> booksRequestedToBorrowOrLoan(String email, boolean requestBorrowedBooks) {
         ArrayList<BorrowedBook> pendingBorrowedBooks = new ArrayList<>();
@@ -209,10 +210,11 @@ public class BorrowBookFlowDatabaseLogic extends DatabaseLogic {
 
 
     /**
-     *
-     * @param status
-     * @param requestNumberDateCopyId
-     * @return
+     * A method to process a loan request and update the database with the result
+     * @param status a string containing the desired status of the book being requested, the status will be updated to
+     *               the value of this string
+     * @param requestNumberDateCopyId an arraylist of strings containing parameters needed for the update
+     * @return a boolean, true if the update is successful, false if otherwise
      */
     public static boolean processApprovalOrDenialOfBorrowRequest(String status, ArrayList<String> requestNumberDateCopyId) {
         openTheConnection();
@@ -240,11 +242,13 @@ public class BorrowBookFlowDatabaseLogic extends DatabaseLogic {
     }
 
     /**
-     *
-     * @param updateLoanConditionsUponApproval
-     * @param requestNumberDateCopyId
-     * @throws SQLException
-     * @throws ParseException
+     * A method to update the loan conditions after the loan has been approved. The purpose of this is to make the database
+     * reflect the next start and end dates, and to show who the book is now loaned to. This method sets the placeholders
+     * of a prepared statement and executes the update
+     * @param updateLoanConditionsUponApproval preparedstatement containing the query to update
+     * @param requestNumberDateCopyId an arraylist of strings containing parameters needed for the update
+     * @throws SQLException an exception if the query fails
+     * @throws ParseException an exception if the parsing fails
      */
     private static void approveRequest(PreparedStatement updateLoanConditionsUponApproval, ArrayList<String> requestNumberDateCopyId) throws SQLException, ParseException {
 
