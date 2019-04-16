@@ -387,6 +387,24 @@ public class Controller {
      * @return a status response of OK if the return action was processed correctly, a bad request otherwise
      */
     @RequestMapping(method = RequestMethod.POST, value = "/rating/book/set")
+    public ResponseEntity<String> setReputationOfUser(@RequestBody String jsonString) {
+        JSONObject data = new JSONObject(jsonString);
+        String borrowerEmail = data.get("borrowerEmail").toString();
+        String lenderEmail = data.get("lenderEmail").toString();
+        Integer rating = Integer.parseInt(data.get("rating").toString());
+        String review = data.get("review").toString();
+
+        Boolean reputationIsSet = UserDatabaseLogic.setReputation(borrowerEmail,lenderEmail,rating,review);
+
+        return (reputationIsSet) ? new ResponseEntity<String>(HttpStatus.OK) : new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+    }
+
+    /**
+     *
+     * @param jsonString JSON containing parameters needed for performing this action
+     * @return a status response of OK if the return action was processed correctly, a bad request otherwise
+     */
+    @RequestMapping(method = RequestMethod.POST, value = "/rating/book/set")
     public ResponseEntity<String> setRatingOfBook(@RequestBody String jsonString) {
         JSONObject data = new JSONObject(jsonString);
         String email = data.get("email").toString();
@@ -398,7 +416,6 @@ public class Controller {
 
         return (ratingIsSet) ? new ResponseEntity<String>(HttpStatus.OK) : new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
     }
-
 
     /**
      * Set loan length

@@ -427,4 +427,32 @@ public class UserDatabaseLogic extends DatabaseLogic {
         return "";
     }
 
+    /**
+     *
+     * @param borowerEmail
+     * @param lenderEmail
+     * @param rating
+     * @param review
+     * @return
+     */
+    public static Boolean setReputation(String borowerEmail, String lenderEmail, Integer rating,String review){
+        openTheConnection();
+
+        try (PreparedStatement statementToSetRating = con.prepareStatement(Query.SET_USER_REPUTATION)){
+
+            statementToSetRating.setString(1, lenderEmail);
+            statementToSetRating.setString(2, borowerEmail);
+            statementToSetRating.setInt(3, rating);
+            statementToSetRating.setString(4, review);
+            statementToSetRating.setDate(5, getCurrentDate());
+
+            statementToSetRating.executeUpdate();
+            con.close();
+            return true;
+        } catch (SQLException se) {
+            System.out.println("SQL ERR: " + se); //
+        }
+        return false;
+    }
+
 }

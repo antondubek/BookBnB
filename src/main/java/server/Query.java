@@ -81,4 +81,6 @@ public class Query {
     public final static String GET_LOAN_TERMS = "select loan_length from Users_book where copy_id = ?;";
     public final static String SET_BOOK_RATING = "INSERT INTO Users_rating (Users_id, Book_ISBN, rating,review,review_date) "+
             "VALUES ((SELECT id FROM Users WHERE email = ?),?,?,?,?)";
+    public static String SET_USER_REPUTATION = "INSERT INTO Reputation (lender,borrower,rating, review,review_date)\n"+
+            "VALUES ((SELECT id FROM Users WHERE email = ?),(SELECT id FROM Users WHERE email = ?),?,?,?);";
 }
