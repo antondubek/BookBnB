@@ -287,7 +287,9 @@ public class BookDatabaseLogic extends DatabaseLogic {
             con.close();
             return averageRating;
         } catch (SQLException se) {
-            System.out.println("SQL ERR: " + se); //
+            System.out.println("SQL ERR: " + se);
+        } catch (ArrayIndexOutOfBoundsException e){
+            System.out.println("Array Index out of Bounds ERR: " + e);
         }
         return "";
     }
