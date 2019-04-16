@@ -386,7 +386,7 @@ public class Controller {
      * @param jsonString JSON containing parameters needed for performing this action
      * @return a status response of OK if the return action was processed correctly, a bad request otherwise
      */
-    @RequestMapping(method = RequestMethod.POST, value = "/rating/book/set")
+    @RequestMapping(method = RequestMethod.POST, value = "/rating/user/set")
     public ResponseEntity<String> setReputationOfUser(@RequestBody String jsonString) {
         JSONObject data = new JSONObject(jsonString);
         String borrowerEmail = data.get("borrowerEmail").toString();
