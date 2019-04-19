@@ -418,7 +418,13 @@ public class UserDatabaseLogic extends DatabaseLogic {
             statementToGetRating.setString(1, email);
 
             ResultSet queryResults = statementToGetRating.executeQuery();
-            String averageRating = getArrayListFromResultSet(queryResults,new String[]{"AVG(rating)"}).get(0);
+            ArrayList<String> averageRatingList = getArrayListFromResultSet(queryResults,new String[]{"AVG(rating)"});
+            String averageRating;
+            if (averageRatingList.size()>0){
+                averageRating = averageRatingList.get(0);
+            } else {
+                averageRating = "";
+            }
             con.close();
             return averageRating;
         } catch (SQLException se) {
