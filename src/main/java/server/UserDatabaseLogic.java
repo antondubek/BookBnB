@@ -228,9 +228,9 @@ public class UserDatabaseLogic extends DatabaseLogic {
     }
 
     /**
-     *
-     * @param email
-     * @return
+     * Get average Reputation of the user.
+     * @param email of the user, whose reputation needs to be returned
+     * @return Average reputation of the user
      */
     public static String getAverageRating(String email){
         openTheConnection();
@@ -256,12 +256,12 @@ public class UserDatabaseLogic extends DatabaseLogic {
     }
 
     /**
-     *
+     * Add new reputation row to the database.
      * @param borowerEmail
      * @param lenderEmail
      * @param rating
      * @param review
-     * @return
+     * @return true if the query was executed successfully
      */
     public static Boolean setReputation(String borowerEmail, String lenderEmail, Integer rating,String review){
         openTheConnection();

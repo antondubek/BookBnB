@@ -220,9 +220,9 @@ public class BookDatabaseLogic extends DatabaseLogic {
     }
 
     /**
-     *
-     * @param ISBN
-     * @return
+     * Get Average rating of the book
+     * @param ISBN of the book, which rating should be returned
+     * @return average rating of the book
      */
     public static String getAverageRating(String ISBN){
         openTheConnection();
@@ -250,9 +250,12 @@ public class BookDatabaseLogic extends DatabaseLogic {
     }
 
     /**
-     *
+     * Add new rating raw in database.
+     * @param email
      * @param ISBN
-     * @return
+     * @param rating
+     * @param review
+     * @return true if the query was executed successfully
      */
     public static Boolean setRating(String email, String ISBN, Integer rating,String review){
         openTheConnection();
