@@ -307,4 +307,15 @@ public class ControllerHelper {
         output.put("AverageRating",rating);
         return output.toString();
     }
+
+    public static String[] getParametersForRatingRequests(String string1,String string2, JSONObject data){
+        String[] result = new String[4];
+
+        result[0] = data.get(string1).toString();
+        result[1] = data.get(string2).toString();
+        result[2] = data.getString("rating").toString();
+        result[3] = data.getString("review").toString();
+
+        return result;
+    }
 }

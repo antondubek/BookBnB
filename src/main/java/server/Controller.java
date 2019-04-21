@@ -388,10 +388,11 @@ public class Controller {
     @RequestMapping(method = RequestMethod.POST, value = "/rating/user/set")
     public ResponseEntity<String> setReputationOfUser(@RequestBody String jsonString) {
         JSONObject data = new JSONObject(jsonString);
-        String borrowerEmail = data.get("borrowerEmail").toString();
-        String lenderEmail = data.get("lenderEmail").toString();
-        Integer rating = Integer.parseInt(data.get("rating").toString());
-        String review = data.get("review").toString();
+        String[] parametersForRating = ControllerHelper.getParametersForRatingRequests("borrowerEmail","lenderEmail",data);
+        String borrowerEmail = parametersForRating[0];
+        String lenderEmail = parametersForRating[1];
+        Integer rating = Integer.parseInt(parametersForRating[2]);
+        String review = parametersForRating[3];
 
         Boolean reputationIsSet = UserDatabaseLogic.setReputation(borrowerEmail,lenderEmail,rating,review);
 
@@ -406,10 +407,11 @@ public class Controller {
     @RequestMapping(method = RequestMethod.POST, value = "/rating/book/set")
     public ResponseEntity<String> setRatingOfBook(@RequestBody String jsonString) {
         JSONObject data = new JSONObject(jsonString);
-        String email = data.get("email").toString();
-        String ISBN = data.get("ISBN").toString();
-        Integer rating = Integer.parseInt(data.get("rating").toString());
-        String review = data.get("review").toString();
+        String[] parametersForRating = ControllerHelper.getParametersForRatingRequests("email","ISBN",data);
+        String email = parametersForRating[0];
+        String ISBN = parametersForRating[1];
+        Integer rating = Integer.parseInt(parametersForRating[2]);
+        String review = parametersForRating[3];
 
         Boolean ratingIsSet = BookDatabaseLogic.setRating(email,ISBN,rating,review);
 
