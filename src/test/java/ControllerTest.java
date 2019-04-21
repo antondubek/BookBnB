@@ -198,4 +198,15 @@ public class ControllerTest {
         assertEquals(actualRequestNumber,"12");
         assertEquals(actualStatus,"active");
     }
+
+    @Test
+    public void testGetBorrowRequestFields(){
+        JSONObject data = new JSONObject();
+        data.put("lenderID", 2);
+        data.put("copyID",12);
+        Lender actualLender = ControllerHelper.getBorrowRequestFields(data);
+        assertEquals(actualLender.getcopyID(),"12");
+        assertEquals(actualLender.getID(),"2");
+        assertEquals(actualLender.getCity(),"");
+    }
 }
