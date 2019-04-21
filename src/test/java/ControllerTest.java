@@ -110,7 +110,6 @@ public class ControllerTest {
         User user1 = new User("Riad", "rio@gmail.com", "baku");
         String json1 = "{\"name\":\"Riad\",\"email\":\"rio@gmail.com\",\"city\":\"baku\"}";
         assertEquals(ControllerHelper.createJSONFromUser(user1),json1);
-        //TODO: test catch block as well
     }
 
     @Test
@@ -208,5 +207,12 @@ public class ControllerTest {
         assertEquals(actualLender.getcopyID(),"12");
         assertEquals(actualLender.getID(),"2");
         assertEquals(actualLender.getCity(),"");
+    }
+
+    @Test
+    public void testProcessRequestStatus(){
+        ArrayList<String> requestNumberDate = new ArrayList<String>();
+        assertFalse(ControllerHelper.processRequestStatus("approd",requestNumberDate));
+
     }
 }
