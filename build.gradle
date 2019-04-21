@@ -47,7 +47,7 @@ jacocoTestReport {
     }
 }
 
-test {
-    exclude '**/DatabaseLogicTest.class'
-    exclude '**/ControllerTest.class'
-}
+//test {
+//    exclude '**/DatabaseLogicTest.class'
+//    exclude '**/ControllerTest.class'
+//}

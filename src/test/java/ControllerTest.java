@@ -1,9 +1,6 @@
 import org.json.JSONObject;
 import org.junit.Test;
-import server.Book;
-import server.Controller;
-import server.ControllerHelper;
-import server.User;
+import server.*;
 
 import static org.junit.Assert.*;
 import java.util.ArrayList;
@@ -59,7 +56,7 @@ public class ControllerTest {
         ArrayList<Book> books = new ArrayList<Book>();
         books.add(new Book("1234567890","Song of Ice and Fire", "George Martin"));
         ArrayList<String> JSONBooks = ControllerHelper.getJSONBooks(books);
-        String expectedJSON = "{\"ISBN\":\"1234567890\",\"title\":\"Song of Ice and Fire\",\"author\":\"George Martin\",\"edition\":null,\"available\":null,\"copyID\":null,\"isbn\":\"1234567890\"}";
+        String expectedJSON = "{\"ISBN\":\"1234567890\",\"title\":\"Song of Ice and Fire\",\"author\":\"George Martin\",\"edition\":null,\"available\":null,\"copyID\":null,\"isLoaned\":false,\"loanLength\":null,\"isbn\":\"1234567890\"}";
         assertEquals(JSONBooks.get(0), expectedJSON);
     }
 
@@ -159,4 +156,31 @@ public class ControllerTest {
         data.put("available", "false");
         assertFalse(ControllerHelper.getAvailabilityFromJSON(data));
     }
+
+    @Test
+    public void testGetJSONBorrowedBooks(){
+        BorrowedBook book1 = new BorrowedBook("123456","Title1","Author1","active", "riadibadulla@gmail.com");
+        book1.setStartDate("01.02.2019");
+        book1.setEndDate("02.09.2019");
+        book1.setRequestNumber("12");
+        book1.setCopyID("4");
+        ArrayList<BorrowedBook> listOfBooks = new ArrayList<BorrowedBook>();
+        listOfBooks.add(book1);
+        String JSONStringExpected = "[{\"copyID\":\"4\",\"requestNumber\":\"12\",\"ISBN\":\"123456\",\"endDate\":\"02.09.2019\",\"author\":\"Author1\",\"name\":\"riadibadulla@gmail.com\",\"title\":\"Title1\",\"startDate\":\"01.02.2019\",\"status\":\"active\"}]";
+        String JSONActual = ControllerHelper.getJSONBorrowedBooks(listOfBooks).toString();
+        assertEquals(JSONActual,JSONStringExpected);
+    }
+
+    @Test
+    public void testGetJSONLenders(){
+        Lender lender = new Lender("12","Name1","City1","12","1");
+        ArrayList<Lender> lenders = new ArrayList<Lender>();
+        lenders.add(lender);
+
+        String ExpectedJSONArray = "[{\"name\":\"Name1\",\"city\":\"City1\",\"loanLength\":\"12\",\"copyID\":\"1\",\"id\":\"12\"}]";
+        String actualJSOON = ControllerHelper.getJSONLenders(lenders).toString();
+        assertEquals(actualJSOON, ExpectedJSONArray);
+    }
+
+
 }
