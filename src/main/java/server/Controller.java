@@ -76,7 +76,7 @@ public class Controller {
     @RequestMapping(method = RequestMethod.GET, value="/book/lenders")
     public String allLendersOfBook(@RequestParam(value="ISBN", defaultValue = "none") String ISBN){
 
-        ArrayList<Lender> Lenders = BookDatabaseLogic.fetchAllLenders(ISBN);
+        ArrayList<Lender> Lenders = BorrowBookFlowDatabaseLogic.fetchAllLenders(ISBN);
         return ControllerHelper.getJSONLenders(Lenders).toString();
     }
 
@@ -242,7 +242,7 @@ public class Controller {
         JSONObject data = new JSONObject(jsonString);
         String email = ControllerHelper.getEmailFromJson(data);
         Lender requestForSpecificLender = ControllerHelper.getBorrowRequestFields(data);
-        Boolean insert = UserDatabaseLogic.requestToBorrow(email, requestForSpecificLender);
+        Boolean insert = BorrowBookFlowDatabaseLogic.requestToBorrow(email, requestForSpecificLender);
         return (insert) ? new ResponseEntity<String>(HttpStatus.OK) : new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
     }
 
@@ -257,7 +257,7 @@ public class Controller {
         JSONObject data = new JSONObject(jsonString);
         String email = ControllerHelper.getEmailFromJson(data);
 
-        ArrayList<BorrowedBook> pendingBorrowRequests = UserDatabaseLogic.booksRequestedToBorrowOrLoan(email, true);
+        ArrayList<BorrowedBook> pendingBorrowRequests = BorrowBookFlowDatabaseLogic.booksRequestedToBorrowOrLoan(email, true);
 
         ArrayList<String> JSONPendingBooks = ControllerHelper.getJSONBorrowedBooks(pendingBorrowRequests);
 
@@ -276,7 +276,7 @@ public class Controller {
         JSONObject data = new JSONObject(jsonString);
         String email = ControllerHelper.getEmailFromJson(data);
 
-        ArrayList<BorrowedBook> pendingBorrowRequests = UserDatabaseLogic.booksRequestedToBorrowOrLoan(email, false);
+        ArrayList<BorrowedBook> pendingBorrowRequests = BorrowBookFlowDatabaseLogic.booksRequestedToBorrowOrLoan(email, false);
 
         ArrayList<String> JSONPendingBooks = ControllerHelper.getJSONBorrowedBooks(pendingBorrowRequests);
 
@@ -293,7 +293,7 @@ public class Controller {
         JSONObject data = new JSONObject(jsonString);
         String email = ControllerHelper.getEmailFromJson(data);
 
-        ArrayList<BorrowedBook> pendingBorrowRequests = UserDatabaseLogic.booksRequestedToBorrowOrLoan(email, false);
+        ArrayList<BorrowedBook> pendingBorrowRequests = BorrowBookFlowDatabaseLogic.booksRequestedToBorrowOrLoan(email, false);
 
         ArrayList<String> JSONPendingBooks = ControllerHelper.getJSONBorrowedBooks(pendingBorrowRequests);
 
@@ -328,7 +328,7 @@ public class Controller {
 
         String requestNumber = data.get("requestNumber").toString();
 
-        boolean recallSuccessful = UserDatabaseLogic.returnOrRecallBook(requestNumber, false);
+        boolean recallSuccessful = BorrowBookFlowDatabaseLogic.returnOrRecallBook(requestNumber, false);
 
         return (recallSuccessful) ? new ResponseEntity<String>(HttpStatus.OK) : new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
     }
@@ -344,7 +344,7 @@ public class Controller {
 
         String requestNumber = data.get("requestNumber").toString();
 
-        boolean returnSuccessful = UserDatabaseLogic.returnOrRecallBook(requestNumber, true);
+        boolean returnSuccessful = BorrowBookFlowDatabaseLogic.returnOrRecallBook(requestNumber, true);
 
         return (returnSuccessful) ? new ResponseEntity<String>(HttpStatus.OK) : new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
     }
@@ -427,7 +427,7 @@ public class Controller {
         JSONObject data = new JSONObject(jsonString);
         String loanLength = data.getString("loanLength");
         String copyID = data.getString("copyID");
-        Boolean insert = BookDatabaseLogic.setLendingTerms(loanLength,copyID);
+        Boolean insert = BorrowBookFlowDatabaseLogic.setLendingTerms(loanLength,copyID);
         return (insert) ? new ResponseEntity<String>(HttpStatus.OK) : new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
     }
 
@@ -440,7 +440,7 @@ public class Controller {
     public String getLoanLength(@RequestBody String jsonString) {
         JSONObject data = new JSONObject(jsonString);
         String copyID = data.getString("copyID");
-        String loanLenght = BookDatabaseLogic.getLendingTerms(copyID);
+        String loanLenght = BorrowBookFlowDatabaseLogic.getLendingTerms(copyID);
         JSONObject output = new JSONObject();
         output.put("loanLength",loanLenght);
         return output.toString();

@@ -220,57 +220,6 @@ public class BookDatabaseLogic extends DatabaseLogic {
     }
 
     /**
-     * <<<<<<< HEAD
-     * Query to return all the available lenders of a particular book
-     *
-     * @param ISBN the unique identifier for the book
-     * @return an ArrayList of Lender objects representing users who are willing to lender the book
-     */
-    public static ArrayList<Lender> fetchAllLenders(String ISBN) {
-        ArrayList<Lender> lenders = new ArrayList<>();
-        if (ISBN == null || ISBN.equals("")) {
-            return lenders;
-        }
-
-        openTheConnection();
-
-        try (PreparedStatement statementToFetchLenders = con.prepareStatement(Query.GET_LENDERS)) {
-
-            statementToFetchLenders.setString(1, ISBN);
-
-            ResultSet queryResults = statementToFetchLenders.executeQuery();
-            lenders = getLendersFromResultSet(queryResults);
-
-            con.close();
-        } catch (SQLException se) {
-            System.out.println("SQL ERR: " + se); //
-        }
-        return lenders;
-
-    }
-
-    /**
-     * Method to extract the query results and create Lender objects to send back to the client. These lenders are
-     * associated with a particular book.
-     *
-     * @param queryResults results from the SELECT query
-     * @return an arraylist of Lender objects
-     */
-    private static ArrayList<Lender> getLendersFromResultSet(ResultSet queryResults) {
-        ArrayList<Lender> lenders = new ArrayList<>();
-        String[] namesOfFieldsInResponse = new String[]{"Users_id", "name", "city", "loan_length", "copy_id"};
-
-        ArrayList<String> data = getArrayListFromResultSet(queryResults, namesOfFieldsInResponse);
-
-        for (int i = 0; i <= data.size() - namesOfFieldsInResponse.length; i += namesOfFieldsInResponse.length) {
-            Lender nextLender = new Lender(data.get(i), data.get(i + 1), data.get(i + 2), data.get(i + 3), data.get(i + 4));
-
-            lenders.add(nextLender);
-        }
-        return lenders;
-    }
-
-    /**
      *
      * @param ISBN
      * @return
@@ -323,51 +272,5 @@ public class BookDatabaseLogic extends DatabaseLogic {
             System.out.println("SQL ERR: " + se); //
         }
         return false;
-    }
-
-    /**
-     * Sets the loan length
-     *
-     * @param loanLength
-     * @param copyID
-     * @return true if the query was executed successfully
-     */
-    public static Boolean setLendingTerms(String loanLength, String copyID) {
-        openTheConnection();
-
-        try (PreparedStatement statementToSetLoanTerms = con.prepareStatement(Query.SET_LOAN_TERMS)) {
-
-            statementToSetLoanTerms.setString(1, loanLength);
-            statementToSetLoanTerms.setString(2, copyID);
-
-            statementToSetLoanTerms.executeUpdate();
-            con.close();
-            return true;
-
-        } catch (SQLException se) {
-            System.out.println("SQL ERR: " + se);
-            return false;
-        }
-    }
-
-    public static String getLendingTerms(String copyID){
-        openTheConnection();
-        try (PreparedStatement statementToGetLoanTerms = con.prepareStatement(Query.GET_LOAN_TERMS)) {
-
-            statementToGetLoanTerms.setString(1, copyID);
-
-            ResultSet queryResults = statementToGetLoanTerms.executeQuery();
-            ArrayList<String> result = getArrayListFromResultSet(queryResults,new String[]{"loan_length"});
-            con.close();
-            return result.get(0);
-
-        } catch (SQLException se) {
-            System.out.println("SQL ERR: " + se);
-            return null;
-        } catch (ArrayIndexOutOfBoundsException e){
-            System.out.println("SQL ERR: " + e);
-            return null;
-        }
-
     }
 }
