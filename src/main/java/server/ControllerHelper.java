@@ -304,7 +304,11 @@ public class ControllerHelper {
 
     public static String getJSONStringFromRating(String rating){
         JSONObject output = new JSONObject();
-        output.put("AverageRating",rating);
+        if (rating !=null) {
+            output.put("AverageRating", rating);
+        } else {
+            output.put("AverageRating", "");
+        }
         return output.toString();
     }
 

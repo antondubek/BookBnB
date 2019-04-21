@@ -215,4 +215,28 @@ public class ControllerTest {
         assertFalse(ControllerHelper.processRequestStatus("approd",requestNumberDate));
 
     }
+
+    @Test
+    public void testGetJsonStringFromRating(){
+        String expectedOutput = "{\"AverageRating\":\"5\"}";
+        String nullOutput = "{\"AverageRating\":\"\"}";
+        assertEquals(ControllerHelper.getJSONStringFromRating("5"),expectedOutput);
+        assertEquals(ControllerHelper.getJSONStringFromRating(null),nullOutput);
+    }
+
+    @Test
+    public void testGetParametersForRatingRequests(){
+        JSONObject data = new JSONObject();
+        data.put("borrowerEmail","riadibadulla@gmail.com");
+        data.put("lenderEmail","ri31@st-andrews.ac.uk");
+        data.put("rating","12");
+        data.put("review","Nice book");
+
+        String[] expexctedOutput = new String[]{"riadibadulla@gmail.com","ri31@st-andrews.ac.uk","12","Nice book"};
+        String[] actualOutput =  ControllerHelper.getParametersForRatingRequests("borrowerEmail","lenderEmail",data);
+        assertArrayEquals(actualOutput,expexctedOutput);
+    }
+
+
+
 }
