@@ -39,7 +39,7 @@ public class Controller {
     }
 
     /**
-     * Login request method
+     * Login request method.
      * @param jsonString gets email and password to login
      * @return status if login was successful
      */
@@ -55,7 +55,7 @@ public class Controller {
     }
 
     /**
-     * get books request method, GET request
+     * get books request method, GET request.
      * @param command command which table of books to send
      * @return books for user or all books depending on request
      */
@@ -69,7 +69,7 @@ public class Controller {
     }
 
     /**
-     * Mapping to find all the available lenders of a particular book
+     * Mapping to find all the available lenders of a particular book.
      * @param ISBN unique identifier of the book, used to find available lenders
      * @return
      */
@@ -96,7 +96,7 @@ public class Controller {
     }
 
     /**
-     * get all books for the user
+     * get all books for the user.
      * @param jsonString
      * @return
      */
@@ -118,7 +118,7 @@ public class Controller {
     }
 
     /**
-     * Update whether or not a book is available for lending. If update successful, send STATUS OK, otherwise send 404
+     * Update whether or not a book is available for lending. If update successful, send STATUS OK, otherwise send 404.
      * @param jsonString JSON passed in the request body, contains "email", "available", "ISBN", "copyID"
      * @return HttpStatus Ok if updated successfully
      */
@@ -136,7 +136,7 @@ public class Controller {
     }
 
     /**
-     * RequestMapping to follow the user
+     * RequestMapping to follow the user.
      * @param jsonString contains "email" and "friendEmail" which it needs to follow
      * @return (HttpStatus.OK) if followed successfully
      */
@@ -155,7 +155,7 @@ public class Controller {
     }
 
     /**
-     * RequestMapping to unfollow the user
+     * RequestMapping to unfollow the user.
      * @param jsonString contains "email" and "friendEmail" which it needs to unfollow
      * @return (HttpStatus.OK) if unfollowed successfully
      */
@@ -169,7 +169,7 @@ public class Controller {
     }
 
     /**
-     * RequestMapping to check if the user is followed by another user
+     * RequestMapping to check if the user is followed by another user.
      * @param jsonString contains "email" and "friendEmail" which it check if is followed or not
      * @return JSon object string with field userIsFollowed, true if the user follows friendEmail
      */
@@ -200,7 +200,7 @@ public class Controller {
     }
 
     /**
-     * Fetches from the database the list of all users who the user follows (people who that user follows)
+     * Fetches from the database the list of all users who the user follows (people who that user follows).
      * @param jsonString contains "email" of the user
      * @return JSON with users
      */
@@ -218,7 +218,7 @@ public class Controller {
     }
 
     /**
-     * Add book request method
+     * Add book request method.
      * @param jsonString
      * @return ok if the book is added to the database successfully
      */
@@ -232,8 +232,7 @@ public class Controller {
     }
 
     /**
-<<<<<<< HEAD
-     * Mapping for a user to request to borrow a book
+     * Mapping for a user to request to borrow a book.
      * @param jsonString containing information needed for a user to request to borrow a book from a lender
      * @return ok if the request to borrow was made successfully, error if otherwise
      */
@@ -248,7 +247,7 @@ public class Controller {
 
     /**
      * This returns the list of all lenders that a user is borrowing from along with some information about what is
-     * being borrow
+     * being borrow.
      * @param jsonString JSON containing parameters needed for getting this information
      * @return a list of all lenders that a user is borrowing from plus some other key information
      */
@@ -267,7 +266,7 @@ public class Controller {
 
     /**
      * Request mapping to return a list of users who have request to loan books from the given users along with the
-     * books they hvae requested to borrow
+     * books they hvae requested to borrow.
      * @param jsonString JSON containing parameters needed for getting this information
      * @return a string containing JSON with the requested information
      */
@@ -284,7 +283,7 @@ public class Controller {
     }
 
     /**
-     * Request mapping to handle when a user makes a request to borrow a book
+     * Request mapping to handle when a user makes a request to borrow a book.
      * @param jsonString JSON containing parameters needed for performing this action
      * @return JSON string containing a list of BorrowedBooks
      */
@@ -301,7 +300,7 @@ public class Controller {
     }
 
     /**
-     * Request mapping to handle the act of a user approving or denying a loan request
+     * Request mapping to handle the act of a user approving or denying a loan request.
      * @param jsonString JSON containing parameters needed for performing this action
      * @return a status response of OK if the loan request response was processed correctly, a bad request otherwise
      */
@@ -318,7 +317,7 @@ public class Controller {
     }
 
     /**
-     * Request mapping to handle when a user recalls a book
+     * Request mapping to handle when a user recalls a book.
      * @param jsonString JSON containing parameters needed for performing this action
      * @return a status response of OK if the recall action was processed correctly, a bad request otherwise
      */
@@ -334,7 +333,7 @@ public class Controller {
     }
 
     /**
-     * Request mapping to handle when a user checks in a book they have lent out after it has been returned from loan
+     * Request mapping to handle when a user checks in a book they have lent out after it has been returned from loan.
      * @param jsonString JSON containing parameters needed for performing this action
      * @return a status response of OK if the return action was processed correctly, a bad request otherwise
      */
@@ -350,8 +349,8 @@ public class Controller {
     }
 
     /**
-     *
-     * @param jsonString JSON containing parameters needed for performing this action
+     * Request mapping to get the books rating.
+     * @param jsonString JSON containing ISBN of the book, which rating needs to be returned
      * @return a status response of OK if the return action was processed correctly, a bad request otherwise
      */
     @RequestMapping(method = RequestMethod.POST, value = "/rating/book")
@@ -365,7 +364,7 @@ public class Controller {
     }
 
     /**
-     *
+     * Request mapping to get the users reputation.
      * @param jsonString JSON containing parameters needed for performing this action
      * @return a status response of OK if the return action was processed correctly, a bad request otherwise
      */
@@ -381,7 +380,7 @@ public class Controller {
     }
 
     /**
-     *
+     * Request mapping to set the users reputation.
      * @param jsonString JSON containing parameters needed for performing this action
      * @return a status response of OK if the return action was processed correctly, a bad request otherwise
      */
@@ -400,7 +399,7 @@ public class Controller {
     }
 
     /**
-     *
+     * Request mapping to set the books rating.
      * @param jsonString JSON containing parameters needed for performing this action
      * @return a status response of OK if the return action was processed correctly, a bad request otherwise
      */
@@ -419,7 +418,7 @@ public class Controller {
     }
 
     /**
-     * Set loan length
+     * Set loan length.
      * @param jsonString
      * @return ok if the table is updated successfully
      */
@@ -433,7 +432,7 @@ public class Controller {
     }
 
     /**
-     * Get loan length
+     * Get loan length.
      * @param jsonString with copyID
      * @return JSON with loanLength
      */
@@ -446,6 +445,4 @@ public class Controller {
         output.put("loanLength",loanLenght);
         return output.toString();
     }
-
-
 }
