@@ -182,5 +182,20 @@ public class ControllerTest {
         assertEquals(actualJSOON, ExpectedJSONArray);
     }
 
+    @Test
+    public void testGetRequestNumberDateStatusFromJSON(){
+        JSONObject data = new JSONObject();
+        data.put("status","active");
+        data.put("requestNumber","12");
+        data.put("startDate","01.02.2019");
 
+        ArrayList<String> actualList = ControllerHelper.getRequestNumberDateStatusFromJSON(data);
+        String actualStatus = actualList.get(0);
+        String actualRequestNumber = actualList.get(1);
+        String actualStartDate = actualList.get(2);
+
+        assertEquals(actualStartDate,"01.02.2019");
+        assertEquals(actualRequestNumber,"12");
+        assertEquals(actualStatus,"active");
+    }
 }
