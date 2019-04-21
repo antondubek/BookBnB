@@ -360,9 +360,8 @@ public class Controller {
         String ISBN = data.get("ISBN").toString();
 
         String rating = BookDatabaseLogic.getAverageRating(ISBN);
-        JSONObject output = new JSONObject(jsonString);
-        output.put("AverageRating",rating);
-        return output.toString();
+
+        return ControllerHelper.getJSONStringFromRating(rating);
     }
 
     /**

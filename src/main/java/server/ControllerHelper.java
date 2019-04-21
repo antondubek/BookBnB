@@ -302,4 +302,9 @@ public class ControllerHelper {
         }
     }
 
+    public static String getJSONStringFromRating(String rating){
+        JSONObject output = new JSONObject();
+        output.put("AverageRating",rating);
+        return output.toString();
+    }
 }
