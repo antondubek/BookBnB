@@ -226,4 +226,61 @@ public class UserDatabaseLogic extends DatabaseLogic {
         }
         return false;
     }
+
+    /**
+     * Get average Reputation of the user.
+     * @param email of the user, whose reputation needs to be returned
+     * @return Average reputation of the user
+     */
+    public static String getAverageRating(String email){
+        openTheConnection();
+
+        try (PreparedStatement statementToGetRating = con.prepareStatement(Query.AVERAGE_USER_REPUTATION)){
+
+            statementToGetRating.setString(1, email);
+
+            ResultSet queryResults = statementToGetRating.executeQuery();
+            ArrayList<String> averageRatingList = getArrayListFromResultSet(queryResults,new String[]{"AVG(rating)"});
+            String averageRating;
+            if (averageRatingList.size()>0){
+                averageRating = averageRatingList.get(0);
+            } else {
+                averageRating = "";
+            }
+            con.close();
+            return averageRating;
+        } catch (SQLException se) {
+            System.out.println("SQL ERR: " + se); //
+        }
+        return "";
+    }
+
+    /**
+     * Add new reputation row to the database.
+     * @param borowerEmail
+     * @param lenderEmail
+     * @param rating
+     * @param review
+     * @return true if the query was executed successfully
+     */
+    public static Boolean setReputation(String borowerEmail, String lenderEmail, Integer rating,String review){
+        openTheConnection();
+
+        try (PreparedStatement statementToSetRating = con.prepareStatement(Query.SET_USER_REPUTATION)){
+
+            statementToSetRating.setString(1, lenderEmail);
+            statementToSetRating.setString(2, borowerEmail);
+            statementToSetRating.setInt(3, rating);
+            statementToSetRating.setString(4, review);
+            statementToSetRating.setDate(5, getCurrentDate());
+
+            statementToSetRating.executeUpdate();
+            con.close();
+            return true;
+        } catch (SQLException se) {
+            System.out.println("SQL ERR: " + se); //
+        }
+        return false;
+    }
+
 }
