@@ -6,8 +6,8 @@ import static org.junit.Assert.*;
 
 
 public class BookTest {
-    public Book testBook;
-    public String ISBN = "1112223334445";
+    private Book testBook;
+    private String ISBN = "1112223334445";
     private String title = "Test";
     private String author = "Testy McTest";
     private String edition = "1st";
@@ -23,15 +23,15 @@ public class BookTest {
     }
 
     @Test
-    public void testConstruction(){
+    public void testConstructor(){
         assertEquals(testBook.getISBN(), ISBN);
         assertEquals(testBook.getTitle(), title);
         assertEquals(testBook.getAuthor(), author);
-        assertEquals(testBook.getIsLoaned(), false);
+        assertFalse(testBook.getIsLoaned());
     }
 
     @Test
-    public void testSetters() {
+    public void testSettersAndGetters() {
         testBook.setEdition(edition);
         testBook.setAvailable("1");
         testBook.setCopyID(copyID);

@@ -25,7 +25,7 @@ public class BorrowedBookTest {
     }
 
     @Test
-    public void testConstruction(){
+    public void testConstructor(){
         assertEquals(testBorrowedBook.getISBN(), ISBN);
         assertEquals(testBorrowedBook.getTitle(), title);
         assertEquals(testBorrowedBook.getAuthor(), author);
@@ -35,7 +35,7 @@ public class BorrowedBookTest {
     }
 
     @Test
-    public void testSetters() {
+    public void testSettersAndGetters() {
         testBorrowedBook.setEdition(edition);
         testBorrowedBook.setAvailable("1");
         testBorrowedBook.setCopyID(copyID);
