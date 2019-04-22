@@ -8,7 +8,7 @@ public class BorrowedBook extends Book {
     private String endDate;
     private String requestNumber;
 
-    BorrowedBook(String ISBN, String title, String author, String status, String personOfInterest) {
+    public BorrowedBook(String ISBN, String title, String author, String status, String personOfInterest) {
         super(ISBN, title, author);
         this.status = status;
         this.personOfInterest = personOfInterest;

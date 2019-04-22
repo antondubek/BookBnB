@@ -1,11 +1,9 @@
-import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.Before;
 import server.Book;
 
-
 import static org.junit.Assert.*;
-import java.util.ArrayList;
+
 
 public class BookTest {
     public Book testBook;
@@ -46,6 +44,4 @@ public class BookTest {
         assertEquals(testBook.getIsLoaned(), isLoaned);
         assertEquals(testBook.getLoanLength(), loanLength);
     }
-
-
 }
