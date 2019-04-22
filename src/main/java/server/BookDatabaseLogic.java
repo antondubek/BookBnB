@@ -219,4 +219,61 @@ public class BookDatabaseLogic extends DatabaseLogic {
         }
     }
 
+    /**
+     * Get Average rating of the book
+     * @param ISBN of the book, which rating should be returned
+     * @return average rating of the book
+     */
+    public static String getAverageRating(String ISBN){
+        openTheConnection();
+
+        try (PreparedStatement statementToGetRating = con.prepareStatement(Query.AVERAGE_BOOK_RATING)){
+
+            statementToGetRating.setString(1, ISBN);
+
+            ResultSet queryResults = statementToGetRating.executeQuery();
+            ArrayList<String> averageRatingList = getArrayListFromResultSet(queryResults,new String[]{"AVG(rating)"});
+            String averageRating;
+            if (averageRatingList.size()>0){
+                averageRating = averageRatingList.get(0);
+            } else {
+                averageRating = "";
+            }
+            con.close();
+            return averageRating;
+        } catch (SQLException se) {
+            System.out.println("SQL ERR: " + se);
+        } catch (ArrayIndexOutOfBoundsException e){
+            System.out.println("Array Index out of Bounds ERR: " + e);
+        }
+        return "";
+    }
+
+    /**
+     * Add new rating raw in database.
+     * @param email
+     * @param ISBN
+     * @param rating
+     * @param review
+     * @return true if the query was executed successfully
+     */
+    public static Boolean setRating(String email, String ISBN, Integer rating,String review){
+        openTheConnection();
+
+        try (PreparedStatement statementToSetRating = con.prepareStatement(Query.SET_BOOK_RATING)){
+
+            statementToSetRating.setString(1, email);
+            statementToSetRating.setString(2, ISBN);
+            statementToSetRating.setInt(3, rating);
+            statementToSetRating.setString(4, review);
+            statementToSetRating.setDate(5, getCurrentDate());
+
+            statementToSetRating.executeUpdate();
+            con.close();
+            return true;
+        } catch (SQLException se) {
+            System.out.println("SQL ERR: " + se); //
+        }
+        return false;
+    }
 }

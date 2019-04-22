@@ -1,9 +1,6 @@
 import org.json.JSONObject;
 import org.junit.Test;
-import server.Book;
-import server.Controller;
-import server.ControllerHelper;
-import server.User;
+import server.*;
 
 import static org.junit.Assert.*;
 import java.util.ArrayList;
@@ -59,7 +56,7 @@ public class ControllerTest {
         ArrayList<Book> books = new ArrayList<Book>();
         books.add(new Book("1234567890","Song of Ice and Fire", "George Martin"));
         ArrayList<String> JSONBooks = ControllerHelper.getJSONBooks(books);
-        String expectedJSON = "{\"ISBN\":\"1234567890\",\"title\":\"Song of Ice and Fire\",\"author\":\"George Martin\",\"edition\":null,\"available\":null,\"copyID\":null,\"isbn\":\"1234567890\"}";
+        String expectedJSON = "{\"ISBN\":\"1234567890\",\"title\":\"Song of Ice and Fire\",\"author\":\"George Martin\",\"edition\":null,\"available\":null,\"copyID\":null,\"isLoaned\":false,\"loanLength\":null,\"isbn\":\"1234567890\"}";
         assertEquals(JSONBooks.get(0), expectedJSON);
     }
 
@@ -113,7 +110,6 @@ public class ControllerTest {
         User user1 = new User("Riad", "rio@gmail.com", "baku");
         String json1 = "{\"name\":\"Riad\",\"email\":\"rio@gmail.com\",\"city\":\"baku\"}";
         assertEquals(ControllerHelper.createJSONFromUser(user1),json1);
-        //TODO: test catch block as well
     }
 
     @Test
@@ -159,4 +155,88 @@ public class ControllerTest {
         data.put("available", "false");
         assertFalse(ControllerHelper.getAvailabilityFromJSON(data));
     }
+
+    @Test
+    public void testGetJSONBorrowedBooks(){
+        BorrowedBook book1 = new BorrowedBook("123456","Title1","Author1","active", "riadibadulla@gmail.com");
+        book1.setStartDate("01.02.2019");
+        book1.setEndDate("02.09.2019");
+        book1.setRequestNumber("12");
+        book1.setCopyID("4");
+        ArrayList<BorrowedBook> listOfBooks = new ArrayList<BorrowedBook>();
+        listOfBooks.add(book1);
+        String JSONStringExpected = "[{\"copyID\":\"4\",\"requestNumber\":\"12\",\"ISBN\":\"123456\",\"endDate\":\"02.09.2019\",\"author\":\"Author1\",\"name\":\"riadibadulla@gmail.com\",\"title\":\"Title1\",\"startDate\":\"01.02.2019\",\"status\":\"active\"}]";
+        String JSONActual = ControllerHelper.getJSONBorrowedBooks(listOfBooks).toString();
+        assertEquals(JSONActual,JSONStringExpected);
+    }
+
+    @Test
+    public void testGetJSONLenders(){
+        Lender lender = new Lender("12","Name1","City1","12","1");
+        ArrayList<Lender> lenders = new ArrayList<Lender>();
+        lenders.add(lender);
+
+        String ExpectedJSONArray = "[{\"name\":\"Name1\",\"city\":\"City1\",\"loanLength\":\"12\",\"copyID\":\"1\",\"id\":\"12\"}]";
+        String actualJSOON = ControllerHelper.getJSONLenders(lenders).toString();
+        assertEquals(actualJSOON, ExpectedJSONArray);
+    }
+
+    @Test
+    public void testGetRequestNumberDateStatusFromJSON(){
+        JSONObject data = new JSONObject();
+        data.put("status","active");
+        data.put("requestNumber","12");
+        data.put("startDate","01.02.2019");
+
+        ArrayList<String> actualList = ControllerHelper.getRequestNumberDateStatusFromJSON(data);
+        String actualStatus = actualList.get(0);
+        String actualRequestNumber = actualList.get(1);
+        String actualStartDate = actualList.get(2);
+
+        assertEquals(actualStartDate,"01.02.2019");
+        assertEquals(actualRequestNumber,"12");
+        assertEquals(actualStatus,"active");
+    }
+
+    @Test
+    public void testGetBorrowRequestFields(){
+        JSONObject data = new JSONObject();
+        data.put("lenderID", 2);
+        data.put("copyID",12);
+        Lender actualLender = ControllerHelper.getBorrowRequestFields(data);
+        assertEquals(actualLender.getcopyID(),"12");
+        assertEquals(actualLender.getID(),"2");
+        assertEquals(actualLender.getCity(),"");
+    }
+
+    @Test
+    public void testProcessRequestStatus(){
+        ArrayList<String> requestNumberDate = new ArrayList<String>();
+        assertFalse(ControllerHelper.processRequestStatus("approd",requestNumberDate));
+
+    }
+
+    @Test
+    public void testGetJsonStringFromRating(){
+        String expectedOutput = "{\"AverageRating\":\"5\"}";
+        String nullOutput = "{\"AverageRating\":\"\"}";
+        assertEquals(ControllerHelper.getJSONStringFromRating("5"),expectedOutput);
+        assertEquals(ControllerHelper.getJSONStringFromRating(null),nullOutput);
+    }
+
+    @Test
+    public void testGetParametersForRatingRequests(){
+        JSONObject data = new JSONObject();
+        data.put("borrowerEmail","riadibadulla@gmail.com");
+        data.put("lenderEmail","ri31@st-andrews.ac.uk");
+        data.put("rating","12");
+        data.put("review","Nice book");
+
+        String[] expexctedOutput = new String[]{"riadibadulla@gmail.com","ri31@st-andrews.ac.uk","12","Nice book"};
+        String[] actualOutput =  ControllerHelper.getParametersForRatingRequests("borrowerEmail","lenderEmail",data);
+        assertArrayEquals(actualOutput,expexctedOutput);
+    }
+
+
+
 }

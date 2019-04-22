@@ -73,12 +73,14 @@ public class Query {
 
     public static String UPDATE_STATUS_AT_END_OF_LOAN = "UPDATE Request SET status = ? WHERE request_number = ? ";
 
-    public static String AVERAGE_BOOK_RATING = "SELECT AVG(rating) FROM Users_rating GROUP BY(Book_ISBN);";
+    public static String AVERAGE_BOOK_RATING = "SELECT AVG(rating) FROM Users_rating WHERE Book_ISBN = ? GROUP BY(Book_ISBN);";
 
-    public static String AVERAGE_USER_REPUTATION = "SELECT AVG(rating), borrower FROM Reputation GROUP BY(borrower);"; //SELECT AVG(rating), borrower FROM Reputation WHERE borrower = '3' GROUP BY(borrower);
+    public static String AVERAGE_USER_REPUTATION = "SELECT AVG(rating), borrower FROM Reputation WHERE borrower = (SELECT id FROM Users WHERE email = ?) GROUP BY(borrower);";
 
     public final static String SET_LOAN_TERMS = "UPDATE Users_book SET loan_length = ? WHERE copy_id = ?;";
     public final static String GET_LOAN_TERMS = "select loan_length from Users_book where copy_id = ?;";
-
-
+    public final static String SET_BOOK_RATING = "INSERT INTO Users_rating (Users_id, Book_ISBN, rating,review,review_date) "+
+            "VALUES ((SELECT id FROM Users WHERE email = ?),?,?,?,?)";
+    public static String SET_USER_REPUTATION = "INSERT INTO Reputation (lender,borrower,rating, review,review_date)\n"+
+            "VALUES ((SELECT id FROM Users WHERE email = ?),(SELECT id FROM Users WHERE email = ?),?,?,?);";
 }
