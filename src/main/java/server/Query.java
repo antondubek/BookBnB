@@ -66,7 +66,7 @@ public class Query {
                                                     "available = false, " +
                                                     "loan_to = (SELECT borrower_id FROM Request WHERE request_number = ?), " +
                                                     "loan_start = ?, " +
-                                                    "loan_end = Users_book.loan_start + Users_book.loan_length " +
+                                                    "loan_end = DATE_ADD(Users_book.loan_start, INTERVAL Users_book.loan_length DAY) " +
                                                     "WHERE copy_id = (SELECT copy_id FROM Request WHERE request_number = ?);";
 
     public static String RETURN_OR_RECALL_BOOK = "UPDATE Users_book SET loan_to = null, loan_start = null, loan_end = null WHERE copy_id = (SELECT copy_id FROM Request WHERE request_number = ?);";
@@ -81,6 +81,7 @@ public class Query {
     public final static String GET_LOAN_TERMS = "select loan_length from Users_book where copy_id = ?;";
     public final static String SET_BOOK_RATING = "INSERT INTO Users_rating (Users_id, Book_ISBN, rating,review,review_date) "+
             "VALUES ((SELECT id FROM Users WHERE email = ?),?,?,?,?)";
+
     public static String SET_USER_REPUTATION = "INSERT INTO Reputation (lender,borrower,rating, review,review_date)\n"+
             "VALUES ((SELECT id FROM Users WHERE email = ?),(SELECT id FROM Users WHERE email = ?),?,?,?);";
 }
